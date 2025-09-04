@@ -1,0 +1,53 @@
+package com.rlp.cosechaencope.dto.response;
+
+import java.math.BigDecimal;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+/**
+ * DTO de respuesta para representar los datos de un artículo.
+ * 
+ * <p>Se utiliza para enviar al cliente la información detallada de un artículo,
+ * incluyendo los datos básicos, su categoría asociada y otros atributos útiles.</p>
+ * 
+ * <p>Este DTO es especialmente útil para mostrar artículos en vistas de lista o detalle,
+ * proporcionando información tanto del propio artículo como de su categoría.</p>
+ * 
+ * @author rafalopezzz
+ */
+@Data
+@Schema(description = "Datos de respuesta de un artículo")
+public class ArticuloResponse {
+
+    @Schema(description = "ID del artículo", example = "1")
+    private Long idArticulo;
+
+    @Schema(description = "Nombre del artículo", example = "Tomate Raf")
+    private String nombre;
+
+    @Schema(description = "Descripción del artículo", example = "Tomate de variedad Raf, muy sabroso y jugoso")
+    private String descripcion;
+
+    @Schema(description = "Precio del artículo", example = "4.99")
+    private BigDecimal precio;
+
+    @Schema(description = "Cantidad disponible en stock", example = "50")
+    private Integer stock;
+
+    @Schema(description = "ID de la categoría a la que pertenece el artículo", example = "1")
+    private Long idCategoria;
+
+    @Schema(description = "Nombre de la categoría a la que pertenece el artículo", example = "Frutas")
+    private String nombreCategoria;
+
+    @Schema(description = "ID del productor del artículo", example = "1")
+    private Long idProductor;
+
+    @Schema(description = "Nombre del productor del artículo", example = "productor Genérico")
+    private String nombreProductor;
+    
+    @Schema(description = "URL de la imagen del artículo", example = "https://example.com/imagen.jpg")
+    private String imagenUrl;
+
+}
