@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html
+  lang="es"
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout/base :: layout(~{::title}, ~{::meta[@name='description']}, ~{::meta[@name='keywords']}, ~{::link[@rel='canonical']}, ~{::meta[@property='og:image']}, null, ~{::main})}"
+>
+  <head>
+    <title th:text="${pageTitle}">
+      Cosecha en Cope - Productos Agrícolas Frescos
+    </title>
+
+    <meta
+      name="description"
+      th:content="${pageDescription}"
+    />
+    <meta name="keywords" th:content="${keywords}" />
+    <link rel="canonical" th:href="${canonicalUrl}" />
+    <meta property="og:image" th:content="${ogImage}" />
+  </head>
+  <body>
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <div th:replace="~{fragments/landing/hero-section :: hero}"></div>
+
+      <!-- Features Section (Categorías) -->
+      <div th:replace="~{fragments/landing/features-section :: features}"></div>
+      
+      <!-- Gallery Carousel (Artículos Destacados) -->
+      <div th:replace="~{fragments/landing/gallery-carousel :: gallery}"></div>
+
+      <!-- Tabs Info Section -->
+      <div th:replace="~{fragments/landing/tabs-info :: tabs}"></div>
+
+      <!-- Testimonials Section -->
+      <div th:replace="~{fragments/landing/testimonials :: testimonials}"></div>
+
+      <!-- CTA Section -->
+      <div th:replace="~{fragments/landing/cta-section :: cta}"></div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Header Fragment -->
+<header th:fragment="header" class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+  <div class="container">
+    
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Ir a inicio" onclick="window.location.href='/'; return false;">
+      <img
+        src="/images/logo_test.svg"
+        width="160"
+        height="60"
+        alt="Cosecha en Cope"
+        class="navbar-logo"
+      />
+    </a>
+
+    <!-- Mobile Menu Toggle -->
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav" 
+      aria-expanded="false" 
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <nav class="navbar-nav me-auto" aria-label="Navegación principal">
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/"
+          th:classappend="${currentPath == '/'} ? ' active'"
+          onclick="window.location.href='/'; return false;"
+        >
+          <i class="fas fa-home me-2"></i>
+          <span>Inicio</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/app/articulos"
+          th:classappend="${currentPath == '/app/articulos'} ? ' active'"
+        >
+          <i class="fas fa-shopping-basket me-2"></i>
+          <span>Productos</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/app/categorias"
+          th:classappend="${currentPath == '/app/categorias'} ? ' active'"
+        >
+          <i class="fas fa-tags me-2"></i>
+          <span>Categorías</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/nosotros"
+          th:classappend="${currentPath == '/nosotros'} ? ' active'"
+          onclick="window.location.href='/nosotros'; return false;"
+        >
+          <i class="fas fa-users me-2"></i>
+          <span>¿Quiénes somos?</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/contacto"
+          th:classappend="${currentPath == '/contacto'} ? ' active'"
+          onclick="window.location.href='/contacto'; return false;"
+        >
+          <i class="fas fa-envelope me-2"></i>
+          <span>Contacto</span>
+        </a>
+      </nav>
+
+      <!-- CTA Actions -->
+      <div class="navbar-nav">
+        <a 
+          class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
+          href="/app/auth"
+        >
+          <i class="fas fa-user-plus me-2"></i>
+          <span>Acceder</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+</body>
+</html>

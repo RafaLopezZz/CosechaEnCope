@@ -1,0 +1,61 @@
+<!-- CTA Section Fragment -->
+<section class="cta py-5 bg-primary text-white" th:fragment="cta">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- CTA Content -->
+      <div class="col-lg-8 mb-4 mb-lg-0 text-center text-lg-start">
+        <h2 class="display-5 fw-bold mb-3">Únete a la comunidad</h2>
+        <p class="lead mb-4">
+          Recibe novedades, ofertas especiales y accede a productos frescos de temporada.
+          Forma parte de un proyecto que apoya la economía local.
+        </p>
+        <div class="cta-actions d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+          <a class="btn btn-light btn-lg px-4 py-3 rounded-pill fw-semibold" href="/app/auth">
+            <i class="fas fa-user-plus me-2"></i> Crear cuenta
+          </a>
+          <a class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill fw-semibold" href="/app/articulos">
+            <i class="fas fa-search me-2"></i> Explorar productos
+          </a>
+        </div>
+      </div>
+
+      <!-- CTA Image -->
+      <div class="col-lg-4">
+        <div class="cta-image text-center">
+          <img
+            src="/images/cta-community.svg"
+            alt="Únete a nuestra comunidad"
+            class="img-fluid"
+            loading="lazy"
+            style="max-width: 300px;"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Extra Features -->
+    <div class="row mt-5 text-center">
+      <div class="col-md-4 mb-3">
+        <div class="feature-item">
+          <i class="fas fa-bell fa-2x mb-3"></i>
+          <h5 class="fw-bold">Notificaciones</h5>
+          <p class="small mb-0">Entérate de nuevos productos y ofertas</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="feature-item">
+          <i class="fas fa-calendar-check fa-2x mb-3"></i>
+          <h5 class="fw-bold">Pedidos Recurrentes</h5>
+          <p class="small mb-0">Programa tus compras semanales</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="feature-item">
+          <i class="fas fa-heart fa-2x mb-3"></i>
+          <h5 class="fw-bold">Favoritos</h5>
+          <p class="small mb-0">Guarda tus productos preferidos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

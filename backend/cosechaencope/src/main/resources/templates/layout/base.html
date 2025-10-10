@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, description, keywords, canonical, ogImage, structuredData, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- SEO Meta Tags: insertamos FRAGMENTS si existen -->
+    <th:block th:if="${title != null}" th:replace="${title}"></th:block>
+    <th:block th:if="${description != null}" th:replace="${description}"></th:block>
+    <th:block th:if="${keywords != null}" th:replace="${keywords}"></th:block>
+
+    <meta name="author" content="Cosecha en Cope">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical -->
+    <th:block th:if="${canonical != null}" th:replace="${canonical}"></th:block>
+
+    <!-- Open Graph -->
+    <meta property="og:title" th:content="${pageTitle}">
+    <meta property="og:description" th:content="${pageDescription}">
+    <th:block th:if="${ogImage != null}" th:replace="${ogImage}"></th:block>
+    <meta property="og:url" th:content="${canonicalUrl}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Cosecha en Cope">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" th:content="${pageTitle}">
+    <meta name="twitter:description" th:content="${pageDescription}">
+    <meta name="twitter:image" th:if="${ogImageUrl != null}" th:content="${ogImageUrl}"/>
+
+    <!-- Favicons, CSS, fonts... (sin cambios) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="thymeleaf/assets/images/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="thymeleaf/assets/images/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="thymeleaf/assets/images/icons/favicon-16x16.png">
+    <link rel="manifest" href="thymeleaf/assets/manifest.json">
+    <meta name="theme-color" content="#28a745">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="thymeleaf/css/main.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Structured Data JSON-LD -->
+    <script th:if="${structuredData != null}" type="application/ld+json" th:utext="${structuredData}"></script>
+</head>
+<body>
+    <header th:replace="~{layout/header :: header}"></header>
+
+    <main th:if="${content != null}" th:replace="${content}">
+        <!-- Fallback si no se pasa fragment 'content' -->
+        <div class="container py-5">
+            <h1 th:text="${pageTitle}">Cosecha en Cope</h1>
+            <p th:text="${pageDescription}">Descripción...</p>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+    <script src="/thymeleaf/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!-- Features Section (Categorías) Fragment -->
+<section class="features py-5 bg-white" th:fragment="features">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="text-center mb-5">
+      <h2 class="display-5 fw-bold mb-3">Explora nuestras categorías</h2>
+      <p class="lead text-muted">
+        Descubre productos frescos organizados por tipo
+      </p>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6" th:each="categoria : ${categorias}">
+        <div class="card h-100 border-0 shadow-sm category-card">
+          <!-- Category Image -->
+          <div class="card-img-container">
+            <img
+              th:src="${categoria.imagenUrl != null && !categoria.imagenUrl.isEmpty()} ? ${categoria.imagenUrl} : '/images/placeholder-category.jpg'"
+              th:alt="${categoria.nombre}"
+              class="card-img-top category-img"
+              loading="lazy"
+            />
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body d-flex flex-column">
+            <span class="badge bg-success mb-3 align-self-start" th:text="${categoria.nombre}">
+              Categoría
+            </span>
+            <h3 class="card-title h5 fw-bold mb-3" th:text="${categoria.descripcion}">
+              Descripción de la categoría
+            </h3>
+            <div class="card-actions mt-auto">
+              <a
+                class="btn btn-primary btn-sm"
+                th:href="@{/app/articulos(cat=${categoria.nombre.toLowerCase()})}"
+                th:text="'Ver productos'"
+              >
+                Ver más <span>›</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center mt-5">
+      <a class="btn btn-outline-primary btn-lg" href="/app/categorias">
+        <i class="fas fa-th-large me-2"></i> Ver todas las categorías
+      </a>
+    </div>
+
+    <!-- Empty State (si no hay categorías) -->
+    <div class="text-center py-5" th:if="${categorias == null || categorias.isEmpty()}">
+      <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+      <h3 class="h4 text-muted">No hay categorías disponibles</h3>
+      <p class="text-muted">Pronto añadiremos nuevas categorías de productos.</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es" 
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <th:block th:fragment="additional-head">
+        <!-- Additional meta tags for categories page -->
+        <meta name="geo.region" content="ES-AN">
+        <meta name="geo.placename" content="Cabo Cope, Murcia">
+    </th:block>
+</head>
+
+<body>
+    <main th:fragment="content">
+        
+        <!-- Hero Section -->
+        <section class="categories-hero bg-light py-5">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-lg-8 mx-auto">
+                        <h1 class="display-4 fw-bold text-dark mb-4">
+                            Categorías de Productos
+                        </h1>
+                        <p class="lead text-muted">
+                            Explora nuestras categorías de productos agrícolas frescos, 
+                            cultivados localmente con amor y dedicación por nuestros productores.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Grid Section -->
+        <section class="categories-grid py-5">
+            <div class="container">
+                <div class="row g-4">
+                    <!-- Category Cards -->
+                    <div th:each="category : ${categories}" class="col-lg-3 col-md-6">
+                        <div class="category-card h-100">
+                            <a th:href="@{'/productos/' + ${category.slug}}" class="text-decoration-none">
+                                <div class="category-image mb-3 position-relative overflow-hidden rounded-4">
+                                    <img 
+                                        th:src="${category.image}" 
+                                        th:alt="${category.description}"
+                                        class="img-fluid w-100"
+                                        style="height: 250px; object-fit: cover; transition: transform 0.3s ease;"
+                                    />
+                                    <div class="category-overlay position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-0 d-flex align-items-center justify-content-center" 
+                                         style="transition: opacity 0.3s ease;">
+                                        <span class="text-white fw-bold">Ver Productos</span>
+                                    </div>
+                                </div>
+                                <div class="category-info text-center">
+                                    <h3 class="h4 fw-bold text-dark mb-2" th:text="${category.name}">Categoría</h3>
+                                    <p class="text-muted mb-3" th:text="${category.description}">Descripción de la categoría</p>
+                                    <span class="btn btn-outline-primary btn-sm">Explorar</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="categories-features py-5 bg-light">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-lg-8 mx-auto">
+                        <h2 class="display-6 fw-bold text-dark mb-3">
+                            ¿Por qué elegir nuestros productos?
+                        </h2>
+                        <p class="lead text-muted">
+                            Cada categoría representa nuestro compromiso con la calidad, 
+                            frescura y sostenibilidad.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-seedling fs-1 text-primary"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-dark mb-3">Productos de Temporada</h3>
+                            <p class="text-muted">
+                                Seguimos los ciclos naturales para ofrecerte productos 
+                                en su momento óptimo de sabor y nutrición.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-map-marker-alt fs-1 text-primary"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-dark mb-3">Origen Local</h3>
+                            <p class="text-muted">
+                                Todos nuestros productos provienen de productores locales 
+                                verificados en un radio de proximidad.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mx-auto">
+                        <div class="feature-item text-center">
+                            <div class="feature-icon mb-3">
+                                <i class="fas fa-certificate fs-1 text-primary"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-dark mb-3">Calidad Garantizada</h3>
+                            <p class="text-muted">
+                                Cada producto pasa por rigurosos controles de calidad 
+                                antes de llegar a tu mesa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-categories py-5 bg-primary text-white">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-lg-8 mx-auto">
+                        <h2 class="display-6 fw-bold mb-3">
+                            ¿Listo para explorar nuestros productos?
+                        </h2>
+                        <p class="lead mb-4">
+                            Descubre la frescura y calidad de nuestros productos agrícolas locales. 
+                            Cada compra apoya a los productores de nuestra región.
+                        </p>
+                        <div class="cta-actions d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                            <a 
+                                href="/app/articulos" 
+                                class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-semibold text-primary"
+                            >
+                                <i class="fas fa-shopping-basket me-2"></i>
+                                Ver Todos los Productos
+                            </a>
+                            <a 
+                                href="/app/auth" 
+                                class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-semibold"
+                            >
+                                <i class="fas fa-user-plus me-2"></i>
+                                Crear Cuenta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Additional Scripts for categories page -->
+    <th:block th:fragment="additional-scripts">
+        <script>
+            // Add hover effects to category cards
+            document.querySelectorAll('.category-card').forEach(card => {
+                const image = card.querySelector('img');
+                const overlay = card.querySelector('.category-overlay');
+                
+                card.addEventListener('mouseenter', () => {
+                    if (image) image.style.transform = 'scale(1.05)';
+                    if (overlay) overlay.style.opacity = '0.3';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    if (image) image.style.transform = 'scale(1)';
+                    if (overlay) overlay.style.opacity = '0';
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

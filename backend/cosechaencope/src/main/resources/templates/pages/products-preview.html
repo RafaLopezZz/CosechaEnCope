@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es" 
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html}">
+<head>
+    <th:block th:fragment="additional-head">
+        <!-- Additional meta tags for products page -->
+        <meta name="geo.region" content="ES-AN">
+        <meta name="geo.placename" content="Cabo Cope, Murcia">
+    </th:block>
+</head>
+
+<body>
+    <main th:fragment="content">
+        
+        <!-- Hero Section -->
+        <section class="products-hero bg-light py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Inicio</a></li>
+                                <li class="breadcrumb-item"><a href="/categorias" class="text-decoration-none">Categorías</a></li>
+                                <li class="breadcrumb-item active" aria-current="page" 
+                                    th:text="${categoryName}">Categoría</li>
+                            </ol>
+                        </nav>
+                        <h1 class="display-5 fw-bold text-dark mb-3">
+                            Productos de <span class="text-primary" th:text="${categoryName}">Categoría</span>
+                        </h1>
+                        <p class="lead text-muted">
+                            Descubre nuestra selección de productos frescos y de calidad en esta categoría.
+                        </p>
+                    </div>
+                    <div class="col-lg-4 text-end">
+                        <a href="/app/articulos" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-basket me-2"></i>
+                            Ver Catálogo Completo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Preview Section -->
+        <section class="products-preview py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <h2 class="h3 fw-bold text-dark">
+                            Productos Destacados
+                        </h2>
+                        <p class="text-muted">
+                            Aquí tienes una muestra de los productos disponibles en nuestra plataforma. 
+                            Para ver el catálogo completo y realizar pedidos, accede a nuestra aplicación.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+                    <!-- Product Cards -->
+                    <div th:each="product : ${sampleProducts}" class="col-lg-4 col-md-6">
+                        <div class="product-card h-100 bg-white rounded-4 shadow-sm overflow-hidden">
+                            <div class="product-image position-relative">
+                                <img 
+                                    th:src="${product.image}" 
+                                    th:alt="${product.name}"
+                                    class="img-fluid w-100"
+                                    style="height: 200px; object-fit: cover;"
+                                />
+                                <div class="product-badge position-absolute top-0 end-0 m-3">
+                                    <span class="badge bg-success rounded-pill">Local</span>
+                                </div>
+                            </div>
+                            
+                            <div class="product-info p-4">
+                                <h3 class="h5 fw-bold text-dark mb-2" th:text="${product.name}">
+                                    Nombre del Producto
+                                </h3>
+                                <p class="text-muted small mb-3" th:text="${product.description}">
+                                    Descripción del producto
+                                </p>
+                                
+                                <div class="product-meta d-flex justify-content-between align-items-center mb-3">
+                                    <div class="product-producer">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>
+                                            <span th:text="${product.producer}">Productor</span>
+                                        </small>
+                                    </div>
+                                    <div class="product-price">
+                                        <span class="h5 fw-bold text-primary mb-0">
+                                            <span th:text="${product.price}">0.00</span>€
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="product-actions">
+                                    <a href="/app/articulos" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-eye me-2"></i>
+                                        Ver en Catálogo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- More Products CTA -->
+                <div class="row mt-5">
+                    <div class="col-12 text-center">
+                        <div class="more-products-cta p-5 bg-light rounded-4">
+                            <h3 class="h4 fw-bold text-dark mb-3">
+                                ¿Quieres ver más productos?
+                            </h3>
+                            <p class="text-muted mb-4">
+                                Explora nuestro catálogo completo con cientos de productos frescos, 
+                                información detallada de productores y opción de compra directa.
+                            </p>
+                            <a href="/app/articulos" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-shopping-basket me-2"></i>
+                                Ir al Catálogo Completo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Categories Section -->
+        <section class="related-categories py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center mb-4">
+                        <h2 class="h3 fw-bold text-dark">
+                            Otras Categorías que Te Pueden Interesar
+                        </h2>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/productos/frutas" class="category-link text-decoration-none">
+                            <div class="category-mini-card p-3 bg-white rounded-3 text-center h-100 shadow-sm">
+                                <i class="fas fa-apple-alt text-primary fs-3 mb-2"></i>
+                                <h4 class="h6 fw-bold text-dark mb-1">Frutas</h4>
+                                <small class="text-muted">Frescas y de temporada</small>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/productos/verduras" class="category-link text-decoration-none">
+                            <div class="category-mini-card p-3 bg-white rounded-3 text-center h-100 shadow-sm">
+                                <i class="fas fa-carrot text-primary fs-3 mb-2"></i>
+                                <h4 class="h6 fw-bold text-dark mb-1">Verduras</h4>
+                                <small class="text-muted">Locales y orgánicas</small>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/productos/hortalizas" class="category-link text-decoration-none">
+                            <div class="category-mini-card p-3 bg-white rounded-3 text-center h-100 shadow-sm">
+                                <i class="fas fa-leaf text-primary fs-3 mb-2"></i>
+                                <h4 class="h6 fw-bold text-dark mb-1">Hortalizas</h4>
+                                <small class="text-muted">Del campo directo</small>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/productos/cereales" class="category-link text-decoration-none">
+                            <div class="category-mini-card p-3 bg-white rounded-3 text-center h-100 shadow-sm">
+                                <i class="fas fa-seedling text-primary fs-3 mb-2"></i>
+                                <h4 class="h6 fw-bold text-dark mb-1">Cereales</h4>
+                                <small class="text-muted">Granos naturales</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Additional Scripts for products page -->
+    <th:block th:fragment="additional-scripts">
+        <script>
+            // Add hover effects to product and category cards
+            document.querySelectorAll('.product-card, .category-mini-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.transition = 'transform 0.2s ease';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>

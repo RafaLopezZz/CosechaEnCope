@@ -1,0 +1,140 @@
+<!-- Tabs Info Section Fragment -->
+<section class="tabs py-5 bg-white" th:fragment="tabs">
+  <div class="container">
+    <!-- Tabs Menu -->
+    <div class="tabs-menu d-flex justify-content-center gap-3 mb-5" role="tablist" aria-label="Información">
+      <button 
+        class="tab-button btn btn-outline-primary active" 
+        role="tab" 
+        aria-selected="true"
+        data-tab="frescura"
+        onclick="switchTab('frescura')">
+        Frescura
+      </button>
+      <button 
+        class="tab-button btn btn-outline-primary" 
+        role="tab" 
+        aria-selected="false"
+        data-tab="calidad"
+        onclick="switchTab('calidad')">
+        Calidad
+      </button>
+      <button 
+        class="tab-button btn btn-outline-primary" 
+        role="tab" 
+        aria-selected="false"
+        data-tab="impacto"
+        onclick="switchTab('impacto')">
+        Impacto
+      </button>
+    </div>
+
+    <!-- Tab Panes -->
+    <div class="tabs-content">
+      <!-- Frescura Tab -->
+      <div class="tab-pane active" id="frescura" role="tabpanel">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="pane-content">
+              <span class="badge bg-success mb-3">Frescura</span>
+              <h3 class="h2 fw-bold mb-3">Cosecha reciente</h3>
+              <p class="lead text-muted mb-4">
+                Productos recolectados y enviados en pocos días. Del campo a tu mesa
+                sin intermediarios, manteniendo toda su frescura y sabor natural.
+              </p>
+              <div class="d-flex gap-3">
+                <a class="btn btn-outline-primary" href="/app/articulos?fresh=1">
+                  Ver más
+                </a>
+                <a class="btn btn-primary" href="#calidad" aria-label="Siguiente">
+                  <span>›</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="pane-image rounded-4" style="background: url('/images/frescura.jpg') center/cover; min-height: 400px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calidad Tab -->
+      <div class="tab-pane" id="calidad" role="tabpanel">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="pane-content">
+              <span class="badge bg-primary mb-3">Calidad</span>
+              <h3 class="h2 fw-bold mb-3">Cuidado en origen</h3>
+              <p class="lead text-muted mb-4">
+                Buenas prácticas agrícolas y trazabilidad completa. Nuestros productores
+                garantizan calidad en cada etapa del proceso.
+              </p>
+              <div class="d-flex gap-3">
+                <a class="btn btn-outline-primary" href="/productores">
+                  Conocer más
+                </a>
+                <a class="btn btn-primary" href="#impacto" aria-label="Siguiente">
+                  <span>›</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="pane-image rounded-4" style="background: url('/images/calidad.jpg') center/cover; min-height: 400px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Impacto Tab -->
+      <div class="tab-pane" id="impacto" role="tabpanel">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="pane-content">
+              <span class="badge bg-warning mb-3">Impacto</span>
+              <h3 class="h2 fw-bold mb-3">Economía local</h3>
+              <p class="lead text-muted mb-4">
+                Apoyando a productores y reduciendo intermediarios. Cada compra contribuye
+                al desarrollo económico de la Marina de Cope.
+              </p>
+              <div class="d-flex gap-3">
+                <a class="btn btn-outline-primary" href="/sobre">
+                  Nuestra misión
+                </a>
+                <a class="btn btn-primary" href="#frescura" aria-label="Siguiente">
+                  <span>›</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="pane-image rounded-4" style="background: url('/images/impacto.jpg') center/cover; min-height: 400px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script th:inline="javascript">
+  // Tabs functionality
+  function switchTab(tabName) {
+    // Ocultar todos los panes
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+      pane.classList.remove('active');
+    });
+    
+    // Desactivar todos los botones
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.classList.remove('active');
+      button.setAttribute('aria-selected', 'false');
+    });
+    
+    // Activar el pane seleccionado
+    document.getElementById(tabName).classList.add('active');
+    
+    // Activar el botón seleccionado
+    const activeButton = document.querySelector(`[data-tab="${tabName}"]`);
+    activeButton.classList.add('active');
+    activeButton.setAttribute('aria-selected', 'true');
+  }
+</script>

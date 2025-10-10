@@ -1,0 +1,68 @@
+<!-- Hero Section Fragment -->
+<section class="hero bg-light py-5" th:fragment="hero">
+  <div class="container">
+    <div class="row align-items-center min-vh-75">
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="hero-content">
+          <h1 class="display-4 fw-bold text-dark mb-4 animate-fade-in">
+            Productos locales, <br />
+            <span class="text-primary">frescos y de calidad</span>
+          </h1>
+          <p class="lead text-muted mb-4 animate-fade-in-delay">
+            Conecta con productores de cercanía y recibe alimentos de temporada
+            directamente a tu mesa.
+          </p>
+
+          <div
+            class="hero-actions d-flex flex-column flex-sm-row gap-3 animate-fade-in-delay-2"
+          >
+            <a
+              href="/app/articulos"
+              class="btn btn-primary btn-lg px-4 py-3 rounded-pill fw-semibold"
+              aria-label="Ver todos los productos disponibles"
+            >
+              <i class="fas fa-shopping-basket me-2"></i> Ver productos
+            </a>
+            <a
+              href="/nosotros"
+              class="btn btn-outline-primary btn-lg px-4 py-3 rounded-pill fw-semibold"
+              aria-label="Conocer más sobre nuestros productores"
+            >
+              <i class="fas fa-users me-2"></i> Conocer productores
+            </a>
+          </div>
+
+          <div
+            class="hero-trust mt-5 d-flex flex-wrap gap-4 text-muted small"
+          >
+            <div class="trust-item d-flex align-items-center">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              <span>100% Productos locales</span>
+            </div>
+            <div class="trust-item d-flex align-items-center">
+              <i class="fas fa-leaf text-success me-2"></i>
+              <span>Cultivo sostenible</span>
+            </div>
+            <div class="trust-item d-flex align-items-center">
+              <i class="fas fa-truck text-success me-2"></i>
+              <span>Entrega fresca</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="hero-media text-center">
+          <img
+            src="/images/marina-de-cope.webp"
+            alt="Plantaciones frescas en la Marina de Cope - Productos agrícolas locales"
+            class="img-fluid rounded-4 shadow-lg animate-float"
+            loading="eager"
+            width="640"
+            height="640"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
