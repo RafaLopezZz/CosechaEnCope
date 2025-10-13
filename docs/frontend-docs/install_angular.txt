@@ -1,0 +1,6 @@
+# instalar ng cli 19
+npm install -g @angular/cli@19
+
+# crear app Angular en frontend/
+cd frontend
+ng new cosechaencope-frontend --standalone --routing --style=scss 
