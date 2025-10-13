@@ -1,0 +1,4 @@
+git add .
+$env:GIT_AUTHOR_DATE = "2025-09-01T10:30:00"
+$env:GIT_COMMITTER_DATE = "2025-09-01T10:30:00"
+git commit -m "Commit con fecha personalizada"
