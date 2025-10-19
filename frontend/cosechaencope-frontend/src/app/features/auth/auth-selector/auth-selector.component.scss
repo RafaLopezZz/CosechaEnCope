@@ -1,0 +1,270 @@
+// Estilos para el selector de tipo de usuario
+.auth-selector {
+  min-height: calc(100vh - 120px);
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+}
+
+.auth-selector__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.auth-selector__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-selector__header {
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 600px;
+}
+
+.auth-selector__title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c5c2d;
+  margin-bottom: 1rem;
+}
+
+.auth-selector__subtitle {
+  font-size: 1.2rem;
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.auth-selector__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 2rem;
+}
+
+.user-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #28a745, #20c997);
+    transition: all 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  }
+  
+  &--productor::before {
+    background: linear-gradient(90deg, #d63384, #fd7e14);
+  }
+}
+
+.user-card__icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  font-size: 2rem;
+  
+  .user-card--productor & {
+    background: linear-gradient(135deg, #d63384, #fd7e14);
+  }
+}
+
+.user-card__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c5c2d;
+  margin-bottom: 1rem;
+  
+  .user-card--productor & {
+    color: #d63384;
+  }
+}
+
+.user-card__description {
+  color: #6c757d;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.user-card__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  text-align: left;
+  
+  li {
+    padding: 0.5rem 0;
+    color: #495057;
+    position: relative;
+    padding-left: 1.5rem;
+    
+    &::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #28a745;
+      font-weight: bold;
+      
+      .user-card--productor & {
+        color: #d63384;
+      }
+    }
+  }
+}
+
+.user-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn--primary {
+  background: #28a745;
+  color: white;
+  
+  &:hover {
+    background: #218838;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  
+  .user-card--productor & {
+    background: #d63384;
+    
+    &:hover {
+      background: #b02a5b;
+    }
+  }
+}
+
+.btn--outline {
+  background: transparent;
+  color: #28a745;
+  border: 2px solid #28a745;
+  
+  &:hover {
+    background: #28a745;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .user-card--productor & {
+    color: #d63384;
+    border-color: #d63384;
+    
+    &:hover {
+      background: #d63384;
+      color: white;
+    }
+  }
+}
+
+.auth-selector__footer {
+  text-align: center;
+  margin-top: 2rem;
+  
+  p {
+    color: #6c757d;
+    font-size: 1rem;
+    margin: 0;
+  }
+  
+  a {
+    color: #2c5c2d;
+    text-decoration: none;
+    font-weight: 600;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .auth-selector__title {
+    font-size: 2rem;
+  }
+  
+  .auth-selector__subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .auth-selector__cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+  
+  .user-card {
+    padding: 2rem;
+  }
+  
+  .user-card__actions {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-selector {
+    padding: 2rem 0;
+  }
+  
+  .auth-selector__header {
+    margin-bottom: 2rem;
+  }
+  
+  .auth-selector__title {
+    font-size: 1.75rem;
+  }
+  
+  .user-card {
+    padding: 1.5rem;
+  }
+  
+  .user-card__icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}

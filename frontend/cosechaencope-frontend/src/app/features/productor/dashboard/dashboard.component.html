@@ -1,0 +1,172 @@
+<div class="dashboard" [class.sidebar-collapsed]="sidebarCollapsed">
+  <!-- Sidebar -->
+  <nav class="dashboard__sidebar">
+    <div class="sidebar__header">
+      <a class="sidebar__brand" href="/">
+        <img src="/images/logo_test.svg" alt="Cosecha en Cope" width="120">
+      </a>
+      <button 
+        class="sidebar__toggle"
+        (click)="toggleSidebar()"
+        [attr.aria-label]="sidebarCollapsed ? 'Expandir menú' : 'Contraer menú'">
+        <i class="fas" [class.fa-bars]="sidebarCollapsed" [class.fa-times]="!sidebarCollapsed"></i>
+      </button>
+    </div>
+
+    <div class="sidebar__user" *ngIf="productor">
+      <div class="user__avatar">
+        <img [src]="productor.imagenUrl || '/images/default-producer.png'" [alt]="productor.nombre">
+      </div>
+      <div class="user__info" *ngIf="!sidebarCollapsed">
+        <h3>{{ productor.nombre }}</h3>
+        <p>{{ currentUser?.email }}</p>
+      </div>
+    </div>
+
+    <ul class="sidebar__menu">
+      <li>
+        <a routerLink="/productor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <i class="fas fa-chart-line"></i>
+          <span *ngIf="!sidebarCollapsed">Dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/productor/perfil" routerLinkActive="active">
+          <i class="fas fa-user-edit"></i>
+          <span *ngIf="!sidebarCollapsed">Mi Perfil</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/productor/articulos" routerLinkActive="active">
+          <i class="fas fa-box"></i>
+          <span *ngIf="!sidebarCollapsed">Mis Productos</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/productor/categorias" routerLinkActive="active">
+          <i class="fas fa-tags"></i>
+          <span *ngIf="!sidebarCollapsed">Categorías</span>
+        </a>
+      </li>
+      <li>
+        <a routerLink="/productor/pedidos" routerLinkActive="active">
+          <i class="fas fa-shopping-cart"></i>
+          <span *ngIf="!sidebarCollapsed">Pedidos</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar__footer">
+      <button class="btn-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span *ngIf="!sidebarCollapsed">Cerrar Sesión</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="dashboard__main">
+    <header class="main__header">
+      <h1>Panel de Control</h1>
+      <div class="header__actions">
+        <button class="btn btn--primary" routerLink="/productor/articulos/nuevo">
+          <i class="fas fa-plus"></i>
+          Nuevo Producto
+        </button>
+      </div>
+    </header>
+
+    <div class="main__content" *ngIf="!loading; else loadingTemplate">
+      <!-- Estadísticas Cards -->
+      <div class="stats-grid" *ngIf="estadisticas">
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <i class="fas fa-box text-blue"></i>
+          </div>
+          <div class="stat-card__content">
+            <h3>{{ estadisticas.totalProductos || 0 }}</h3>
+            <p>Productos Activos</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <i class="fas fa-shopping-cart text-green"></i>
+          </div>
+          <div class="stat-card__content">
+            <h3>{{ estadisticas.totalVentas || 0 }}</h3>
+            <p>Ventas Este Mes</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <i class="fas fa-euro-sign text-yellow"></i>
+          </div>
+          <div class="stat-card__content">
+            <h3>€{{ estadisticas.ingresosMes || 0 | number:'1.2-2' }}</h3>
+            <p>Ingresos del Mes</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <i class="fas fa-star text-orange"></i>
+          </div>
+          <div class="stat-card__content">
+            <h3>{{ estadisticas.valoracion || 'N/A' }}</h3>
+            <p>Valoración Media</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones Rápidas -->
+      <div class="quick-actions">
+        <h2>Acciones Rápidas</h2>
+        <div class="actions-grid">
+          <a routerLink="/productor/articulos/nuevo" class="action-card">
+            <i class="fas fa-plus-circle"></i>
+            <h3>Agregar Producto</h3>
+            <p>Añade un nuevo producto a tu catálogo</p>
+          </a>
+
+          <a routerLink="/productor/categorias/nueva" class="action-card">
+            <i class="fas fa-tag"></i>
+            <h3>Nueva Categoría</h3>
+            <p>Crea una nueva categoría de productos</p>
+          </a>
+
+          <a routerLink="/productor/perfil" class="action-card">
+            <i class="fas fa-user-cog"></i>
+            <h3>Actualizar Perfil</h3>
+            <p>Modifica la información de tu empresa</p>
+          </a>
+
+          <a routerLink="/productor/pedidos" class="action-card">
+            <i class="fas fa-list-alt"></i>
+            <h3>Ver Pedidos</h3>
+            <p>Gestiona los pedidos recibidos</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Productos Recientes -->
+      <div class="recent-products">
+        <div class="section-header">
+          <h2>Productos Recientes</h2>
+          <a routerLink="/productor/articulos" class="btn btn--outline">Ver Todos</a>
+        </div>
+        <div class="products-placeholder">
+          <p>Aquí se mostrarán tus productos más recientes</p>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #loadingTemplate>
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando panel de control...</p>
+      </div>
+    </ng-template>
+  </main>
+</div>

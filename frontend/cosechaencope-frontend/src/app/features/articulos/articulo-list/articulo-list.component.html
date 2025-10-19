@@ -1,0 +1,78 @@
+<app-navbar></app-navbar>
+
+<!-- Gallery Section (Productos) -->
+<section class="gallery py-5 bg-light">
+  <div class="container">
+    <!-- Header -->
+    <div class="gallery__header text-center mb-5">
+      <h2 class="gallery__title display-5 fw-bold mb-3 text-primary">Productos Destacados</h2>
+      <p class="gallery__subtitle lead text-muted">
+        Descubre lo mejor de nuestros productores locales
+      </p>
+    </div>
+
+    <!-- Filtro de categorías -->
+    <div class="text-center mb-4">
+      <select
+        name="categoria"
+        [(ngModel)]="categoriaSeleccionada"
+        class="form-select d-inline-block w-auto"
+      >
+        <option value="">Todas las categorías</option>
+        <option value="1">Frutas</option>
+        <option value="2">Verduras</option>
+        <option value="3">Cestas</option>
+      </select>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row g-4" *ngIf="articulosFiltrados.length > 0">
+      <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let articulo of articulosFiltrados">
+        <div class="gallery__item">
+          <div class="item__image-wrapper">
+            <!-- Product Image -->
+            <img 
+              [src]="articulo.imagenUrl || '/images/placeholder-product.svg'"
+              [alt]="articulo.nombre"
+              class="item__image"
+              loading="lazy"
+              (error)="onImageError($event)"
+            />
+            
+            <!-- Overlay with product info -->
+            <div class="item__overlay">
+              <div class="item__content">
+                <h3 class="item__name">{{ articulo.nombre }}</h3>
+                <p class="item__producer">{{ articulo.nombreProductor }}</p>
+                <span class="item__category badge bg-success">{{ articulo.nombreCategoria }}</span>
+                <span 
+                  class="item__price badge bg-primary mt-2" 
+                  *ngIf="articulo.precio > 0">
+                  {{ articulo.precio | currency:'EUR':'symbol':'1.2-2' }}
+                </span>
+              </div>
+              <div class="item__actions">
+                <button 
+                  class="btn-add-cart"
+                  (click)="addToCart(articulo)"
+                  aria-label="Añadir al carrito">
+                  <i class="fas fa-shopping-cart"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State (si no hay productos) -->
+    <div class="text-center py-5" *ngIf="articulosFiltrados.length === 0">
+      <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+      <h3 class="h4 text-muted">No hay productos disponibles</h3>
+      <p class="text-muted">Pronto añadiremos nuevos productos frescos.</p>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>
+

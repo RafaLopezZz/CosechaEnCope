@@ -1,0 +1,200 @@
+<div class="categorias-container">
+  <div class="categorias-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver al Dashboard
+    </button>
+    <div class="header-content">
+      <h1>Gestión de Categorías</h1>
+      <button class="btn btn--primary" (click)="showNewForm()" *ngIf="!showForm">
+        <i class="fas fa-plus"></i>
+        Nueva Categoría
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-container" *ngIf="showForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>{{ editingCategoria ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
+        <button class="btn-close" (click)="cancelForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="categoria-form">
+        
+        <!-- Imagen de la Categoría -->
+        <div class="form-section">
+          <h3>Imagen de la Categoría</h3>
+          
+          <div class="image-upload-container">
+            <!-- Vista previa de la imagen -->
+            <div class="image-preview" *ngIf="imagePreview || editingCategoria?.imagenUrl">
+              <img 
+                [src]="imagePreview || editingCategoria?.imagenUrl" 
+                alt="Vista previa"
+                class="preview-image">
+                
+              <!-- Overlay de carga -->
+              <div class="upload-overlay" *ngIf="uploadingImage">
+                <div class="spinner"></div>
+                <p>Subiendo imagen...</p>
+              </div>
+            </div>
+            
+            <!-- Placeholder cuando no hay imagen -->
+            <div class="image-placeholder" *ngIf="!imagePreview && !editingCategoria?.imagenUrl">
+              <i class="fas fa-image"></i>
+              <p>Vista previa de la imagen</p>
+            </div>
+            
+            <!-- Controles de subida -->
+            <div class="upload-controls">
+              <input 
+                type="file" 
+                id="imagen"
+                class="file-input"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                (change)="onFileSelected($event)">
+              
+              <label for="imagen" class="btn btn--outline">
+                <i class="fas fa-upload"></i>
+                {{ selectedFile ? 'Cambiar imagen' : 'Seleccionar imagen' }}
+              </label>
+              
+              <button 
+                type="button" 
+                class="btn btn--outline btn--danger"
+                *ngIf="selectedFile || imagePreview"
+                (click)="removeSelectedImage()">
+                <i class="fas fa-times"></i>
+                Quitar imagen
+              </button>
+              
+              <p class="upload-hint" *ngIf="selectedFile">
+                <strong>Archivo seleccionado:</strong> {{ selectedFile.name }}<br>
+                <small>Tamaño: {{ imagenService.formatearTamanoArchivo(selectedFile.size) }}</small>
+              </p>
+              
+              <p class="upload-hint" *ngIf="!selectedFile">
+                Selecciona una imagen para tu categoría (JPG, PNG, GIF, WEBP - máx. 10MB)
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información de la Categoría -->
+        <div class="form-section">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre de la Categoría *</label>
+              <input 
+                type="text" 
+                id="nombre"
+                formControlName="nombre"
+                class="form-control"
+                placeholder="Ej: Frutas, Verduras, Lácteos">
+              <div class="field-error" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.errors">
+                <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+                <span *ngIf="form.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="descripcion">Descripción *</label>
+              <textarea 
+                id="descripcion"
+                formControlName="descripcion"
+                class="form-control"
+                rows="4"
+                placeholder="Describe qué tipo de productos incluye esta categoría..."></textarea>
+              <div class="field-error" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.errors">
+                <span *ngIf="form.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+                <span *ngIf="form.get('descripcion')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones del Formulario -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn--outline"
+            (click)="cancelForm()">
+            Cancelar
+          </button>
+          
+          <button 
+            type="submit" 
+            class="btn btn--primary"
+            [disabled]="form.invalid || saving || uploadingImage">
+            <i class="fas fa-save" *ngIf="!saving && !uploadingImage"></i>
+            <div class="button-spinner" *ngIf="saving || uploadingImage"></div>
+            {{ (saving || uploadingImage) ? 'Guardando...' : (editingCategoria ? 'Actualizar' : 'Crear Categoría') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de Categorías -->
+  <div class="categorias-content" *ngIf="!loading; else loadingTemplate">
+    <div class="categorias-grid" *ngIf="categorias.length > 0; else noCategorias">
+      <div class="categoria-card" *ngFor="let categoria of categorias">
+        <div class="categoria-image">
+          <img 
+            [src]="categoria.imagenUrl || '/images/default-category.png'" 
+            [alt]="categoria.nombre"
+            (error)="onImageError($event)">
+        </div>
+        
+        <div class="categoria-content">
+          <h3>{{ categoria.nombre }}</h3>
+          <p>{{ categoria.descripcion }}</p>
+        </div>
+        
+        <div class="categoria-actions">
+          <button 
+            class="btn-action btn-action--edit" 
+            (click)="editCategoria(categoria)"
+            title="Editar categoría">
+            <i class="fas fa-edit"></i>
+          </button>
+          
+          <button 
+            class="btn-action btn-action--delete" 
+            (click)="deleteCategoria(categoria)"
+            title="Eliminar categoría">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noCategorias>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-tags"></i>
+        </div>
+        <h3>No hay categorías</h3>
+        <p>Empieza creando tu primera categoría de productos.</p>
+        <button class="btn btn--primary" (click)="showNewForm()">
+          <i class="fas fa-plus"></i>
+          Crear Primera Categoría
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando categorías...</p>
+    </div>
+  </ng-template>
+</div>

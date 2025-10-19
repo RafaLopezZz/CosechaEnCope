@@ -1,0 +1,18 @@
+:host{display:block}
+.testimonials{ padding:112px 0; background:#fff; }
+.container{ max-width:1280px; margin:0 auto; padding:0 24px; }
+.section__head{ text-align:center; margin-bottom:48px; }
+.title{ font:700 48px/1.2 Roboto,system-ui; margin:0; }
+.subtitle{ font:400 18px/1.5 Roboto,system-ui; margin:8px 0 0; }
+.testimonials__row{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:48px; }
+.testimonial{ display:flex; flex-direction:column; align-items:center; gap:24px; }
+.testimonial__logo{ width:120px; height:48px; background:#000; }
+.testimonial__quote{ text-align:center; font:700 20px/1.4 Roboto,system-ui; margin:0; color:#000; }
+.testimonial__avatar{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+.avatar__img{ width:56px; height:56px; background:#ddd; border-radius:50%; }
+.avatar__name{ font:600 16px/1.5 Roboto,system-ui; text-align:center; }
+.avatar__role{ font:400 16px/1.5 Roboto,system-ui; text-align:center; }
+
+@media (max-width:900px){
+  .testimonials__row{ grid-template-columns: 1fr; }
+}

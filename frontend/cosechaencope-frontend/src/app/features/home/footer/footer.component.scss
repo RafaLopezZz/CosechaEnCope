@@ -1,0 +1,41 @@
+:host{display:block}
+.footer{ padding:80px 0; background:#fff; border-top:1px solid #00000010; }
+.container{ max-width:1280px; margin:0 auto; padding:0 24px; display:flex; flex-direction:column; gap:80px; }
+.footer__content{ display:flex; gap:64px; }
+.footer__about{ flex:2; display:flex; flex-direction:column; gap:24px; }
+.footer__logo { display:flex; align-items:center; }
+.footer__logo img {
+  display:block;
+  width:auto;
+  height:170px;        /* coincide con tu atributo height o el alto deseado */
+  max-width:170px;    /* tope de ancho consistente */
+  object-fit:contain; /* por si el contenedor limita */
+}
+.footer__block{ display:flex; flex-direction:column; gap:4px; }
+.block__title{ font:600 14px/1.5 Roboto,system-ui; color:#000; }
+.block__text{ font:400 14px/1.5 Roboto,system-ui; color:#000; }
+.block__links{ display:flex; flex-direction:column; gap:4px; }
+.block__links a{ color:#000; text-decoration:underline; }
+
+.footer__social{ display:flex; gap:12px; }
+.ico{ width:24px; height:24px; display:inline-block; background-size:cover; background-position:center; }
+.ico--fb{ background-image:url('/iconos/facebook.png'); }
+.ico--ig{ background-image:url('/iconos/instagram.png'); }
+.ico--in{ background-image:url('/iconos/linkedin.png'); }
+.ico--x { background-image:url('/iconos/gorjeo.png'); }
+
+
+.footer__links{ flex:1; display:flex; gap:24px; }
+.footer__links .col{ display:flex; flex-direction:column; gap:8px; min-width:188px; }
+.footer__links a{ color:#000; text-decoration:none; font:600 14px/1.5 Roboto,system-ui; }
+
+.footer__divider{ border:1px solid #000; }
+.footer__credits{ display:flex; justify-content:space-between; align-items:center; gap:24px; }
+.copy{ font:400 14px/1.5 Roboto,system-ui; color:#000; }
+.legal{ display:flex; gap:24px; }
+.legal a{ color:#000; text-decoration:underline; font:400 14px/1.5 Roboto,system-ui; }
+
+@media (max-width:900px){
+  .footer__content{ flex-direction:column; }
+  .footer__credits{ flex-direction:column; gap:12px; }
+}

@@ -1,0 +1,90 @@
+<header class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm" [class.navbar--scrolled]="isScrolled">
+  <div class="container">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Ir a inicio" (click)="navigateToRoot($event)">
+      <img
+        src="/images/logo_test.svg"
+        width="160"
+        height="60"
+        alt="Cosecha en Cope"
+        class="navbar-logo"
+      />
+    </a>
+
+    <!-- Mobile Menu Toggle -->
+    <button 
+      class="navbar-toggler" 
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-controls="navbarNav"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
+      <nav class="navbar-nav me-auto" aria-label="Navegación principal">
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/"
+          [class.active]="isRootPath()"
+          (click)="navigateToRoot($event)"
+        >
+          <i class="fas fa-home me-2"></i>
+          <span>Inicio</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          routerLink="/articulos"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: false}"
+        >
+          <i class="fas fa-shopping-basket me-2"></i>
+          <span>Productos</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          routerLink="/categorias"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: false}"
+        >
+          <i class="fas fa-tags me-2"></i>
+          <span>Categorías</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/nosotros"
+          (click)="navigateExternal($event, '/nosotros')"
+        >
+          <i class="fas fa-users me-2"></i>
+          <span>¿Quiénes somos?</span>
+        </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2" 
+          href="/contacto"
+          (click)="navigateExternal($event, '/contacto')"
+        >
+          <i class="fas fa-envelope me-2"></i>
+          <span>Contacto</span>
+        </a>
+      </nav>
+
+      <!-- CTA Actions -->
+      <div class="navbar-nav">
+        <a 
+          class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
+          routerLink="/auth"
+        >
+          <i class="fas fa-user-plus me-2"></i>
+          <span>Acceder</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

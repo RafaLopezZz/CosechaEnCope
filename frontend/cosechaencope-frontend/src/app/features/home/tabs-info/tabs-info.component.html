@@ -1,0 +1,54 @@
+<section class="tabs">
+  <div class="container">
+    <div class="tabs__menu" role="tablist" aria-label="Información">
+      <button class="tab" role="tab" [attr.aria-selected]="tab===0" (click)="tab=0">Frescura</button>
+      <button class="tab" role="tab" [attr.aria-selected]="tab===1" (click)="tab=1">Calidad</button>
+      <button class="tab" role="tab" [attr.aria-selected]="tab===2" (click)="tab=2">Impacto</button>
+    </div>
+
+    <div class="tabs__pane" *ngIf="tab===0" role="tabpanel">
+      <div class="pane">
+        <div class="pane__content">
+          <span class="tag">Frescura</span>
+          <h3 class="pane__title">Cosecha reciente</h3>
+          <p class="pane__text">Productos recolectados y enviados en pocos días.</p>
+          <div class="pane__actions">
+            <a class="btn btn--outline" routerLink="/articulos?fresh=1">Ver más</a>
+            <a class="btn" aria-label="Siguiente"><span class="chev">›</span></a>
+          </div>
+        </div>
+        <div class="pane__image"></div>
+      </div>
+    </div>
+
+    <div class="tabs__pane" *ngIf="tab===1" role="tabpanel">
+      <div class="pane">
+        <div class="pane__content">
+          <span class="tag">Calidad</span>
+          <h3 class="pane__title">Cuidado en origen</h3>
+          <p class="pane__text">Buenas prácticas agrícolas y trazabilidad.</p>
+          <div class="pane__actions">
+            <a class="btn btn--outline" routerLink="/productores">Conocer más</a>
+            <a class="btn" aria-label="Siguiente"><span class="chev">›</span></a>
+          </div>
+        </div>
+        <div class="pane__image"></div>
+      </div>
+    </div>
+
+    <div class="tabs__pane" *ngIf="tab===2" role="tabpanel">
+      <div class="pane">
+        <div class="pane__content">
+          <span class="tag">Impacto</span>
+          <h3 class="pane__title">Economía local</h3>
+          <p class="pane__text">Apoyando a productores y reduciendo intermediarios.</p>
+          <div class="pane__actions">
+            <a class="btn btn--outline" routerLink="/sobre">Nuestra misión</a>
+            <a class="btn" aria-label="Siguiente"><span class="chev">›</span></a>
+          </div>
+        </div>
+        <div class="pane__image"></div>
+      </div>
+    </div>
+  </div>
+</section>

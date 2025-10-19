@@ -1,0 +1,242 @@
+<div class="articulos-container">
+  <div class="articulos-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver al Dashboard
+    </button>
+    <div class="header-content">
+      <h1>Mis Productos</h1>
+      <button class="btn btn--primary" (click)="showNewForm()" *ngIf="!showForm">
+        <i class="fas fa-plus"></i>
+        Nuevo Producto
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="form-container" *ngIf="showForm">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>{{ editingArticulo ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+        <button class="btn-close" (click)="cancelForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="articulo-form">
+        
+        <!-- Imagen del Producto -->
+        <div class="form-section">
+          <h3>Imagen del Producto</h3>
+          <div class="image-upload-container">
+            <div class="image-preview">
+              <img 
+                [src]="imagePreview || 'assets/images/default-product.png'" 
+                alt="Vista previa"
+                class="preview-image">
+              <div class="upload-overlay" *ngIf="uploading">
+                <div class="spinner"></div>
+                <p>Subiendo a AWS S3...</p>
+              </div>
+            </div>
+            
+            <div class="upload-controls">
+              <input 
+                type="file" 
+                id="productImageInput" 
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                (change)="onFileSelected($event)"
+                class="file-input"
+                [disabled]="uploading">
+              <label for="productImageInput" class="btn btn--outline" [class.disabled]="uploading">
+                <i class="fas fa-cloud-upload-alt"></i>
+                {{ uploading ? 'Subiendo...' : 'Seleccionar Imagen' }}
+              </label>
+              <p class="upload-hint">
+                JPG, PNG, GIF, WEBP. Máximo 10MB.
+                <br>Se subirá automáticamente a AWS S3.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información Básica -->
+        <div class="form-section">
+          <h3>Información del Producto</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre del Producto *</label>
+              <input 
+                type="text" 
+                id="nombre"
+                formControlName="nombre"
+                class="form-control"
+                placeholder="Ej: Tomates Cherry Ecológicos">
+              <div class="field-error" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.errors">
+                <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+                <span *ngIf="form.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="descripcion">Descripción *</label>
+              <textarea 
+                id="descripcion"
+                formControlName="descripcion"
+                class="form-control"
+                rows="4"
+                placeholder="Describe tu producto: características, origen, método de cultivo..."></textarea>
+              <div class="field-error" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.errors">
+                <span *ngIf="form.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+                <span *ngIf="form.get('descripcion')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row form-row--split">
+            <div class="form-group">
+              <label for="precio">Precio (€) *</label>
+              <input 
+                type="number" 
+                id="precio"
+                formControlName="precio"
+                class="form-control"
+                step="0.01"
+                min="0"
+                placeholder="0.00">
+              <div class="field-error" *ngIf="form.get('precio')?.touched && form.get('precio')?.errors">
+                <span *ngIf="form.get('precio')?.errors?.['required']">El precio es obligatorio</span>
+                <span *ngIf="form.get('precio')?.errors?.['min']">El precio debe ser mayor que 0</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="stock">Stock Disponible *</label>
+              <input 
+                type="number" 
+                id="stock"
+                formControlName="stock"
+                class="form-control"
+                min="0"
+                placeholder="0">
+              <div class="field-error" *ngIf="form.get('stock')?.touched && form.get('stock')?.errors">
+                <span *ngIf="form.get('stock')?.errors?.['required']">El stock es obligatorio</span>
+                <span *ngIf="form.get('stock')?.errors?.['min']">El stock no puede ser negativo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="idCategoria">Categoría *</label>
+              <select 
+                id="idCategoria"
+                formControlName="idCategoria"
+                class="form-control">
+                <option value="0">Selecciona una categoría</option>
+                <option *ngFor="let categoria of categorias" [value]="categoria.idCategoria">
+                  {{ categoria.nombre }}
+                </option>
+              </select>
+              <div class="field-error" *ngIf="form.get('idCategoria')?.touched && form.get('idCategoria')?.errors">
+                <span *ngIf="form.get('idCategoria')?.errors?.['required'] || form.get('idCategoria')?.errors?.['min']">
+                  Selecciona una categoría
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones del Formulario -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn--outline"
+            (click)="cancelForm()">
+            Cancelar
+          </button>
+          
+          <button 
+            type="submit" 
+            class="btn btn--primary"
+            [disabled]="form.invalid || saving || uploading">
+            <i class="fas fa-save" *ngIf="!saving"></i>
+            <div class="button-spinner" *ngIf="saving"></div>
+            {{ saving ? 'Guardando...' : (editingArticulo ? 'Actualizar' : 'Crear Producto') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lista de Productos -->
+  <div class="articulos-content" *ngIf="!loading; else loadingTemplate">
+    <div class="articulos-grid" *ngIf="articulos.length > 0; else noArticulos">
+      <div class="articulo-card" *ngFor="let articulo of articulos">
+        <div class="articulo-image">
+          <img [src]="articulo.imagenUrl || '/images/default-product.png'" [alt]="articulo.nombre">
+          <div class="stock-badge" [class.low-stock]="articulo.stock < 10" [class.out-of-stock]="articulo.stock === 0">
+            Stock: {{ articulo.stock }}
+          </div>
+        </div>
+        
+        <div class="articulo-content">
+          <div class="articulo-header">
+            <h3>{{ articulo.nombre }}</h3>
+            <div class="precio">{{ articulo.precio | currency:'EUR':'symbol':'1.2-2' }}</div>
+          </div>
+          
+          <p class="descripcion">{{ articulo.descripcion }}</p>
+          
+          <div class="articulo-meta">
+            <span class="categoria">{{ articulo.nombreCategoria }}</span>
+            <span class="stock-info" [class.warning]="articulo.stock < 10" [class.danger]="articulo.stock === 0">
+              <i class="fas fa-boxes"></i>
+              {{ articulo.stock }} unidades
+            </span>
+          </div>
+        </div>
+        
+        <div class="articulo-actions">
+          <button 
+            class="btn-action btn-action--edit" 
+            (click)="editArticulo(articulo)"
+            title="Editar producto">
+            <i class="fas fa-edit"></i>
+          </button>
+          
+          <button 
+            class="btn-action btn-action--delete" 
+            (click)="deleteArticulo(articulo)"
+            title="Eliminar producto">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noArticulos>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-box"></i>
+        </div>
+        <h3>No tienes productos</h3>
+        <p>Empieza añadiendo tu primer producto al catálogo.</p>
+        <button class="btn btn--primary" (click)="showNewForm()">
+          <i class="fas fa-plus"></i>
+          Crear Primer Producto
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando productos...</p>
+    </div>
+  </ng-template>
+</div>

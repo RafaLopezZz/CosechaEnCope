@@ -1,0 +1,15 @@
+:host{display:block}
+.cta{ padding:112px 0; background:#fff; }
+.container{ max-width:1280px; margin:0 auto; padding:0 24px; display:flex; flex-direction:column; gap:80px; }
+.cta__head{ text-align:center; display:flex; flex-direction:column; gap:24px; align-items:center; }
+.title{ font:700 48px/1.2 Roboto,system-ui; margin:0; }
+.subtitle{ font:400 18px/1.5 Roboto,system-ui; margin:0; }
+.cta__actions{ display:flex; gap:16px; }
+.btn{ border:1px solid #000; padding:12px 24px; text-decoration:none; }
+.btn--primary{ background:#000; color:#fff; }
+.btn--outline{ background:#fff; color:#000; }
+.cta__image{ width:100%; height:738px; background:#eee url('/assets/placeholder-wide.png') center/cover no-repeat; }
+
+@media (max-width:900px){
+  .cta__image{ height:360px; }
+}

@@ -1,0 +1,106 @@
+<!-- Gallery Carousel (Productos Destacados) -->
+<section class="gallery py-5 bg-light">
+  <div class="container">
+    <!-- Header -->
+    <div class="gallery__header text-center mb-5">
+      <h2 class="gallery__title display-5 fw-bold mb-3 text-primary">Productos Destacados</h2>
+      <p class="gallery__subtitle lead text-muted">
+        Descubre lo mejor de nuestros productores locales
+      </p>
+    </div>
+
+    <!-- Carousel -->
+    <div class="gallery__carousel position-relative" *ngIf="galleryItems && galleryItems.length > 0">
+      <!-- Previous Arrow -->
+      <button 
+        class="gallery__arrow gallery__arrow--prev" 
+        (click)="scroll(-1)"
+        aria-label="Producto anterior">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <!-- Viewport -->
+      <div class="gallery__viewport">
+        <div class="gallery__track" #track>
+          <!-- Gallery Items -->
+          <div 
+            class="gallery__item" 
+            *ngFor="let articulo of galleryItems; index as i"
+            [class.active]="i === index">
+            
+            <div class="item__image-wrapper">
+              <!-- Product Image -->
+              <img 
+                [src]="articulo.imagenUrl"
+                [alt]="articulo.nombre"
+                class="item__image"
+                loading="lazy"
+                (error)="onImageError($event)"
+              />
+              
+              <!-- Overlay with product info -->
+              <div class="item__overlay">
+                <div class="item__content">
+                  <h3 class="item__name">{{ articulo.nombre }}</h3>
+                  <p class="item__producer">{{ articulo.nombreProductor }}</p>
+                  <span class="item__category badge bg-success">{{ articulo.nombreCategoria }}</span>
+                  <span 
+                    class="item__price badge bg-primary mt-2" 
+                    *ngIf="articulo.precio > 0">
+                    {{ articulo.precio | currency:'EUR':'symbol':'1.2-2' }}
+                  </span>
+                </div>
+                <div class="item__actions">
+                  <a 
+                    routerLink="/app/articulos" 
+                    class="btn-view"
+                    aria-label="Ver productos">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Arrow -->
+      <button 
+        class="gallery__arrow gallery__arrow--next" 
+        (click)="scroll(1)"
+        aria-label="Siguiente producto">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Indicators -->
+    <div class="gallery__indicators text-center mt-4" *ngIf="galleryItems && galleryItems.length > 0">
+      <button 
+        class="indicator" 
+        *ngFor="let articulo of galleryItems; index as i"
+        [class.active]="i === index"
+        (click)="goToSlide(i)"
+        [attr.aria-label]="'Ir al producto ' + (i + 1)">
+      </button>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="gallery__cta text-center mt-5" *ngIf="galleryItems && galleryItems.length > 0">
+      <a routerLink="/app/articulos" class="btn-cta btn btn-primary btn-lg rounded-pill px-5 py-3">
+        <span>Ver Todos los Productos</span>
+        <i class="fas fa-arrow-right ms-2"></i>
+      </a>
+    </div>
+
+    <!-- Empty State -->
+    <div class="text-center py-5" *ngIf="!galleryItems || galleryItems.length === 0">
+      <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+      <h3 class="h4 text-muted">No hay productos disponibles</h3>
+      <p class="text-muted">Pronto añadiremos nuevos productos frescos.</p>
+      <a routerLink="/app/articulos" class="btn btn-primary mt-3">
+        <i class="fas fa-search me-2"></i> Explorar catálogo
+      </a>
+    </div>
+  </div>
+</section>
+

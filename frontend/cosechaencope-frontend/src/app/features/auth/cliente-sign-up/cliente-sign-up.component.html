@@ -1,0 +1,101 @@
+<app-navbar></app-navbar>
+
+<section class="auth">
+  <div class="container auth__container">
+    <div class="auth__card">
+      <header class="auth__head">
+        <h1 class="auth__title">Registro de Cliente</h1>
+        <p class="auth__subtitle">Regístrate para empezar a comprar productos locales.</p>
+      </header>
+
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form__row">
+          <label class="form__label" for="email">Email *</label>
+          <input
+            id="email"
+            class="form__input"
+            type="email"
+            formControlName="email"
+            required
+            [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
+            aria-describedby="emailHelp" />
+          <p id="emailHelp" class="form__hint" aria-live="polite">
+            {{ form.controls.email.touched && form.controls.email.invalid ? 'Introduce un email válido' : '' }}
+          </p>
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="password">Contraseña *</label>
+          <input
+            id="password"
+            class="form__input"
+            type="password"
+            formControlName="password"
+            required
+            minlength="6"
+            [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched" />
+          <p class="form__hint" aria-live="polite">
+            {{ form.controls.password.touched && form.controls.password.invalid ? 'Mínimo 6 caracteres' : '' }}
+          </p>
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="confirm">Confirmar contraseña *</label>
+          <input
+            id="confirm"
+            class="form__input"
+            type="password"
+            formControlName="confirm"
+            required
+            [attr.aria-invalid]="form.errors?.['mismatch'] && form.controls.confirm.touched"
+            aria-describedby="confirmHelp" />
+          <p id="confirmHelp" class="form__hint" aria-live="polite">
+            {{ form.errors?.['mismatch'] ? 'Las contraseñas no coinciden' : '' }}
+          </p>
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="nombre">Nombre completo *</label>
+          <input 
+            id="nombre" 
+            class="form__input" 
+            type="text" 
+            formControlName="nombre"
+            required
+            [attr.aria-invalid]="form.controls.nombre.invalid && form.controls.nombre.touched" />
+          <p class="form__hint" aria-live="polite">
+            {{ form.controls.nombre.touched && form.controls.nombre.invalid ? 'El nombre es obligatorio' : '' }}
+          </p>
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="direccion">Dirección</label>
+          <input id="direccion" class="form__input" type="text" formControlName="direccion" />
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="telefono">Teléfono</label>
+          <input id="telefono" class="form__input" type="tel" formControlName="telefono" />
+        </div>
+
+        <label class="checkbox">
+          <input type="checkbox" formControlName="terms" />
+          <span>Acepto términos y condiciones *</span>
+        </label>
+
+        <div class="form__actions">
+          <button class="btn btn--primary" type="submit" [disabled]="form.invalid || loading">
+            {{ loading ? 'Registrando...' : 'Registrar Cliente' }}
+          </button>
+          <a class="btn btn--outline" routerLink="/cliente/login">Ya tengo cuenta</a>
+        </div>
+
+        <div class="form__footer">
+          <p>¿Eres productor? <a routerLink="/productor/registro">Regístrate aquí</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>
