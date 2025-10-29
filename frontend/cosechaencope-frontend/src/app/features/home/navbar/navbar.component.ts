@@ -33,12 +33,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     // Cleanup si es necesario
   }
 
-  @HostListener('window:scroll', ['$event'])
+  @HostListener('window:scroll')
   onWindowScroll() {
     this.requestTick();
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     this.forceReflow();
   }
