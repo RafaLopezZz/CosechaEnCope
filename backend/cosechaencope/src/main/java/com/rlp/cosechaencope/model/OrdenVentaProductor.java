@@ -7,6 +7,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -62,13 +64,19 @@ public class OrdenVentaProductor {
      * Fecha y hora en que se creó la orden de venta. Se establece un valor por
      * defecto de la fecha y hora actual.
      */
+    @Column(name = "fecha_creacion")
     private Instant fechaCreacion;
 
     /**
      * Estado actual de la orden de venta. Puede ser PENDIENTE, ENVIADO,
      * ENTREGADO o CANCELADO.
      */
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, length = 20)
+    private EstadoOrdenVenta estado = EstadoOrdenVenta.PENDIENTE;
+
+    @Column(name = "fecha_actualizacion")
+    private Instant fechaActualizacion;
 
     /**
      * Lista de líneas o ítems que forman parte de esta orden de venta. Cada

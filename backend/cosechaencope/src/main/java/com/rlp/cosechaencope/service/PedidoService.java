@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,16 +16,21 @@ import com.rlp.cosechaencope.dto.response.DetallePedidoResponse;
 import com.rlp.cosechaencope.dto.response.PedidoResponse;
 import com.rlp.cosechaencope.exception.ResourceNotFoundException;
 import com.rlp.cosechaencope.exception.StockInsuficienteException;
+import com.rlp.cosechaencope.exception.UnauthorizedException;
 import com.rlp.cosechaencope.model.Articulo;
 import com.rlp.cosechaencope.model.Carrito;
 import com.rlp.cosechaencope.model.Cliente;
 import com.rlp.cosechaencope.model.DetalleCarrito;
 import com.rlp.cosechaencope.model.DetallePedido;
+import com.rlp.cosechaencope.model.OrdenVentaProductor;
 import com.rlp.cosechaencope.model.Pedido;
+import com.rlp.cosechaencope.model.EstadoOrdenVenta;
+import com.rlp.cosechaencope.model.EstadoPedido;
+import com.rlp.cosechaencope.repository.ArticuloRepository;
 import com.rlp.cosechaencope.repository.CarritoRepository;
 import com.rlp.cosechaencope.repository.ClienteRepository;
 import com.rlp.cosechaencope.repository.PedidoRepository;
-import com.rlp.cosechaencope.repository.ArticuloRepository;
+import com.rlp.cosechaencope.repository.OrdenVentaProductorRepository;
 
 @Service
 public class PedidoService {
@@ -32,6 +39,7 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ClienteRepository clienteRepository;
     private final CarritoRepository carritoRepository;
+    private final OrdenVentaProductorRepository ordenVentaProductorRepository;
     private final CarritoService carritoService;
     private final OrdenVentaProductorService ordenVentaProductorService;
 
@@ -39,6 +47,7 @@ public class PedidoService {
             ArticuloRepository articuloRepository,
             PedidoRepository pedidoRepository,
             CarritoRepository carritoRepository,
+            OrdenVentaProductorRepository ordenVentaProductorRepository,
             CarritoService carritoService,
             ClienteRepository clienteRepository,
             OrdenVentaProductorService ordenVentaProductorService
@@ -47,6 +56,7 @@ public class PedidoService {
         this.clienteRepository = clienteRepository;
         this.pedidoRepository = pedidoRepository;
         this.carritoRepository = carritoRepository;
+        this.ordenVentaProductorRepository = ordenVentaProductorRepository;
         this.carritoService = carritoService;
         this.ordenVentaProductorService = ordenVentaProductorService;
     }
@@ -83,7 +93,7 @@ public class PedidoService {
         // Crear el pedido
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
-        pedido.setEstadoPedido("PENDIENTE");
+        pedido.setEstado(EstadoPedido.PENDIENTE);
         pedido.setFechaPedido(Instant.now());
         pedido.setSubtotal(carrito.getSubtotal());
         pedido.setIva(carrito.getImpuestos());
@@ -118,6 +128,9 @@ public class PedidoService {
         // Generar órdenes de venta a productores
         ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedidoGuardado);
 
+        carrito.setFinalizado(true);
+        carritoRepository.save(carrito);
+
         // Vaciar el carrito
         carritoService.vaciarCarrito(idUsuario);
 
@@ -149,6 +162,169 @@ public class PedidoService {
         return "PED-" + fecha + "-" + secuencial;
     }
 
+    public PedidoResponse obtenerPedidoPorId(Long idUsuario, Long idPedido) {
+        Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado"));
+
+        if (!pedido.getCliente().getIdCliente().equals(cliente.getIdCliente())) {
+            throw new ResourceNotFoundException("El pedido no pertenece al usuario autenticado");
+        }
+
+        return mapearResponseDTO(pedido);
+    }
+
+    /**
+     * Actualiza el estado de una orden de venta a productor específica dentro
+     * de un pedido.
+     *
+     * @param idCliente ID del cliente autenticado
+     * @param idPedido ID del pedido
+     * @param idOvp ID de la orden de venta al productor
+     * @param nuevoEstado Nuevo estado a establecer
+     * @return PedidoResponse actualizado
+     * @throws ResourceNotFoundException si no se encuentra el pedido o la OVP
+     * @throws IllegalArgumentException si el estado no es válido
+     * @throws UnauthorizedException si el pedido no pertenece al cliente
+     */
+    @Transactional
+    public PedidoResponse actualizarEstadoOrdenVentaProductor(
+            Long idCliente,
+            Long idPedido,
+            Long idOvp,
+            String nuevoEstado) {
+        // 1. Validar que el pedido existe y pertenece al cliente
+        Pedido pedido = pedidoRepository.findById(idPedido)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + idPedido));
+
+        if (!pedido.getCliente().getIdCliente().equals(idCliente)) {
+            throw new UnauthorizedException("No tiene permisos para modificar este pedido");
+        }
+
+        // 2. Buscar la orden de venta al productor
+        OrdenVentaProductor ovp = ordenVentaProductorRepository.findById(idOvp)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden de venta no encontrada con ID: " + idOvp));
+
+        // 3. Validar que la OVP está relacionada con el pedido
+        boolean ovpPerteneceAlPedido = pedido.getDetallePedido().stream()
+                .anyMatch(detalle -> detalle.getArticulo().getProductor().getIdProductor()
+                .equals(ovp.getProductor().getIdProductor()));
+
+        if (!ovpPerteneceAlPedido) {
+            throw new IllegalArgumentException(
+                    "La orden de venta no está relacionada con este pedido");
+        }
+
+        // 4. Validar que el nuevo estado es válido
+        EstadoOrdenVenta estadoEnum;
+        try {
+            estadoEnum = EstadoOrdenVenta.valueOf(nuevoEstado.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Estado inválido: " + nuevoEstado
+                    + ". Estados válidos: " + Arrays.toString(EstadoOrdenVenta.values()));
+        }
+
+        // 5. Validar transición de estado (lógica de negocio)
+        validarTransicionEstado(ovp.getEstado(), estadoEnum);
+
+        // 6. Actualizar el estado
+        EstadoOrdenVenta estadoAnterior = ovp.getEstado();
+        ovp.setEstado(estadoEnum);
+        ovp.setFechaActualizacion(Instant.now());
+        ordenVentaProductorRepository.save(ovp);
+
+        // 7. Actualizar el estado del pedido si es necesario
+        actualizarEstadoPedidoSegunOVPs(pedido);
+
+        // 8. Retornar el pedido actualizado
+        return obtenerPedidoPorId(idCliente, idPedido);
+    }
+
+    /**
+     * Valida que la transición de estado sea permitida según reglas de negocio.
+     *
+     * @param estadoActual Estado actual de la OVP
+     * @param nuevoEstado Nuevo estado solicitado
+     * @throws IllegalStateException si la transición no es válida
+     */
+    private void validarTransicionEstado(EstadoOrdenVenta estadoActual, EstadoOrdenVenta nuevoEstado) {
+        // Definir transiciones válidas
+        Map<EstadoOrdenVenta, List<EstadoOrdenVenta>> transicionesPermitidas = Map.of(
+                EstadoOrdenVenta.PENDIENTE, List.of(
+                        EstadoOrdenVenta.EN_PROCESO,
+                        EstadoOrdenVenta.CANCELADA
+                ),
+                EstadoOrdenVenta.EN_PROCESO, List.of(
+                        EstadoOrdenVenta.ENVIADA,
+                        EstadoOrdenVenta.CANCELADA
+                ),
+                EstadoOrdenVenta.ENVIADA, List.of(
+                        EstadoOrdenVenta.ENTREGADA
+                ),
+                EstadoOrdenVenta.ENTREGADA, List.of(), // Estado final
+                EstadoOrdenVenta.CANCELADA, List.of() // Estado final
+        );
+
+        List<EstadoOrdenVenta> estadosPermitidos = transicionesPermitidas.get(estadoActual);
+
+        if (estadosPermitidos == null || !estadosPermitidos.contains(nuevoEstado)) {
+            throw new IllegalStateException(
+                    String.format("No se puede cambiar de estado %s a %s",
+                            estadoActual, nuevoEstado));
+        }
+    }
+
+    /**
+     * Actualiza el estado general del pedido basándose en los estados de todas
+     * sus OVPs.
+     *
+     * @param pedido El pedido a actualizar
+     */
+    private void actualizarEstadoPedidoSegunOVPs(Pedido pedido) {
+        // Obtener todas las OVPs relacionadas con este pedido
+        List<OrdenVentaProductor> ovps = ordenVentaProductorRepository
+                .findByPedido(pedido);
+
+        if (ovps.isEmpty()) {
+            return;
+        }
+
+        // Contar estados
+        long totalOvps = ovps.size();
+        long ovpsEntregadas = ovps.stream()
+                .filter(ovp -> ovp.getEstado() == EstadoOrdenVenta.ENTREGADA)
+                .count();
+        long ovpsCanceladas = ovps.stream()
+                .filter(ovp -> ovp.getEstado() == EstadoOrdenVenta.CANCELADA)
+                .count();
+        long ovpsEnviadas = ovps.stream()
+                .filter(ovp -> ovp.getEstado() == EstadoOrdenVenta.ENVIADA)
+                .count();
+
+        // Determinar el nuevo estado del pedido
+        EstadoPedido nuevoEstadoPedido;
+
+        if (ovpsEntregadas == totalOvps) {
+            nuevoEstadoPedido = EstadoPedido.ENTREGADO;
+        } else if (ovpsCanceladas == totalOvps) {
+            nuevoEstadoPedido = EstadoPedido.CANCELADO;
+        } else if (ovpsEnviadas + ovpsCanceladas + ovpsEntregadas > 0) {
+            nuevoEstadoPedido = EstadoPedido.EN_PREPARACION;
+        } else if (ovpsEnviadas > 0) {
+            nuevoEstadoPedido = EstadoPedido.ENVIADO;
+        } else {
+            nuevoEstadoPedido = EstadoPedido.PENDIENTE;
+        }
+
+        // Actualizar solo si hay cambio
+        if (!pedido.getEstado().equals(nuevoEstadoPedido)) {
+            pedido.setEstado(nuevoEstadoPedido);
+            pedidoRepository.save(pedido);
+        }
+    }
+
     private PedidoResponse mapearResponseDTO(Pedido pedido) {
         PedidoResponse response = new PedidoResponse();
         //BigDecimal total = BigDecimal.valueOf(pedido.getTotal());
@@ -160,7 +336,7 @@ public class PedidoService {
         response.setNombreCliente(pedido.getCliente().getNombre());
         response.setDireccionCliente(pedido.getCliente().getDireccion());
         response.setFechaPedido(pedido.getFechaPedido());
-        response.setEstadoPedido(pedido.getEstadoPedido());
+        response.setEstadoPedido(pedido.getEstado().getNombre());
         response.setSubTotal(pedido.getSubtotal());
         response.setIva(pedido.getIva());
         response.setGastosEnvio(pedido.getGastosEnvio());

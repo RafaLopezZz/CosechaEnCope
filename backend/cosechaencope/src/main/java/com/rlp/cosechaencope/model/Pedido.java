@@ -37,8 +37,8 @@ public class Pedido {
     @Column(name = "fecha_pedido")
     private Instant fechaPedido = Instant.now();
 
-    @Column(name = "estado_pedido")
-    private String estadoPedido; // PENDIENTE, ENVIADO, ENTREGADO, CANCELADO
+    @Column(name = "estado", nullable = false)
+    private EstadoPedido estado; // Usar EstadoPedido enum
 
     @JsonManagedReference
     @ToString.Exclude

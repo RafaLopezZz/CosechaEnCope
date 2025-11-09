@@ -32,7 +32,7 @@ public class CarritoService {
     private final ClienteRepository clienteRepository;
 
     public CarritoService(CarritoRepository carritoRepository,
-            ArticuloRepository articuloRepository, DetalleCarritoRepository detalleCarritoRepository, 
+            ArticuloRepository articuloRepository, DetalleCarritoRepository detalleCarritoRepository,
             ClienteRepository clienteRepository) {
         this.clienteRepository = clienteRepository;
         this.carritoRepository = carritoRepository;
@@ -229,6 +229,27 @@ public class CarritoService {
             // Persistir el carrito vacío
             carritoRepository.save(carrito);
         }
+    }
+
+    @Transactional
+    public Carrito obtenerOCrearCarritoActivo(Long idCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+
+        return carritoRepository
+                .findByClienteConDetalles(cliente)
+                .map(c -> {
+                    // Si está finalizado, crear uno nuevo
+                    if (Boolean.TRUE.equals(c.getFinalizado())) {
+                        Carrito carritoNuevo = new Carrito();
+                        carritoNuevo.setCliente(cliente);
+                        carritoNuevo.setFechaCreacion(Instant.now());
+                        carritoNuevo.setFinalizado(false);
+                        return carritoRepository.save(carritoNuevo);
+                    }
+                    return c;
+                })
+                .orElseGet(() -> crearCarritoNuevo(cliente));
     }
 
     private CarritoResponse mapearCarritoResponseDTO(Carrito carrito) {

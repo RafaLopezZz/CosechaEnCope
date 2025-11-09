@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -168,4 +170,24 @@ public class PedidoController {
         List<PedidoResponse> pedidos = pedidoService.listarPorCliente(userDetails.getId());
         return ResponseEntity.ok(pedidos);
     }
+
+    @GetMapping("/pedidos/{idPedido}")
+    public ResponseEntity<PedidoResponse> obtenerPedidoPorId(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long idPedido) {
+        PedidoResponse pedido = pedidoService.obtenerPedidoPorId(userDetails.getId(), idPedido);
+        return ResponseEntity.ok(pedido); 
+    }
+
+    @PatchMapping("/pedidos/{idPedido}/ordenes-venta-productores/{idOvp}/estado")
+        public ResponseEntity<PedidoResponse> actualizarEstadoOrdenVentaProductor(
+                @AuthenticationPrincipal UserDetailsImpl userDetails,
+                @PathVariable Long idPedido,
+                @PathVariable Long idOvp,
+                @RequestParam String nuevoEstado) {
+            // Lógica para actualizar el estado de la orden de venta al productor
+            // Esto podría implicar llamar a un servicio que maneje esta lógica
+            PedidoResponse pedidoActualizado = pedidoService.actualizarEstadoOrdenVentaProductor(
+                    userDetails.getId(), idPedido, idOvp, nuevoEstado);
+            return ResponseEntity.ok(pedidoActualizado);
+    }
+    
 }
