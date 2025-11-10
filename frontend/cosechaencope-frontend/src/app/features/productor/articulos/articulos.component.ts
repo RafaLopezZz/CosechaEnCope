@@ -5,15 +5,15 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { UserStoreService } from '../../../core/services/user-store.service';
 import { ProductorService } from '../../../core/services/productor.service';
-import { ImagenService } from '../../../core/services/imagen.service';
 import { ArticuloResponse, ArticuloRequest } from '../../../shared/models/articulo.models';
 import { CategoriaResponse } from '../../../shared/models/categoria.models';
 import { ProductorResponse } from '../../../shared/models/productor.models';
+import { ImageUploadPanelComponent } from '../../../shared/components/image-upload-panel/image-upload-panel.component';
 
 @Component({
   selector: 'app-articulos-productor',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ImageUploadPanelComponent],
   templateUrl: './articulos.component.html',
   styleUrls: ['./articulos.component.scss']
 })
@@ -21,7 +21,6 @@ export class ArticulosProductorComponent implements OnInit {
   private fb = inject(FormBuilder);
   private userStore = inject(UserStoreService);
   private productorService = inject(ProductorService);
-  private imagenService = inject(ImagenService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
@@ -32,7 +31,6 @@ export class ArticulosProductorComponent implements OnInit {
   showForm = false;
   editingArticulo: ArticuloResponse | null = null;
   saving = false;
-  uploading = false;
   imagePreview: string | null = null;
 
   currentUser = this.userStore.snapshot();
@@ -266,52 +264,14 @@ export class ArticulosProductorComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const file = target.files?.[0];
+  onImageUploaded(url: string) {
+    this.form.patchValue({ imagenUrl: url });
+    this.imagePreview = url;
+  }
 
-    if (!file) return;
-
-    // Validar imagen usando el nuevo servicio
-    const errores = this.imagenService.validarImagen(file);
-    if (errores.length > 0) {
-      alert(errores.join('\n'));
-      return;
-    }
-
-    // Preview inmediato
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.imagePreview = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-
-    // Verificar usuario actual
-    if (!this.currentUser || !this.currentUser.idUsuario) {
-      alert('Error: No se ha iniciado sesión correctamente');
-      return;
-    }
-
-    // Upload a AWS S3
-    this.uploading = true;
-    this.imagenService.subirImagenArticulo(file, this.currentUser.idUsuario, this.currentUser.tipoUsuario).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.form.patchValue({ imagenUrl: response.imageUrl });
-          console.log('Imagen subida exitosamente:', response.imageUrl);
-        } else {
-          alert(response.message || 'Error al subir la imagen');
-          this.imagePreview = this.form.value.imagenUrl || null;
-        }
-        this.uploading = false;
-      },
-      error: (error) => {
-        console.error('Error uploading image:', error);
-        alert(error.error?.message || 'Error al subir la imagen. Inténtalo de nuevo.');
-        this.uploading = false;
-        this.imagePreview = this.form.value.imagenUrl || null;
-      }
-    });
+  onImageRemoved() {
+    this.form.patchValue({ imagenUrl: '' });
+    this.imagePreview = null;
   }
 
   onSubmit() {

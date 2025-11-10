@@ -28,36 +28,13 @@
         <!-- Imagen del Producto -->
         <div class="form-section">
           <h3>Imagen del Producto</h3>
-          <div class="image-upload-container">
-            <div class="image-preview">
-              <img 
-                [src]="imagePreview || 'assets/images/default-product.png'" 
-                alt="Vista previa"
-                class="preview-image">
-              <div class="upload-overlay" *ngIf="uploading">
-                <div class="spinner"></div>
-                <p>Subiendo a AWS S3...</p>
-              </div>
-            </div>
-            
-            <div class="upload-controls">
-              <input 
-                type="file" 
-                id="productImageInput" 
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                (change)="onFileSelected($event)"
-                class="file-input"
-                [disabled]="uploading">
-              <label for="productImageInput" class="btn btn--outline" [class.disabled]="uploading">
-                <i class="fas fa-cloud-upload-alt"></i>
-                {{ uploading ? 'Subiendo...' : 'Seleccionar Imagen' }}
-              </label>
-              <p class="upload-hint">
-                JPG, PNG, GIF, WEBP. Máximo 10MB.
-                <br>Se subirá automáticamente a AWS S3.
-              </p>
-            </div>
-          </div>
+          <app-image-upload-panel
+            #imageUploader
+            [currentImageUrl]="imagePreview || form.value.imagenUrl || undefined"
+            uploadType="articulo"
+            (imageUploaded)="onImageUploaded($event)"
+            (imageRemoved)="onImageRemoved()">
+          </app-image-upload-panel>
         </div>
 
         <!-- Información Básica -->
@@ -162,7 +139,7 @@
           <button 
             type="submit" 
             class="btn btn--primary"
-            [disabled]="form.invalid || saving || uploading">
+            [disabled]="form.invalid || saving || imageUploader?.isUploading">
             <i class="fas fa-save" *ngIf="!saving"></i>
             <div class="button-spinner" *ngIf="saving"></div>
             {{ saving ? 'Guardando...' : (editingArticulo ? 'Actualizar' : 'Crear Producto') }}

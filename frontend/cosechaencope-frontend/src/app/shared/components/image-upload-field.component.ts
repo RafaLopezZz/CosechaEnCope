@@ -1,33 +1,34 @@
-import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, Output, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ImageUploadUtilsService, ImageValidationOptions } from '../../core/services/image-upload-utils.service';
 
 @Component({
-  selector: 'app-image-upload',
+  selector: 'app-image-upload-field',
   standalone: true,
   imports: [CommonModule],
   template: `
     <div class="image-upload-container">
       <div class="image-preview" [class.uploading]="uploading">
-        <img 
-          [src]="imageUrl || defaultImage" 
+        <img
+          [src]="imageUrl || defaultImage"
           [alt]="alt"
-          class="preview-image">
-        
+          class="preview-image" />
+
         <div class="upload-overlay" *ngIf="uploading">
           <div class="spinner"></div>
           <p>{{ uploadMessage }}</p>
         </div>
-        
+
         <div class="upload-actions" *ngIf="!uploading">
-          <button 
+          <button
             type="button"
             class="upload-btn"
             (click)="fileInput.click()">
             <i class="fas fa-camera"></i>
           </button>
-          
-          <button 
+
+          <button
             type="button"
             class="remove-btn"
             *ngIf="imageUrl && showRemove"
@@ -37,13 +38,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         </div>
       </div>
 
-      <input 
+      <input
         #fileInput
-        type="file" 
+        type="file"
         accept="image/*"
         (change)="onFileSelected($event)"
-        class="file-input">
-      
+        class="file-input" />
+
       <div class="upload-info" *ngIf="showInfo">
         <p class="upload-hint">{{ hint }}</p>
         <div class="upload-error" *ngIf="error">
@@ -53,16 +54,18 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       </div>
     </div>
   `,
-  styleUrls: ['image-upload.component.scss'],
+  styleUrls: ['./image-upload-field.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => ImageUploadComponent),
-      multi: true
-    }
-  ]
+      useExisting: forwardRef(() => ImageUploadFieldComponent),
+      multi: true,
+    },
+  ],
 })
-export class ImageUploadComponent implements ControlValueAccessor {
+export class ImageUploadFieldComponent implements ControlValueAccessor {
+  private utils = inject(ImageUploadUtilsService);
+
   @Input() defaultImage = '/images/default-image.png';
   @Input() alt = 'Imagen';
   @Input() hint = 'JPG, PNG, WebP. Máximo 5MB.';
@@ -70,7 +73,7 @@ export class ImageUploadComponent implements ControlValueAccessor {
   @Input() showRemove = true;
   @Input() showInfo = true;
   @Input() maxSizeMB = 5;
-  @Input() acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  @Input() acceptedTypes: string[] = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
   @Output() fileSelected = new EventEmitter<File>();
   @Output() uploadStart = new EventEmitter<void>();
@@ -82,40 +85,45 @@ export class ImageUploadComponent implements ControlValueAccessor {
   uploading = false;
   error: string | null = null;
 
-  private onChange = (value: string | null) => {};
-  private onTouched = () => {};
+  private onChange: (value: string | null) => void = () => {};
+  private onTouched: () => void = () => {};
 
-  onFileSelected(event: Event) {
+  onFileSelected(event: Event): void {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
 
-    if (!file) return;
-
-    this.error = null;
-
-    // Validar archivo
-    const validation = this.validateFile(file);
-    if (!validation.valid) {
-      this.error = validation.error || 'Archivo inválido';
+    if (!file) {
       return;
     }
 
-    // Preview inmediato
+    this.error = null;
+
+    const validationOptions: ImageValidationOptions = {
+      maxSizeMb: this.maxSizeMB,
+      allowedMimeTypes: this.acceptedTypes,
+    };
+
+    const validation = this.utils.validateFile(file, validationOptions);
+    if (!validation.valid) {
+      this.error = this.utils.buildErrorMessage(validation, validationOptions);
+      this.uploadError.emit(this.error ?? 'Archivo inválido');
+      target.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       this.imageUrl = e.target?.result as string;
     };
     reader.readAsDataURL(file);
 
-    // Emitir eventos
     this.fileSelected.emit(file);
     this.uploadStart.emit();
 
-    // Limpiar el input para permitir seleccionar el mismo archivo
     target.value = '';
   }
 
-  removeImage() {
+  removeImage(): void {
     this.imageUrl = null;
     this.error = null;
     this.onChange(null);
@@ -123,11 +131,11 @@ export class ImageUploadComponent implements ControlValueAccessor {
     this.imageRemoved.emit();
   }
 
-  setUploading(status: boolean) {
+  setUploading(status: boolean): void {
     this.uploading = status;
   }
 
-  setImageUrl(url: string) {
+  setImageUrl(url: string): void {
     this.imageUrl = url;
     this.uploading = false;
     this.error = null;
@@ -135,32 +143,12 @@ export class ImageUploadComponent implements ControlValueAccessor {
     this.uploadComplete.emit(url);
   }
 
-  setError(error: string) {
+  setError(error: string): void {
     this.error = error;
     this.uploading = false;
     this.uploadError.emit(error);
   }
 
-  private validateFile(file: File): { valid: boolean; error?: string } {
-    if (!this.acceptedTypes.includes(file.type)) {
-      return { 
-        valid: false, 
-        error: `Solo se permiten archivos: ${this.acceptedTypes.map(t => t.split('/')[1].toUpperCase()).join(', ')}` 
-      };
-    }
-
-    const maxSize = this.maxSizeMB * 1024 * 1024;
-    if (file.size > maxSize) {
-      return { 
-        valid: false, 
-        error: `El archivo no puede superar los ${this.maxSizeMB}MB` 
-      };
-    }
-
-    return { valid: true };
-  }
-
-  // ControlValueAccessor implementation
   writeValue(value: string | null): void {
     this.imageUrl = value;
   }
@@ -173,7 +161,7 @@ export class ImageUploadComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
-    // Implementar si es necesario
+  setDisabledState(_: boolean): void {
+    // ControlValueAccessor contract; not needed for now.
   }
 }

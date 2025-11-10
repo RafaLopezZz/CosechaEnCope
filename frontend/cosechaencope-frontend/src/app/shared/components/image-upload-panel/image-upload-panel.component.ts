@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ImagenService, ImageUploadResponse } from '../../../core/services/imagen.service';
 import { UserStoreService } from '../../../core/services/user-store.service';
+import { ImageUploadUtilsService, ImageValidationOptions } from '../../../core/services/image-upload-utils.service';
 
 /**
  * Componente reutilizable para subir imágenes.
@@ -13,7 +14,7 @@ import { UserStoreService } from '../../../core/services/user-store.service';
  */
 @Component({
   standalone: true,
-  selector: 'app-image-upload',
+  selector: 'app-image-upload-panel',
   imports: [CommonModule],
   template: `
     <div class="image-upload-container">
@@ -260,13 +261,16 @@ import { UserStoreService } from '../../../core/services/user-store.service';
     }
   `]
 })
-export class ImageUploadComponent {
+export class ImageUploadPanelComponent {
   private imagenService = inject(ImagenService);
   private userStore = inject(UserStoreService);
+  private utils = inject(ImageUploadUtilsService);
 
   @Input() currentImageUrl?: string;
   @Input() uploadType: 'articulo' | 'categoria' = 'articulo';
   @Input() placeholder: string = 'Subir imagen';
+  @Input() maxSizeMb = 10;
+  @Input() allowedMimeTypes: string[] = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
 
   @Output() imageUploaded = new EventEmitter<string>();
   @Output() imageRemoved = new EventEmitter<void>();
@@ -312,10 +316,14 @@ export class ImageUploadComponent {
   private processFile(file: File): void {
     this.clearMessages();
     
-    // Validar archivo
-    const errors = this.imagenService.validarImagen(file);
-    if (errors.length > 0) {
-      this.errorMessages = errors;
+    const options: ImageValidationOptions = {
+      maxSizeMb: this.maxSizeMb,
+      allowedMimeTypes: this.allowedMimeTypes,
+    };
+    const validation = this.utils.validateFile(file, options);
+    if (!validation.valid) {
+      const errorMessage = this.utils.buildErrorMessage(validation, options) ?? 'Archivo inválido';
+      this.errorMessages = [errorMessage];
       return;
     }
 
@@ -394,7 +402,7 @@ export class ImageUploadComponent {
   }
 
   formatFileSize(bytes: number): string {
-    return this.imagenService.formatearTamanoArchivo(bytes);
+    return this.utils.formatFileSize(bytes);
   }
 
   private clearMessages(): void {
