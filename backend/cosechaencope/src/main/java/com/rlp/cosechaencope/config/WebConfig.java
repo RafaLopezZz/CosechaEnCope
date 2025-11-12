@@ -40,7 +40,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(604800); // Cache por 1 semana para fuentes
 
         // Recursos para Angular SPA
-        String angularLocation = "classpath:/static/app/browser/";
+        // CRÍTICO: Angular 20 compila a static/app/ directamente, NO a static/app/browser/
+        String angularLocation = "classpath:/static/app/";
 
         // Archivos de Angular (JS, CSS, etc.)
         registry.addResourceHandler(
@@ -72,13 +73,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations(angularLocation + "assets/", angularLocation + "media/", angularLocation + "images/", angularLocation + "gal/", angularLocation + "iconos/")
                 .setCachePeriod(3600);
 
-        // Favicon y otros recursos raíz
+        // Favicon y otros recursos raíz de Angular
         registry.addResourceHandler("/favicon.ico")
-                .addResourceLocations("classpath:/static/browser/")
+                .addResourceLocations(angularLocation) // Usa la misma location de Angular
                 .setCachePeriod(86400);
 
         registry.addResourceHandler("/manifest.json")
-                .addResourceLocations("classpath:/static/browser/")
+                .addResourceLocations(angularLocation) // Usa la misma location de Angular
                 .setCachePeriod(86400);
     }
 

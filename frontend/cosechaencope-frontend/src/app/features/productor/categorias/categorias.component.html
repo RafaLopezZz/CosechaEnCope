@@ -75,7 +75,7 @@
               
               <p class="upload-hint" *ngIf="selectedFile">
                 <strong>Archivo seleccionado:</strong> {{ selectedFile.name }}<br>
-                <small>Tamaño: {{ imagenService.formatearTamanoArchivo(selectedFile.size) }}</small>
+                <small>Tamaño: {{ imagenUtils.formatFileSize(selectedFile.size) }}</small>
               </p>
               
               <p class="upload-hint" *ngIf="!selectedFile">

@@ -27,10 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controlador REST para la gestión de imágenes en AWS S3.
- * 
- * <p>Proporciona endpoints para subir y eliminar imágenes que serán utilizadas
- * en artículos y categorías del sistema.</p>
- * 
+ *
+ * <p>
+ * Proporciona endpoints para subir y eliminar imágenes que serán utilizadas en
+ * artículos y categorías del sistema.</p>
+ *
  * @author rafalopezzz
  */
 @Slf4j
@@ -81,20 +82,20 @@ public class ImagenController {
             @RequestParam("idUsuario") Long idUsuario,
             @Parameter(description = "Tipo de usuario", required = true)
             @RequestParam("tipoUsuario") String tipoUsuario) {
-        
+
         try {
             String imageUrl = s3FileStorageService.subirImagen(file, "articulos", tipoUsuario.toLowerCase(), idUsuario);
-            
+
             ImageUploadResponse response = new ImageUploadResponse();
             response.setImageUrl(imageUrl);
             response.setMessage("Imagen subida exitosamente");
             response.setFileName(file.getOriginalFilename());
             response.setFileSize(file.getSize());
-            
+
             log.info("Imagen de artículo subida por usuario {}: {}", idUsuario, imageUrl);
-            
+
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            
+
         } catch (FileStorageException e) {
             log.error("Error al subir imagen de artículo: {}", e.getMessage());
             return ResponseEntity.badRequest()
@@ -144,22 +145,85 @@ public class ImagenController {
             @RequestParam("idUsuario") Long idUsuario,
             @Parameter(description = "Tipo de usuario", required = true)
             @RequestParam("tipoUsuario") String tipoUsuario) {
-        
+
         try {
             String imageUrl = s3FileStorageService.subirImagen(file, "categorias", tipoUsuario.toLowerCase(), idUsuario);
-            
+
             ImageUploadResponse response = new ImageUploadResponse();
             response.setImageUrl(imageUrl);
             response.setMessage("Imagen subida exitosamente");
             response.setFileName(file.getOriginalFilename());
             response.setFileSize(file.getSize());
-            
+
             log.info("Imagen de categoría subida por usuario {}: {}", idUsuario, imageUrl);
-            
+
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            
+
         } catch (FileStorageException e) {
             log.error("Error al subir imagen de categoría: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(ImageUploadResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error inesperado al subir imagen: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ImageUploadResponse.error("Error interno del servidor"));
+        }
+    }
+
+    /**
+     * Sube una imagen para el perfil de un productor.
+     *
+     * @param file Archivo de imagen a subir
+     * @param idUsuario ID del usuario que sube la imagen
+     * @param tipoUsuario Tipo de usuario (PRODUCTOR, ADMIN)
+     * @return URL de la imagen subida
+     */
+    @Operation(
+            summary = "Subir imagen de perfil",
+            description = "Sube una imagen al bucket S3 para ser utilizada en el perfil de un productor"
+    )
+    @ApiResponses({
+        @ApiResponse(
+                responseCode = "201",
+                description = "Imagen subida exitosamente",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ImageUploadResponse.class)
+                )
+        ),
+        @ApiResponse(
+                responseCode = "400",
+                description = "Archivo inválido o parámetros incorrectos"
+        ),
+        @ApiResponse(
+                responseCode = "500",
+                description = "Error interno del servidor"
+        )
+    })
+    @PostMapping("/perfiles")
+    public ResponseEntity<ImageUploadResponse> subirImagenPerfil(
+            @Parameter(description = "Archivo de imagen", required = true)
+            @RequestParam("file") MultipartFile file,
+            @Parameter(description = "ID del usuario", required = true)
+            @RequestParam("idUsuario") Long idUsuario,
+            @Parameter(description = "Tipo de usuario", required = true)
+            @RequestParam("tipoUsuario") String tipoUsuario) {
+
+        try {
+            String imageUrl = s3FileStorageService.subirImagen(file, "perfiles", tipoUsuario.toLowerCase(), idUsuario);
+
+            ImageUploadResponse response = new ImageUploadResponse();
+            response.setImageUrl(imageUrl);
+            response.setMessage("Imagen de perfil subida exitosamente");
+            response.setFileName(file.getOriginalFilename());
+            response.setFileSize(file.getSize());
+
+            log.info("Imagen de perfil subida por usuario {}: {}", idUsuario, imageUrl);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (FileStorageException e) {
+            log.error("Error al subir imagen de perfil: {}", e.getMessage());
             return ResponseEntity.badRequest()
                     .body(ImageUploadResponse.error(e.getMessage()));
         } catch (Exception e) {
@@ -201,10 +265,10 @@ public class ImagenController {
     public ResponseEntity<MessageResponse> eliminarImagen(
             @Parameter(description = "URL de la imagen a eliminar", required = true)
             @RequestParam("imageUrl") String imageUrl) {
-        
+
         try {
             boolean eliminada = s3FileStorageService.eliminarImagen(imageUrl);
-            
+
             if (eliminada) {
                 log.info("Imagen eliminada exitosamente: {}", imageUrl);
                 return ResponseEntity.ok(new MessageResponse("Imagen eliminada exitosamente"));
@@ -213,7 +277,7 @@ public class ImagenController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(new MessageResponse("Error al eliminar la imagen"));
             }
-            
+
         } catch (Exception e) {
             log.error("Error inesperado al eliminar imagen: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -13,11 +13,13 @@ export * from './categorias.service';
 export * from './cliente.service';
 export * from './pedido.service';
 export * from './productor.service';
-export * from './upload.service';
+export * from './imagen.service';
+export * from './image-upload-utils.service'
 export * from './user-store.service';
 
 // Re-exportar tipos útiles
 export type { AddToCarritoRequest, CarritoResponse, CarritoItemResponse } from './carrito.service';
-export type { UploadResponse, PresignedUrlRequest, PresignedUrlResponse } from './upload.service';
+export type { ImageUploadResponse } from './imagen.service';
+export type { ImageValidationOptions, ImageValidationResult } from './image-upload-utils.service';
 export type { PedidoResponse, PedidoItemResponse } from './pedido.service';
 export type { ClienteRequest, ClienteResponse } from './cliente.service';

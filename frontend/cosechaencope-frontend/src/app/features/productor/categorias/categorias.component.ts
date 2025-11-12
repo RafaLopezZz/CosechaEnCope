@@ -2,9 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { ProductorService } from '../../../core/services/productor.service';
 import { ImagenService } from '../../../core/services/imagen.service';
+import { ImageUploadUtilsService } from '../../../core/services/image-upload-utils.service';
 import { CategoriaResponse, CategoriaRequest } from '../../../shared/models/categoria.models';
 
 @Component({
@@ -14,10 +14,12 @@ import { CategoriaResponse, CategoriaRequest } from '../../../shared/models/cate
   templateUrl: './categorias.component.html',
   styleUrls: ['./categorias.component.scss']
 })
+
 export class CategoriasProductorComponent implements OnInit {
   private fb = inject(FormBuilder);
   private productorService = inject(ProductorService);
   public imagenService = inject(ImagenService);
+  public imagenUtils = inject(ImageUploadUtilsService);
   private router = inject(Router);
 
   categorias: CategoriaResponse[] = [];
@@ -46,9 +48,9 @@ export class CategoriasProductorComponent implements OnInit {
       const file = input.files[0];
       
       // Validar archivo
-      const errores = this.imagenService.validarImagen(file);
-      if (errores.length > 0) {
-        alert(errores.join('\n'));
+      const validationResult = this.imagenUtils.validateFile(file);
+      if (!validationResult.valid) {
+        alert(this.imagenUtils.buildErrorMessage(validationResult, {}));
         return;
       }
 

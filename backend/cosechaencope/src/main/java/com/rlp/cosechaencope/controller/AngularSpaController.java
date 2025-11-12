@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/app")
 public class AngularSpaController {
 
-    private static final String ANGULAR_INDEX_PATH = "static/app/browser/index.html";
+    private static final String ANGULAR_INDEX_PATH = "static/app/index.html";
 
     /**
      * Maneja todas las rutas de Angular SPA que no corresponden a archivos

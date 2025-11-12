@@ -154,7 +154,7 @@
     <div class="articulos-grid" *ngIf="articulos.length > 0; else noArticulos">
       <div class="articulo-card" *ngFor="let articulo of articulos">
         <div class="articulo-image">
-          <img [src]="articulo.imagenUrl || '/images/default-product.png'" [alt]="articulo.nombre">
+          <img [src]="articulo.imagenUrl || 'https://via.placeholder.com/300/8BC34A/FFFFFF?text=Producto'" [alt]="articulo.nombre">
           <div class="stock-badge" [class.low-stock]="articulo.stock < 10" [class.out-of-stock]="articulo.stock === 0">
             Stock: {{ articulo.stock }}
           </div>

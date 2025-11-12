@@ -71,9 +71,9 @@ export class ArticuloListComponent implements OnInit {
    */
   onImageError(event: Event): void {
     const imgElement = event.target as HTMLImageElement;
-    if (imgElement && !imgElement.src.includes('default-product.png')) {
+    if (imgElement && !imgElement.src.includes('placeholder')) {
       // Solo cambiar si no es ya la imagen por defecto (evitar bucle infinito)
-      imgElement.src = '/app/assets/images/default-product.png';
+      imgElement.src = 'https://via.placeholder.com/300/8BC34A/FFFFFF?text=Producto';
     }
   }
 

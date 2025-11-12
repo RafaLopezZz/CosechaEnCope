@@ -15,7 +15,7 @@
 
     <div class="sidebar__user" *ngIf="productor">
       <div class="user__avatar">
-        <img [src]="productor.imagenUrl || '/images/default-producer.png'" [alt]="productor.nombre">
+        <img [src]="productor.imagenUrl || 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=Productor'" [alt]="productor.nombre">
       </div>
       <div class="user__info" *ngIf="!sidebarCollapsed">
         <h3>{{ productor.nombre }}</h3>

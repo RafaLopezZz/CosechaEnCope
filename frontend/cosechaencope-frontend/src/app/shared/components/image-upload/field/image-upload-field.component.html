@@ -1,0 +1,41 @@
+<div class="image-upload-container">
+  <div class="image-preview" [class.uploading]="uploading">
+    <img [src]="imageUrl || defaultImage" [alt]="alt" class="preview-image" />
+
+    <div class="upload-overlay" *ngIf="uploading">
+      <div class="spinner"></div>
+      <p>{{ uploadMessage }}</p>
+    </div>
+
+    <div class="upload-actions" *ngIf="!uploading">
+      <button type="button" class="upload-btn" (click)="fileInput.click()">
+        <i class="fas fa-camera"></i>
+      </button>
+
+      <button
+        type="button"
+        class="remove-btn"
+        *ngIf="imageUrl && showRemove"
+        (click)="removeImage()"
+      >
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  </div>
+
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    (change)="onFileSelected($event)"
+    class="file-input"
+  />
+
+  <div class="upload-info" *ngIf="showInfo">
+    <p class="upload-hint">{{ hint }}</p>
+    <div class="upload-error" *ngIf="error">
+      <i class="fas fa-exclamation-triangle"></i>
+      {{ error }}
+    </div>
+  </div>
+</div>

@@ -7,146 +7,138 @@
     <h1>Mi Perfil de Productor</h1>
   </div>
 
-  <div class="perfil-content" *ngIf="!loading; else loadingTemplate">
+  @if(!loading) {
+  <div class="perfil-content">
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="perfil-form">
-      
       <!-- Imagen del Productor -->
       <div class="form-section">
         <h2>Imagen de la Empresa</h2>
-        <div class="image-upload-container">
-          <div class="image-preview">
-            <img 
-              [src]="imagePreview || '/images/default-producer.png'" 
-              alt="Vista previa"
-              class="preview-image">
-            <div class="upload-overlay" *ngIf="uploading">
-              <div class="spinner"></div>
-              <p>Subiendo imagen...</p>
-            </div>
-          </div>
-          
-          <div class="upload-controls">
-            <input 
-              type="file" 
-              id="imageInput" 
-              accept="image/*"
-              (change)="onFileSelected($event)"
-              class="file-input">
-            <label for="imageInput" class="btn btn--outline">
-              <i class="fas fa-camera"></i>
-              Cambiar Imagen
-            </label>
-            <p class="upload-hint">
-              Formatos permitidos: JPG, PNG, WebP. Máximo 5MB.
-            </p>
-          </div>
-        </div>
+        <app-image-upload-panel
+          [currentImageUrl]="form.value.imagenUrl || undefined"
+          uploadType="perfil"
+          (imageUploaded)="onImageUploaded($event)"
+          (imageRemoved)="onImageRemoved()"
+        >
+        </app-image-upload-panel>
       </div>
 
       <!-- Información Básica -->
       <div class="form-section">
         <h2>Información de la Empresa</h2>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label for="nombre">Nombre de la Empresa *</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               id="nombre"
               formControlName="nombre"
               class="form-control"
-              placeholder="Ej: Huerta Los Olivos">
-            <div class="field-error" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.errors">
-              <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
-              <span *ngIf="form.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</span>
+              placeholder="Ej: Huerta Los Olivos"
+            />
+            @if(form.get('nombre')?.touched && form.get('nombre')?.errors) {
+            <div class="field-error">
+              @if(form.get('nombre')?.errors?.['required']) {
+              <span>El nombre es obligatorio</span>
+              } @if(form.get('nombre')?.errors?.['minlength']) {
+              <span>El nombre debe tener al menos 2 caracteres</span>
+              }
             </div>
+            }
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="direccion">Dirección *</label>
-            <textarea 
+            <textarea
               id="direccion"
               formControlName="direccion"
               class="form-control"
               rows="3"
-              placeholder="Dirección completa de la empresa o finca"></textarea>
-            <div class="field-error" *ngIf="form.get('direccion')?.touched && form.get('direccion')?.errors">
-              <span *ngIf="form.get('direccion')?.errors?.['required']">La dirección es obligatoria</span>
+              placeholder="Dirección completa de la empresa o finca"
+            ></textarea>
+            @if(form.get('direccion')?.touched && form.get('direccion')?.errors) {
+            <div class="field-error">
+              @if(form.get('direccion')?.errors?.['required']) {
+              <span>La dirección es obligatoria</span>
+              }
             </div>
+            }
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="telefono">Teléfono de Contacto *</label>
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               id="telefono"
               formControlName="telefono"
               class="form-control"
-              placeholder="123456789">
-            <div class="field-error" *ngIf="form.get('telefono')?.touched && form.get('telefono')?.errors">
-              <span *ngIf="form.get('telefono')?.errors?.['required']">El teléfono es obligatorio</span>
-              <span *ngIf="form.get('telefono')?.errors?.['pattern']">Introduce un teléfono válido (9 dígitos)</span>
+              placeholder="123456789"
+            />
+            @if(form.get('telefono')?.touched && form.get('telefono')?.errors) {
+            <div class="field-error">
+              @if(form.get('telefono')?.errors?.['required']) {
+              <span>El teléfono es obligatorio</span>
+              } @if(form.get('telefono')?.errors?.['pattern']) {
+              <span>Introduce un teléfono válido (9 dígitos)</span>
+              }
             </div>
+            }
           </div>
         </div>
       </div>
 
       <!-- Información de la Cuenta -->
-      <div class="form-section" *ngIf="productor">
+      @if(productor) {
+      <div class="form-section">
         <h2>Información de la Cuenta</h2>
-        
+
         <div class="info-grid">
           <div class="info-item">
             <label>Email de la cuenta</label>
             <p>{{ currentUser?.email }}</p>
           </div>
-          
+
           <div class="info-item">
             <label>Fecha de registro</label>
-            <p>{{ productor.fechaRegistro | date:'dd/MM/yyyy' }}</p>
+            <p>{{ productor.fechaRegistro | date : 'dd/MM/yyyy' }}</p>
           </div>
-          
+
           <div class="info-item">
             <label>Tipo de usuario</label>
             <span class="badge badge--green">{{ currentUser?.tipoUsuario }}</span>
           </div>
-          
+
           <div class="info-item">
             <label>ID del productor</label>
             <p>#{{ productor.idProductor }}</p>
           </div>
         </div>
       </div>
+      }
 
       <!-- Acciones -->
       <div class="form-actions">
-        <button 
-          type="button" 
-          class="btn btn--outline"
-          (click)="goBack()">
-          Cancelar
-        </button>
-        
-        <button 
-          type="submit" 
-          class="btn btn--primary"
-          [disabled]="form.invalid || saving || uploading">
-          <i class="fas fa-save" *ngIf="!saving"></i>
-          <div class="button-spinner" *ngIf="saving"></div>
+        <button type="button" class="btn btn--outline" (click)="goBack()">Cancelar</button>
+
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving">
+          @if(!saving) {
+          <i class="fas fa-save"></i>
+          } @if(saving) {
+          <div class="button-spinner"></div>
+          }
           {{ saving ? 'Guardando...' : 'Guardar Cambios' }}
         </button>
       </div>
     </form>
   </div>
-
-  <ng-template #loadingTemplate>
-    <div class="loading-container">
-      <div class="spinner"></div>
-      <p>Cargando perfil...</p>
-    </div>
-  </ng-template>
+  } @else {
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando perfil...</p>
+  </div>
+  }
 </div>

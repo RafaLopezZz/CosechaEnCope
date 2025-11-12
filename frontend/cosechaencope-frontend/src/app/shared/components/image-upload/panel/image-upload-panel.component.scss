@@ -1,0 +1,151 @@
+.image-upload-container {
+  width: 100%;
+}
+
+.upload-zone {
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-zone:hover {
+  border-color: #28a745;
+  background-color: #f8f9fa;
+}
+
+.upload-zone.drag-over {
+  border-color: #28a745;
+  background-color: #e8f5e8;
+}
+
+.upload-zone.has-error {
+  border-color: #dc3545;
+}
+
+.current-image,
+.preview-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.preview-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.current-image .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.current-image:hover .overlay {
+  opacity: 1;
+}
+
+.overlay i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.file-info {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.file-name {
+  font-weight: 500;
+  margin-bottom: 5px;
+  word-break: break-all;
+}
+
+.file-size {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #dc3545;
+}
+
+.upload-prompt {
+  color: #6c757d;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.upload-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-messages .alert {
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.alert-sm {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.action-buttons {
+  text-align: center;
+}
+
+@media (max-width: 576px) {
+  .upload-zone {
+    padding: 15px;
+    min-height: 150px;
+  }
+
+  .preview-img {
+    height: 150px;
+  }
+
+  .upload-icon {
+    font-size: 2rem;
+  }
+}

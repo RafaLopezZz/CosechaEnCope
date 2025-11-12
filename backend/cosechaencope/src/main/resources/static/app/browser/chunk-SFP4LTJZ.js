@@ -1,1 +1,0 @@
-import{e as r,o as s}from"./chunk-PPRWOMJK.js";var o=class e{_user$=new r(null);user$=this._user$.asObservable();set(t){this._user$.next(t)}clear(){this._user$.next(null)}snapshot(){return this._user$.value}static \u0275fac=function(n){return new(n||e)};static \u0275prov=s({token:e,factory:e.\u0275fac,providedIn:"root"})};export{o as a};

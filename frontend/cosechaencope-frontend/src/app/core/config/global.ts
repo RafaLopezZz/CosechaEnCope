@@ -142,17 +142,6 @@ export const API_ENDPOINTS = {
   },
 
   /**
-   * Endpoints de Upload/AWS S3 (UploadController)
-   * Base: /cosechaencope/upload
-   * Nota: Para gestión de archivos e imágenes
-   */
-  UPLOAD: {
-    BASE: `${API_BASE_URL}/upload`,
-    PRESIGNED_URL: `${API_BASE_URL}/upload/presigned-url`,
-    DELETE_FILE: (key: string) => `${API_BASE_URL}/upload/${key}`,
-  },
-
-  /**
    * Endpoints de Gestión de Imágenes (ImagenController)
    * Base: /cosechaencope/imagenes
    * Nota: Para subir y eliminar imágenes en AWS S3
@@ -161,6 +150,7 @@ export const API_ENDPOINTS = {
     BASE: `${API_BASE_URL}/imagenes`,
     UPLOAD_ARTICULO: `${API_BASE_URL}/imagenes/articulos`,
     UPLOAD_CATEGORIA: `${API_BASE_URL}/imagenes/categorias`,
+    UPLOAD_PERFIL: `${API_BASE_URL}/imagenes/perfiles`,
     DELETE: `${API_BASE_URL}/imagenes`,
   },
 } as const;

@@ -8,14 +8,14 @@ import { ProductorService } from '../../../core/services/productor.service';
 import { ArticuloResponse, ArticuloRequest } from '../../../shared/models/articulo.models';
 import { CategoriaResponse } from '../../../shared/models/categoria.models';
 import { ProductorResponse } from '../../../shared/models/productor.models';
-import { ImageUploadPanelComponent } from '../../../shared/components/image-upload-panel/image-upload-panel.component';
+import { ImageUploadPanelComponent } from '../../../shared/components/image-upload/panel/image-upload-panel.component';
 
 @Component({
   selector: 'app-articulos-productor',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ImageUploadPanelComponent],
   templateUrl: './articulos.component.html',
-  styleUrls: ['./articulos.component.scss']
+  styleUrl: './articulos.component.scss'
 })
 export class ArticulosProductorComponent implements OnInit {
   private fb = inject(FormBuilder);

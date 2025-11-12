@@ -52,7 +52,7 @@ import jakarta.validation.Valid;
  */
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("cosechaencope/articulos")
+@RequestMapping("/cosechaencope/articulos")
 @Tag(name = "Artículo", description = "Operaciones para la gestión de artículos")
 public class ArticuloController {
 

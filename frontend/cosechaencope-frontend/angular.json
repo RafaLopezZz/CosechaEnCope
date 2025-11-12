@@ -42,7 +42,7 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "../backend/cosechaencope/src/main/resources/static/app",
+              "outputPath": "../../backend/cosechaencope/src/main/resources/static/app",
               "optimization": true,
               "sourceMap": false,
               "namedChunks": false,
