@@ -73,6 +73,21 @@
           <i class="fas fa-envelope me-2"></i>
           <span>Contacto</span>
         </a>
+        
+        <a 
+          class="nav-link px-3 py-2 rounded-2 position-relative" 
+          routerLink="/carrito"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: false}"
+        >
+          <i class="fas fa-shopping-cart me-2"></i>
+          <span>Carrito</span>
+          @if (carritoItemCount > 0) {
+            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+              {{ carritoItemCount }}
+            </span>
+          }
+        </a>
       </nav>
 
       <!-- CTA Actions -->

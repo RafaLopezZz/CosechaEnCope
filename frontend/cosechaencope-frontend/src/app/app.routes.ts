@@ -100,6 +100,14 @@ export const routes: Routes = [
         (m) => m.ArticulosProductorComponent
       ),
   },
+  {
+    path: 'carrito',
+    loadComponent: () =>
+      import('./features/carrito/pages/carrito-view/carrito-view.component').then(
+        (m) => m.CarritoViewComponent
+      ),
+    title: 'Mi Carrito',
+  },
 
   // Redirección por defecto del productor
   {
@@ -108,9 +116,8 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  
   // Rutas de autenticación genéricas (redireccionan a selector)
-  // Deprecadas en favor de las específicas arriba 
+  // Deprecadas en favor de las específicas arriba
   {
     path: 'login',
     redirectTo: 'auth',
@@ -131,4 +138,3 @@ export const routes: Routes = [
     component: SignErrComponent,
   },
 ];
-

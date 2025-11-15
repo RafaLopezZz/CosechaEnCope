@@ -1,6 +1,5 @@
 package com.rlp.cosechaencope.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,7 +27,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Controlador REST para gestionar el carrito de compras en Beerstar.
+ * Controlador REST para gestionar el carrito de compras en Cosecha en Cope.
  *
  * <p>
  * Este controlador proporciona operaciones completas para la gestión del
@@ -38,10 +37,10 @@ import lombok.RequiredArgsConstructor;
  * <p>
  * Endpoints disponibles:</p>
  * <ul>
- * <li>POST     /cosechaencope/carrito      → Agregar artículo al carrito</li>
- * <li>GET      /cosechaencope/carrito      → Ver contenido del carrito</li>
- * <li>POST     /cosechaencope/carrito/{id} → Decrementar cantidad de artículo</li>
- * <li>DELETE   /cosechaencope/carrito      → Vaciar carrito completo</li>
+ * <li>POST     /cosechaencope/carrito/agregar          → Agregar artículo al carrito</li>
+ * <li>GET      /cosechaencope/carrito                  → Ver contenido del carrito</li>
+ * <li>POST     /cosechaencope/carrito/decrementar/{id} → Decrementar cantidad de artículo</li>
+ * <li>DELETE   /cosechaencope/carrito/vaciar           → Vaciar carrito completo</li>
  * </ul>
  *
  * <p>
@@ -56,6 +55,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Carrito", description = "Operaciones sobre el carrito de compras")
 public class CarritoController {
+
+    private final CarritoService carritoService;
 
     /**
      * Agrega un artículo al carrito de compras del usuario autenticado.
@@ -73,16 +74,13 @@ public class CarritoController {
      * <li>Cantidad válida (mayor a 0)</li>
      * </ul>
      *
-     * @param userDetails Detalles del usuario autenticado (inyectado
-     * automáticamente)
+     * @param userDetails Detalles del usuario autenticado (inyectado automáticamente)
      * @param request DTO con el ID del artículo y cantidad a agregar
      * @return ResponseEntity con el estado actualizado del carrito
-     * @throws ArticuloNotFoundException Si el artículo no existe
-     * @throws StockInsuficienteException Si no hay stock disponible
+     * @throws com.rlp.cosechaencope.exception.ResourceNotFoundException Si el artículo no existe
+     * @throws com.rlp.cosechaencope.exception.StockInsuficienteException Si no hay stock disponible
      * @throws IllegalArgumentException Si la cantidad es inválida
      */
-    @Autowired
-    private CarritoService carritoService;
 
     @Operation(
             summary = "Añadir artículo al carrito",
@@ -126,7 +124,7 @@ public class CarritoController {
                 description = "Usuario no autenticado"
         )
     })
-    @PostMapping
+    @PostMapping("/agregar")
     public ResponseEntity<CarritoResponse> agregarAlCarrito(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody AddToCarritoRequest request) {
@@ -139,31 +137,23 @@ public class CarritoController {
      *
      * <p>
      * Devuelve todos los artículos en el carrito con sus cantidades, precios
-     * unitarios, subtotales y el total general del carrito.</p>
+     * unitarios, subtotales y el total general del carrito. Si el usuario no
+     * tiene un carrito activo, se crea uno nuevo vacío automáticamente.</p>
      *
-     * @param userDetails Detalles del usuario autenticado (inyectado
-     * automáticamente)
-     * @return DTO con el contenido completo del carrito
+     * @param userDetails Detalles del usuario autenticado (inyectado automáticamente)
+     * @return ResponseEntity con el DTO del contenido completo del carrito
      */
     @Operation(
             summary = "Ver carrito de compras",
-            description = "Obtiene el contenido completo del carrito del usuario autenticado con totales calculados"
+            description = "Obtiene el contenido completo del carrito del usuario autenticado con totales calculados. Si no existe, crea uno nuevo vacío."
     )
     @ApiResponses({
         @ApiResponse(
                 responseCode = "200",
-                description = "Carrito obtenido exitosamente",
+                description = "Carrito obtenido exitosamente (puede estar vacío si es nuevo)",
                 content = @Content(
                         mediaType = "application/json",
                         schema = @Schema(implementation = CarritoResponse.class)
-                )
-        ),
-        @ApiResponse(
-                responseCode = "404",
-                description = "El usuario no tiene un carrito activo",
-                content = @Content(
-                        mediaType = "application/json",
-                        schema = @Schema(implementation = MessageResponse.class)
                 )
         ),
         @ApiResponse(
@@ -172,8 +162,9 @@ public class CarritoController {
         )
     })
     @GetMapping
-    public CarritoResponse verCarrito(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return carritoService.verCarrito(userDetails.getId());
+    public ResponseEntity<CarritoResponse> verCarrito(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CarritoResponse response = carritoService.verCarrito(userDetails.getId());
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -181,13 +172,13 @@ public class CarritoController {
      *
      * <p>
      * Reduce en 1 unidad la cantidad del artículo especificado. Si la cantidad
-     * resultante es 0, el artículo se elimina completamente del carrito.</p>
+     * resultante es 0, el artículo se elimina completamente del carrito y el
+     * stock se devuelve al inventario.</p>
      *
-     * @param userDetails Detalles del usuario autenticado (inyectado
-     * automáticamente)
+     * @param userDetails Detalles del usuario autenticado (inyectado automáticamente)
      * @param idArticulo ID único del artículo a decrementar
      * @return ResponseEntity con el estado actualizado del carrito
-     * @throws ArticuloNotFoundException Si el artículo no está en el carrito
+     * @throws com.rlp.cosechaencope.exception.ResourceNotFoundException Si el artículo no está en el carrito
      */
     @Operation(
             summary = "Decrementar cantidad de artículo",
@@ -219,7 +210,7 @@ public class CarritoController {
                 description = "Usuario no autenticado"
         )
     })
-    @PostMapping("/{idArticulo}")
+    @PostMapping("/decrementar/{idArticulo}")
     public ResponseEntity<CarritoResponse> decrementarArticulo(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long idArticulo) {
@@ -231,16 +222,15 @@ public class CarritoController {
      * Vacía completamente el carrito del usuario autenticado.
      *
      * <p>
-     * Elimina todos los artículos del carrito activo del usuario. Esta
-     * operación es irreversible.</p>
+     * Elimina todos los artículos del carrito activo del usuario y devuelve
+     * el stock de cada artículo al inventario. Esta operación es irreversible.</p>
      *
-     * @param userDetails Detalles del usuario autenticado (inyectado
-     * automáticamente)
+     * @param userDetails Detalles del usuario autenticado (inyectado automáticamente)
      * @return ResponseEntity vacío con código 204 (No Content)
      */
     @Operation(
             summary = "Vaciar carrito completo",
-            description = "Elimina todos los artículos del carrito del usuario. Esta operación es irreversible"
+            description = "Elimina todos los artículos del carrito del usuario y devuelve el stock. Esta operación es irreversible"
     )
     @ApiResponses({
         @ApiResponse(
@@ -248,19 +238,11 @@ public class CarritoController {
                 description = "Carrito vaciado exitosamente"
         ),
         @ApiResponse(
-                responseCode = "404",
-                description = "El usuario no tiene un carrito activo",
-                content = @Content(
-                        mediaType = "application/json",
-                        schema = @Schema(implementation = MessageResponse.class)
-                )
-        ),
-        @ApiResponse(
                 responseCode = "401",
                 description = "Usuario no autenticado"
         )
     })
-    @DeleteMapping
+    @DeleteMapping("/vaciar")
     public ResponseEntity<Void> vaciarCarrito(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         carritoService.vaciarCarrito(userDetails.getId());
         return ResponseEntity.noContent().build();

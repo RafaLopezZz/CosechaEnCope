@@ -40,30 +40,29 @@ public class CarritoService {
         this.detalleCarritoRepository = detalleCarritoRepository;
     }
 
+    /**
+     * Agrega un artículo al carrito del usuario autenticado.
+     * 
+     * <p>Si el artículo ya existe en el carrito, incrementa su cantidad.
+     * Si el carrito no existe, lo crea automáticamente.</p>
+     * 
+     * @param idUsuario ID del usuario autenticado (obtenido del JWT)
+     * @param request Datos del artículo a agregar (idArticulo, cantidad)
+     * @return {@link CarritoResponse} con el estado actualizado del carrito
+     * @throws ResourceNotFoundException Si el artículo no existe
+     * @throws StockInsuficienteException Si no hay suficiente stock
+     */
     @Transactional
     public CarritoResponse agregarACarrito(Long idUsuario, AddToCarritoRequest request) {
-        Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
-        // Validación de cantidad
+        // Validación de cantidad (aunque ya viene validada por @Min en el DTO)
         if (request.getCantidad() <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor que cero.");
         }
 
+        // Buscar o crear carrito activo del usuario (1 sola query optimizada)
         Carrito carrito = carritoRepository
-                .findByClienteConDetalles(cliente)
-                .map(c -> {
-                    // Si ya existía pero estaba finalizado, lo reseteamos
-                    if (Boolean.TRUE.equals(c.getFinalizado())) {
-                        c.setFinalizado(false);
-                        c.getDetalleList().clear();
-                        c.setSubtotal(BigDecimal.ZERO);
-                        c.setImpuestos(BigDecimal.ZERO);
-                        c.setGastosEnvio(BigDecimal.ZERO);
-                        c.setTotal(BigDecimal.ZERO);
-                    }
-                    return c;
-                })
-                .orElseGet(() -> crearCarritoNuevo(cliente));
+                .findActivoByUsuarioIdConDetalles(idUsuario)
+                .orElseGet(() -> crearCarritoNuevoPorUsuarioId(idUsuario));
 
         // Verificar existencia del artículo
         Articulo articulo = articuloRepository.findById(request.getIdArticulo())
@@ -100,31 +99,15 @@ public class CarritoService {
                     + " disponibles en total.");
         }
 
-        // Actualizar cantidad y precios
+        // Actualizar cantidad y precio del detalle
         detalle.setCantidad(nuevaCantidad);
-        detalle.setPrecioUnitario(articulo.getPrecio()); // Asegurarse de que el precio esté actualizado
+        detalle.setPrecioUnitario(articulo.getPrecio());
+        detalle.calcularTotalLinea();
 
-        // Verificar si el método calcularTotalLinea existe
-        try {
-            detalle.calcularTotalLinea();
-        } catch (Exception ex) {
-            // Si no existe, calcular manualmente
-            detalle.setTotalLinea(detalle.getPrecioUnitario().multiply(new BigDecimal(detalle.getCantidad())));
-        }
+        // Recalcular totales del carrito (subtotal, impuestos, envío, total)
+        carrito.recalcularTotales();
 
-        // Recalcular totales del carrito
-        try {
-            carrito.recalcularTotales();
-        } catch (Exception ex) {
-            // Si el método no existe, implementar cálculo básico
-            BigDecimal subtotal = carrito.getDetalleList().stream()
-                    .map(DetalleCarrito::getTotalLinea)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            carrito.setSubtotal(subtotal);
-            carrito.setImpuestos(subtotal.multiply(new BigDecimal("0.21")));
-            carrito.setTotal(subtotal.add(carrito.getImpuestos()).add(carrito.getGastosEnvio()));
-        }
-        // Actualizar stock del artículo
+        // Actualizar stock del artículo (restar la cantidad agregada)
         articulo.setStock(articulo.getStock() - request.getCantidad());
         articuloRepository.save(articulo);
 
@@ -133,25 +116,48 @@ public class CarritoService {
         return mapearCarritoResponseDTO(carrito);
     }
 
+    /**
+     * Crea un carrito nuevo vacío para un usuario (usado cuando buscamos por ID de usuario).
+     * 
+     * @param idUsuario ID del usuario
+     * @return Carrito nuevo persistido
+     */
+    private Carrito crearCarritoNuevoPorUsuarioId(Long idUsuario) {
+        Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado para el usuario: " + idUsuario));
+        return crearCarritoNuevo(cliente);
+    }
+
+    /**
+     * Crea un carrito nuevo vacío para un cliente.
+     * 
+     * @param cliente Cliente propietario del carrito
+     * @return Carrito nuevo persistido
+     */
     private Carrito crearCarritoNuevo(Cliente cliente) {
         Carrito nuevo = new Carrito();
         nuevo.setCliente(cliente);
         nuevo.setFechaCreacion(Instant.now());
-        nuevo.setSubtotal(BigDecimal.ZERO);
-        nuevo.setImpuestos(BigDecimal.ZERO);
-        nuevo.setGastosEnvio(BigDecimal.ZERO);
-        nuevo.setTotal(BigDecimal.ZERO);
+        nuevo.setFinalizado(false);
+        // Los valores numéricos ya se inicializan en BigDecimal.ZERO en la entidad
         // la lista detalleList ya viene inicializada en el constructor de la entidad
         return carritoRepository.save(nuevo);
     }
 
+    /**
+     * Decrementa en 1 la cantidad de un artículo en el carrito.
+     * Si la cantidad llega a 0, elimina el artículo del carrito.
+     * 
+     * @param idUsuario ID del usuario autenticado
+     * @param articuloId ID del artículo a decrementar
+     * @return {@link CarritoResponse} con el estado actualizado del carrito
+     * @throws ResourceNotFoundException Si el carrito o artículo no existe
+     */
     @Transactional
     public CarritoResponse decrementarArticulo(Long idUsuario, Long articuloId) {
-        Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
-        // Buscar carrito del cliente
-        Carrito carrito = carritoRepository.findByCliente(cliente)
-                .orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
+        // Buscar carrito activo con detalles (1 query optimizada)
+        Carrito carrito = carritoRepository.findActivoByUsuarioIdConDetalles(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado para el usuario"));
 
         // Buscar el detalle correspondiente al artículo
         DetalleCarrito detalle = carrito.getDetalleList().stream()
@@ -174,42 +180,43 @@ public class CarritoService {
 
         // Recalcular totales del carrito
         carrito.recalcularTotales();
-        carritoRepository.save(carrito);
+        
         // Devolver stock
         articulo.setStock(articulo.getStock() + 1);
         articuloRepository.save(articulo);
 
-        // Guardar cambios
+        // Guardar cambios del carrito
         Carrito carritoActualizado = carritoRepository.save(carrito);
 
         return mapearCarritoResponseDTO(carritoActualizado);
     }
 
+    /**
+     * Obtiene el carrito actual del usuario autenticado.
+     * Si no existe carrito, crea uno nuevo vacío.
+     * 
+     * @param idUsuario ID del usuario autenticado (del JWT)
+     * @return {@link CarritoResponse} con el contenido del carrito
+     */
+    @Transactional(readOnly = true)
     public CarritoResponse verCarrito(Long idUsuario) {
-        Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
-        Carrito carrito = carritoRepository.findByCliente(cliente)
-                .orElseGet(() -> {
-                    Carrito nuevoCarrito = new Carrito();
-                    nuevoCarrito.setCliente(cliente);
-                    nuevoCarrito.setFechaCreacion(Instant.now());
-                    nuevoCarrito.setSubtotal(BigDecimal.ZERO);
-                    nuevoCarrito.setImpuestos(BigDecimal.ZERO);
-                    nuevoCarrito.setGastosEnvio(BigDecimal.ZERO);
-                    nuevoCarrito.setTotal(BigDecimal.ZERO);
-                    return carritoRepository.save(nuevoCarrito);
-                });
+        // Buscar carrito activo con detalles, o crear uno nuevo si no existe
+        Carrito carrito = carritoRepository.findActivoByUsuarioIdConDetalles(idUsuario)
+                .orElseGet(() -> crearCarritoNuevoPorUsuarioId(idUsuario));
 
         return mapearCarritoResponseDTO(carrito);
     }
 
+    /**
+     * Vacía completamente el carrito del usuario, devolviendo el stock de todos los artículos.
+     * 
+     * @param idUsuario ID del usuario autenticado
+     */
     @Transactional
     public void vaciarCarrito(Long idUsuario) {
-        Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
-        // Recuperar carrito junto con sus detalles
+        // Recuperar carrito activo junto con sus detalles
         Carrito carrito = carritoRepository
-                .findByClienteConDetalles(cliente)
+                .findActivoByUsuarioIdConDetalles(idUsuario)
                 .orElse(null);
 
         if (carrito != null && !carrito.getDetalleList().isEmpty()) {
@@ -231,24 +238,23 @@ public class CarritoService {
         }
     }
 
+    /**
+     * Obtiene el carrito activo de un cliente o crea uno nuevo si no existe.
+     * 
+     * <p><b>Uso interno:</b> Método usado por otros servicios (ej: PedidoService)
+     * que necesitan acceder al carrito usando el ID del cliente directamente.</p>
+     * 
+     * @param idCliente ID del cliente
+     * @return Carrito activo con detalles cargados
+     */
     @Transactional
     public Carrito obtenerOCrearCarritoActivo(Long idCliente) {
         Cliente cliente = clienteRepository.findById(idCliente)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
+        // Buscar carrito activo con detalles (ya filtra por finalizado=false)
         return carritoRepository
-                .findByClienteConDetalles(cliente)
-                .map(c -> {
-                    // Si está finalizado, crear uno nuevo
-                    if (Boolean.TRUE.equals(c.getFinalizado())) {
-                        Carrito carritoNuevo = new Carrito();
-                        carritoNuevo.setCliente(cliente);
-                        carritoNuevo.setFechaCreacion(Instant.now());
-                        carritoNuevo.setFinalizado(false);
-                        return carritoRepository.save(carritoNuevo);
-                    }
-                    return c;
-                })
+                .findActivoConDetalles(cliente)
                 .orElseGet(() -> crearCarritoNuevo(cliente));
     }
 

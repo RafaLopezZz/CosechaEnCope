@@ -2,7 +2,17 @@
 import { Component, OnInit, OnDestroy, HostListener, ElementRef, inject, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { CarritoService } from '../../../core/services/carrito.service';
+import { Subscription } from 'rxjs';
 
+/**
+ * Componente de navbar mejorado con contador de carrito
+ * 
+ * MEJORAS IMPLEMENTADAS:
+ * ✅ Badge con contador de items en el carrito
+ * ✅ Sincronización en tiempo real con CarritoService
+ * ✅ Soporte para usuarios autenticados e invitados
+ */
 @Component({
   standalone: true,
   selector: 'app-navbar',
@@ -12,14 +22,37 @@ import { RouterModule } from '@angular/router';
 })
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   private elementRef = inject(ElementRef);
+  private carritoService = inject(CarritoService);
   
   isMenuOpen = false;
   isScrolled = false;
   private ticking = false;
   
+  // =============================
+  // CONTADOR DEL CARRITO
+  // =============================
+  
+  /**
+   * Número total de items en el carrito (reactivo)
+   */
+  carritoItemCount = 0;
+  
+  /**
+   * Suscripción al observable del carrito
+   */
+  private carritoSubscription?: Subscription;
+  
   ngOnInit() {
     // Detectar scroll inicial
     this.checkScrollPosition();
+    
+    // Suscribirse al estado del carrito para actualizar el contador
+    this.carritoSubscription = this.carritoService.carrito$.subscribe(() => {
+      this.actualizarContadorCarrito();
+    });
+    
+    // Actualizar contador inicial
+    this.actualizarContadorCarrito();
   }
 
   ngAfterViewInit() {
@@ -30,7 +63,15 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // Cleanup si es necesario
+    // Limpiar suscripciones
+    this.carritoSubscription?.unsubscribe();
+  }
+  
+  /**
+   * Actualiza el contador de items del carrito
+   */
+  private actualizarContadorCarrito(): void {
+    this.carritoItemCount = this.carritoService.getTotalItems();
   }
 
   @HostListener('window:scroll')

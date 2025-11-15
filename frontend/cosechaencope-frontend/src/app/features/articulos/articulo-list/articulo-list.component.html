@@ -31,31 +31,26 @@
         <div class="gallery__item">
           <div class="item__image-wrapper">
             <!-- Product Image -->
-            <img 
+            <img
               [src]="articulo.imagenUrl || '/images/placeholder-product.svg'"
               [alt]="articulo.nombre"
               class="item__image"
               loading="lazy"
               (error)="onImageError($event)"
             />
-            
+
             <!-- Overlay with product info -->
             <div class="item__overlay">
               <div class="item__content">
                 <h3 class="item__name">{{ articulo.nombre }}</h3>
                 <p class="item__producer">{{ articulo.nombreProductor }}</p>
                 <span class="item__category badge bg-success">{{ articulo.nombreCategoria }}</span>
-                <span 
-                  class="item__price badge bg-primary mt-2" 
-                  *ngIf="articulo.precio > 0">
-                  {{ articulo.precio | currency:'EUR':'symbol':'1.2-2' }}
+                <span class="item__price badge bg-primary mt-2" *ngIf="articulo.precio > 0">
+                  {{ articulo.precio | currency : 'EUR' : 'symbol' : '1.2-2' }}
                 </span>
               </div>
               <div class="item__actions">
-                <button 
-                  class="btn-add-cart"
-                  (click)="addToCart(articulo)"
-                  aria-label="Añadir al carrito">
+                <button class="btn-add-cart" (click)="addToCart(articulo)">
                   <i class="fas fa-shopping-cart"></i>
                 </button>
               </div>
@@ -75,4 +70,3 @@
 </section>
 
 <app-footer></app-footer>
-

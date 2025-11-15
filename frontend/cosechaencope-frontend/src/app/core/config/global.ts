@@ -63,11 +63,11 @@ export const API_ENDPOINTS = {
    */
   CARRITO: {
     BASE: `${API_BASE_URL}/carrito`,
-    ADD_ITEM: `${API_BASE_URL}/carrito`,
-    GET_CART: `${API_BASE_URL}/carrito`,
-    DECREMENT_ITEM: (idArticulo: number) =>
-      `${API_BASE_URL}/carrito/${idArticulo}`,
-    CLEAR_CART: `${API_BASE_URL}/carrito`,
+    ADD_ITEM: `${API_BASE_URL}/carrito/agregar`,                       // POST
+    GET_CART: `${API_BASE_URL}/carrito`,                                // GET
+    DECREMENT_ITEM: (idArticulo: number) =>                            // POST con {idArticulo}
+      `${API_BASE_URL}/carrito/decrementar/${idArticulo}`,
+    CLEAR_CART: `${API_BASE_URL}/carrito/vaciar`,                      // DELETE
   },
 
   /**

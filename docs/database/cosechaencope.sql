@@ -91,9 +91,10 @@ CREATE TABLE IF NOT EXISTS public.orden_venta_productor
     id_pedido bigint,
     id_pedido_cliente bigint,
     id_productor bigint,
-    estado character varying(255) COLLATE pg_catalog."default",
+    estado character varying(20) COLLATE pg_catalog."default",
     numero_orden character varying(255) COLLATE pg_catalog."default",
     observaciones character varying(255) COLLATE pg_catalog."default",
+    fecha_actualizacion timestamp(6) with time zone,
     CONSTRAINT orden_venta_productor_pkey PRIMARY KEY (id_ovp),
     CONSTRAINT orden_venta_productor_numero_orden_key UNIQUE (numero_orden)
 );
@@ -110,6 +111,7 @@ CREATE TABLE IF NOT EXISTS public.pedido
     estado_pedido character varying(255) COLLATE pg_catalog."default",
     id_transaccion character varying(255) COLLATE pg_catalog."default",
     metodo_pago character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    estado smallint NOT NULL,
     CONSTRAINT pedido_pkey PRIMARY KEY (id_pedido)
 );
 

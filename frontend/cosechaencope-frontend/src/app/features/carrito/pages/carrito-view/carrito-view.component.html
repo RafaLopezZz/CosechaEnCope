@@ -1,0 +1,133 @@
+<div class="carrito-container">
+  <!-- Header -->
+  <div class="carrito-header">
+    <h1>Mi Carrito</h1>
+    <div class="d-flex align-items-center gap-3">
+      <span class="item-count">{{ totalItems }} artículos</span>
+      @if (isUsuarioInvitado) {
+        <span class="badge bg-warning text-dark">Usuario invitado</span>
+      }
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading">
+      <p>Cargando carrito...</p>
+      <!-- Aquí puedes agregar un spinner -->
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error) {
+    <div class="error-message">
+      <p>{{ error }}</p>
+      <button (click)="cargarCarrito()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && !error && carritoVacio) {
+    <div class="carrito-vacio">
+      <p>Tu carrito está vacío</p>
+      <a routerLink="/app/articulos" class="btn-primary">Ver productos</a>
+    </div>
+  }
+
+  <!-- Carrito con items -->
+  @if (!loading && !error && !carritoVacio) {
+    <div class="carrito-content">
+    
+      <!-- Lista de items -->
+      <div class="items-list">
+        @for (item of carrito?.items; track item.idArticulo) {
+          <div class="carrito-item">
+        
+            <!-- Imagen del producto -->
+            <div class="item-image">
+              <img 
+                [src]="item.imagenUrl || 'assets/placeholder.png'" 
+                [alt]="item.nombreArticulo"
+              >
+            </div>
+
+            <!-- Información del producto -->
+            <div class="item-info">
+              <h3>{{ item.nombreArticulo }}</h3>
+              <p class="precio-unitario">{{ item.precioUnitario | currency:'EUR':'symbol':'1.2-2' }}</p>
+            </div>
+
+            <!-- Controles de cantidad -->
+            <div class="item-cantidad">
+              <button 
+                class="btn-cantidad" 
+                (click)="decrementarItem(item.idArticulo)"
+                [disabled]="item.cantidad <= 1"
+              >
+                -
+              </button>
+              <span class="cantidad">{{ item.cantidad }}</span>
+              <button 
+                class="btn-cantidad" 
+                (click)="incrementarItem(item.idArticulo)"
+              >
+                +
+              </button>
+            </div>
+
+            <!-- Subtotal del item -->
+            <div class="item-subtotal">
+              <p>{{ item.totalLinea | currency:'EUR':'symbol':'1.2-2' }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Resumen de totales -->
+      <div class="carrito-resumen">
+      <div class="resumen-linea">
+        <span>Subtotal:</span>
+        <span>{{ carrito?.subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      
+      <!-- Si tienes IVA o envío en el backend, agrégalos aquí -->
+      <!--
+      <div class="resumen-linea">
+        <span>IVA (21%):</span>
+        <span>{{ carrito?.iva | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="resumen-linea">
+        <span>Envío:</span>
+        <span>{{ carrito?.envio | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      -->
+
+      <div class="resumen-linea total">
+        <span><strong>Total:</strong></span>
+        <span><strong>{{ carrito?.total | currency:'EUR':'symbol':'1.2-2' }}</strong></span>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="carrito-acciones">
+        <button 
+          class="btn-vaciar" 
+          (click)="vaciarCarrito()"
+        >
+          Vaciar carrito
+        </button>
+        <button 
+          class="btn-checkout" 
+          (click)="irACheckout()"
+        >
+          @if (isUsuarioInvitado) {
+            Iniciar sesión para comprar
+          } @else {
+            Proceder al pago
+          }
+        </button>
+      </div>
+    </div>
+
+    </div>
+  }
+</div>

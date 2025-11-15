@@ -114,9 +114,8 @@ public class CarritoServiceTest {
     @Test
     void agregarACarrito_deberiaAgregarArticuloCuandoDatosValidos() {
         // Arrange
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.of(carrito));
         when(articuloRepository.findById(1L)).thenReturn(Optional.of(articulo));
-        when(carritoRepository.findByClienteConDetalles(cliente)).thenReturn(Optional.of(carrito));
         when(detalleCarritoRepository.save(any(DetalleCarrito.class))).thenReturn(detalleCarrito);
         when(carritoRepository.save(any(Carrito.class))).thenReturn(carrito);
 
@@ -125,30 +124,32 @@ public class CarritoServiceTest {
 
         // Assert
         assertThat(response.getId()).isEqualTo(1L);
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(articuloRepository).findById(1L);
-        verify(carritoRepository).findByClienteConDetalles(cliente);
         verify(detalleCarritoRepository).save(any(DetalleCarrito.class));
+        verify(carritoRepository).save(any(Carrito.class));
     }
 
     @Test
     void agregarACarrito_deberiaLanzarExcepcionCuandoClienteNoExiste() {
         // Arrange
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.empty());
         when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> carritoService.agregarACarrito(1L, addToCarritoRequest))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Cliente no encontrado");
+                .hasMessage("Cliente no encontrado para el usuario: 1");
 
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verifyNoMoreInteractions(articuloRepository, carritoRepository, detalleCarritoRepository);
+        verifyNoMoreInteractions(articuloRepository, detalleCarritoRepository);
     }
 
     @Test
     void agregarACarrito_deberiaLanzarExcepcionCuandoArticuloNoExiste() {
         // Arrange
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.of(carrito));
         when(articuloRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -156,9 +157,9 @@ public class CarritoServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Artículo no existe");
 
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(articuloRepository).findById(1L);
-        verifyNoMoreInteractions(carritoRepository, detalleCarritoRepository);
+        verifyNoMoreInteractions(clienteRepository, detalleCarritoRepository);
     }
 
     @Test
@@ -180,8 +181,7 @@ public class CarritoServiceTest {
         articulo.setStock(3); // Stock menor que la cantidad solicitada
         addToCarritoRequest.setCantidad(5);
         
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByClienteConDetalles(cliente)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.of(carrito));
         when(articuloRepository.findById(1L)).thenReturn(Optional.of(articulo));
 
         // Act & Assert
@@ -189,7 +189,7 @@ public class CarritoServiceTest {
                 .isInstanceOf(StockInsuficienteException.class)
                 .hasMessage("Stock insuficiente para el artículo: Tomate");
 
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(articuloRepository).findById(1L);
         verifyNoMoreInteractions(detalleCarritoRepository);
     }
@@ -198,30 +198,31 @@ public class CarritoServiceTest {
     void verCarrito_deberiaRetornarCarritoCuandoExiste() {
         // Arrange
         carrito.getDetalleList().add(detalleCarrito); // Agregar detalle al carrito
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByCliente(cliente)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.of(carrito));
 
         // Act
         CarritoResponse response = carritoService.verCarrito(1L);
 
         // Assert
         assertThat(response.getId()).isEqualTo(1L);
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verify(carritoRepository).findByCliente(cliente);
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
+        verifyNoMoreInteractions(clienteRepository);
     }
 
     @Test
     void verCarrito_deberiaLanzarExcepcionCuandoClienteNoExiste() {
         // Arrange
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.empty());
         when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> carritoService.verCarrito(1L))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Cliente no encontrado");
+                .hasMessage("Cliente no encontrado para el usuario: 1");
 
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verifyNoMoreInteractions(carritoRepository, detalleCarritoRepository);
+        verifyNoMoreInteractions(detalleCarritoRepository);
     }
 
     @Test
@@ -230,8 +231,7 @@ public class CarritoServiceTest {
         detalleCarrito.setCantidad(3); // Cantidad mayor a 1
         carrito.getDetalleList().add(detalleCarrito); // Agregar detalle al carrito
         
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByCliente(cliente)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.of(carrito));
         when(articuloRepository.save(any(Articulo.class))).thenReturn(articulo);
         when(carritoRepository.save(any(Carrito.class))).thenReturn(carrito);
 
@@ -240,18 +240,17 @@ public class CarritoServiceTest {
 
         // Assert
         assertThat(response.getId()).isEqualTo(1L);
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verify(carritoRepository).findByCliente(cliente);
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(articuloRepository).save(any(Articulo.class));
         verify(carritoRepository).save(any(Carrito.class));
+        verifyNoMoreInteractions(clienteRepository);
     }
 
     @Test
     void vaciarCarrito_deberiaEliminarTodosLosArticulos() {
         // Arrange
         carrito.getDetalleList().add(detalleCarrito); // Agregar detalle al carrito
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByClienteConDetalles(cliente)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.of(carrito));
         when(articuloRepository.save(any(Articulo.class))).thenReturn(articulo);
         when(carritoRepository.save(any(Carrito.class))).thenReturn(carrito);
 
@@ -259,23 +258,22 @@ public class CarritoServiceTest {
         carritoService.vaciarCarrito(1L);
 
         // Assert
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verify(carritoRepository).findByClienteConDetalles(cliente);
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
         verify(articuloRepository).save(any(Articulo.class));
         verify(carritoRepository).save(any(Carrito.class));
+        verifyNoMoreInteractions(clienteRepository);
     }
 
     @Test
-    void vaciarCarrito_deberiaLanzarExcepcionCuandoClienteNoExiste() {
+    void vaciarCarrito_noDeberiaHacerNadaCuandoCarritoNoExiste() {
         // Arrange
-        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.empty());
+        when(carritoRepository.findActivoByUsuarioIdConDetalles(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThatThrownBy(() -> carritoService.vaciarCarrito(1L))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Cliente no encontrado");
+        // Act
+        carritoService.vaciarCarrito(1L);
 
-        verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verifyNoMoreInteractions(carritoRepository, detalleCarritoRepository);
+        // Assert - El servicio debe manejar gracefully el caso de carrito inexistente
+        verify(carritoRepository).findActivoByUsuarioIdConDetalles(1L);
+        verifyNoMoreInteractions(clienteRepository, articuloRepository, detalleCarritoRepository);
     }
 }
