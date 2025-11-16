@@ -26,4 +26,10 @@ public class DetalleCarritoResponse {
 
     @Schema(description = "Total de la línea del carrito", example = "19.96")
     private BigDecimal totalLinea;
+
+    @Schema(description = "URL de la imagen del artículo en el carrito", example = "https://example.com/imagen.jpg")
+    private String imagenUrl;
+
+    @Schema(description = "Stock disponible del artículo", example = "10")
+    private Integer stockDisponible;
 }

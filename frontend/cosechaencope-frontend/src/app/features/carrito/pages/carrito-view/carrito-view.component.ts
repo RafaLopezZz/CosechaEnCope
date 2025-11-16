@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CarritoService } from '../../../../core/services/carrito.service';
 import { CarritoResponse, CarritoInvitadoItem } from '../../../../shared/models/carrito.models';
 import { ArticuloService } from '../../../../core/services/articulo.service';
@@ -8,19 +8,14 @@ import { forkJoin } from 'rxjs';
 
 /**
  * Componente de vista del carrito mejorado con soporte para invitados
- * 
- * MEJORAS IMPLEMENTADAS:
- * ✅ Vista del carrito para usuarios autenticados (backend)
- * ✅ Vista del carrito para usuarios invitados (localStorage)
- * ✅ Modal de autenticación antes del checkout
- * ✅ Gestión de imágenes de artículos
+ *
  */
 @Component({
   selector: 'app-carrito-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './carrito-view.component.html',
-  styleUrls: ['./carrito-view.component.scss']
+  styleUrls: ['./carrito-view.component.scss'],
 })
 export class CarritoViewComponent implements OnInit {
   // Inyección de dependencias
@@ -68,59 +63,78 @@ export class CarritoViewComponent implements OnInit {
           this.error = 'Error al cargar el carrito. Intenta nuevamente.';
           this.loading = false;
           console.error(err);
-        }
+        },
       });
     }
   }
 
+
   /**
    * Carga el carrito invitado desde localStorage y obtiene datos de artículos
+   * usando el endpoint batch para optimizar el número de peticiones HTTP
    */
   private cargarCarritoInvitado(): void {
     const items = this.carritoService.obtenerCarritoInvitado();
-    
+
+    // Validación: carrito vacío
     if (items.length === 0) {
       this.carrito = null;
       this.loading = false;
       return;
     }
 
-    // Obtener detalles de cada artículo desde el backend
-    const requests = items.map(item => this.articuloService.getArticuloPorId(item.idArticulo));
-    
-    forkJoin(requests).subscribe({
+    const ids = items.map((item) => item.idArticulo);
+
+    this.articuloService.getArticulosPorIds(ids).subscribe({
       next: (articulos) => {
-        // Construir CarritoResponse mock con los datos
+        // Crear un Map para lookup O(1) en lugar de búsqueda lineal O(n)
+        const articulosMap = new Map(articulos.map((art) => [art.idArticulo, art]));
+
+        // Construir CarritoResponse con datos enriquecidos
         this.carrito = {
           id: 0,
-          items: items.map((item, index) => ({
-            id: index,
-            idArticulo: item.idArticulo,
-            nombreArticulo: articulos[index].nombre,
-            cantidad: item.cantidad,
-            precioUnitario: articulos[index].precio,
-            totalLinea: articulos[index].precio * item.cantidad,
-            imagenUrl: articulos[index].imagenUrl
-          })),
+          items: items
+            .map((item, index) => {
+              const articulo = articulosMap.get(item.idArticulo);
+
+              // Validación: artículo no encontrado (eliminado de BD)
+              if (!articulo) {
+                console.warn(`Artículo ${item.idArticulo} no encontrado`);
+                return null;
+              }
+
+              return {
+                id: index,
+                idArticulo: item.idArticulo,
+                nombreArticulo: articulo.nombre,
+                cantidad: item.cantidad,
+                precioUnitario: articulo.precio,
+                totalLinea: articulo.precio * item.cantidad,
+                imagenUrl: articulo.imagenUrl,
+                stockDisponible: articulo.stock, // Incluir stock para validación
+              };
+            })
+            .filter((item) => item !== null), // Eliminar items null
           subtotal: 0,
           impuestos: 0,
           gastosEnvio: 0,
-          total: 0
+          total: 0,
         };
 
         // Calcular totales
         this.carrito.subtotal = this.carrito.items.reduce((sum, item) => sum + item.totalLinea, 0);
         this.carrito.impuestos = this.carrito.subtotal * 0.21; // IVA 21%
         this.carrito.gastosEnvio = this.carrito.subtotal > 50 ? 0 : 4.99;
-        this.carrito.total = this.carrito.subtotal + this.carrito.impuestos + this.carrito.gastosEnvio;
+        this.carrito.total =
+          this.carrito.subtotal + this.carrito.impuestos + this.carrito.gastosEnvio;
 
         this.loading = false;
       },
       error: (err) => {
         this.error = 'Error al cargar detalles del carrito.';
         this.loading = false;
-        console.error(err);
-      }
+        console.error('Error cargando carrito invitado:', err);
+      },
     });
   }
 
@@ -128,12 +142,20 @@ export class CarritoViewComponent implements OnInit {
    * Incrementa la cantidad de un artículo
    */
   incrementarItem(idArticulo: number): void {
+    // Verificar stock disponible antes de incrementar
+    const item = this.carrito?.items.find((i) => i.idArticulo === idArticulo);
+    if (item && !this.tieneStockDisponible(item)) {
+      this.error = `No puedes agregar más unidades. Stock máximo: ${item.stockDisponible}`;
+      setTimeout(() => (this.error = null), 3000); // Limpiar error después de 3 segundos
+      return;
+    }
+
     if (this.isUsuarioInvitado) {
       // Usuario invitado: actualizar localStorage
       const items = this.carritoService.obtenerCarritoInvitado();
-      const item = items.find(i => i.idArticulo === idArticulo);
-      if (item) {
-        item.cantidad++;
+      const itemInvitado = items.find((i) => i.idArticulo === idArticulo);
+      if (itemInvitado) {
+        itemInvitado.cantidad++;
         localStorage.setItem('carritoInvitado', JSON.stringify(items));
         this.cargarCarritoInvitado();
       }
@@ -142,11 +164,17 @@ export class CarritoViewComponent implements OnInit {
       this.carritoService.agregarItem(idArticulo, 1).subscribe({
         next: (carrito) => {
           this.carrito = carrito;
+          this.error = null; // Limpiar error si había
         },
         error: (err) => {
-          this.error = 'Error al actualizar la cantidad.';
-          console.error(err);
-        }
+          // Extraer mensaje de error del backend
+          const mensajeError = err.error || 'Error al actualizar la cantidad.';
+          this.error = mensajeError;
+          console.error('Error al incrementar item:', err);
+          
+          // Recargar carrito para reflejar estado actual
+          this.cargarCarrito();
+        },
       });
     }
   }
@@ -168,7 +196,7 @@ export class CarritoViewComponent implements OnInit {
         error: (err) => {
           this.error = 'Error al actualizar la cantidad.';
           console.error(err);
-        }
+        },
       });
     }
   }
@@ -191,7 +219,7 @@ export class CarritoViewComponent implements OnInit {
           error: (err) => {
             this.error = 'Error al vaciar el carrito.';
             console.error(err);
-          }
+          },
         });
       }
     }
@@ -226,5 +254,24 @@ export class CarritoViewComponent implements OnInit {
    */
   get carritoVacio(): boolean {
     return !this.carrito || this.carrito.items.length === 0;
+  }
+
+  /**
+   * Verifica si hay stock disponible para incrementar un artículo
+   */
+  tieneStockDisponible(item: any): boolean {
+    if (!item.stockDisponible) return true; // Si no hay info de stock, permitir (caso invitado)
+    return item.cantidad < item.stockDisponible;
+  }
+
+  /**
+   * Obtiene el mensaje de error de stock si corresponde
+   */
+  obtenerMensajeStock(item: any): string | null {
+    if (!item.stockDisponible) return null;
+    if (item.cantidad >= item.stockDisponible) {
+      return 'Stock insuficiente';
+    }
+    return null;
   }
 }

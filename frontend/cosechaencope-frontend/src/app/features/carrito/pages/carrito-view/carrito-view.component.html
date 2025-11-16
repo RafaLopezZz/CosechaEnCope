@@ -30,7 +30,7 @@
   @if (!loading && !error && carritoVacio) {
     <div class="carrito-vacio">
       <p>Tu carrito está vacío</p>
-      <a routerLink="/app/articulos" class="btn-primary">Ver productos</a>
+      <a routerLink="/articulos" class="btn-articulos">Ver productos</a>
     </div>
   }
 
@@ -70,9 +70,14 @@
               <button 
                 class="btn-cantidad" 
                 (click)="incrementarItem(item.idArticulo)"
+                [disabled]="!tieneStockDisponible(item)"
+                [title]="!tieneStockDisponible(item) ? 'Stock máximo alcanzado' : 'Incrementar cantidad'"
               >
                 +
               </button>
+              @if (obtenerMensajeStock(item)) {
+                <span class="stock-error">{{ obtenerMensajeStock(item) }}</span>
+              }
             </div>
 
             <!-- Subtotal del item -->
@@ -90,17 +95,15 @@
         <span>{{ carrito?.subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
       
-      <!-- Si tienes IVA o envío en el backend, agrégalos aquí -->
-      <!--
+      <!-- Impuestos y envío -->
       <div class="resumen-linea">
         <span>IVA (21%):</span>
-        <span>{{ carrito?.iva | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span>{{ carrito?.impuestos | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
       <div class="resumen-linea">
         <span>Envío:</span>
-        <span>{{ carrito?.envio | currency:'EUR':'symbol':'1.2-2' }}</span>
+        <span>{{ carrito?.gastosEnvio | currency:'EUR':'symbol':'1.2-2' }}</span>
       </div>
-      -->
 
       <div class="resumen-linea total">
         <span><strong>Total:</strong></span>

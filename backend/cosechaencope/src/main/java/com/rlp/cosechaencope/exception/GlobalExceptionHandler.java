@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  *   <li>{@link EmailAlreadyExistsException} → HTTP 409 Conflict</li>
  *   <li>{@link ResourceNotFoundException} → HTTP 404 Not Found</li>
  *   <li>{@link InvalidPasswordException} → HTTP 401 Unauthorized</li>
+ *   <li>{@link StockInsuficienteException} → HTTP 409 Conflict</li>
+ *   <li>{@link IllegalArgumentException} → HTTP 400 Bad Request</li>
  * </ul>
  *
  * <p>Esto permite que la API devuelva respuestas consistentes y fáciles de consumir desde el frontend.</p>
@@ -57,5 +59,33 @@ public class GlobalExceptionHandler extends RuntimeException {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    /**
+     * Maneja la excepción {@link StockInsuficienteException}.
+     *
+     * <p>Se lanza cuando se intenta agregar un artículo al carrito pero 
+     * no hay stock suficiente disponible.</p>
+     *
+     * @param ex La excepción lanzada por falta de stock.
+     * @return Una respuesta HTTP 409 Conflict con mensaje descriptivo.
+     */
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<String> handleStockInsuficienteException(StockInsuficienteException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    /**
+     * Maneja la excepción {@link IllegalArgumentException}.
+     *
+     * <p>Se lanza cuando los parámetros de entrada son inválidos
+     * (ej: cantidad negativa o cero).</p>
+     *
+     * @param ex La excepción lanzada por argumentos inválidos.
+     * @return Una respuesta HTTP 400 Bad Request con mensaje descriptivo.
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

@@ -22,18 +22,35 @@
     }
   }
 
+  .btn-articulos {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: #4caf50;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
   // Estados de carga y error
-  .loading, .error-message, .carrito-vacio {
+  .loading,
+  .error-message,
+  .carrito-vacio {
     text-align: center;
     padding: 3rem;
-    
+
     p {
       font-size: 1.2rem;
       color: #666;
       margin-bottom: 1rem;
     }
 
-    button, .btn-primary {
+    button,
+    .btn-primary {
       padding: 0.75rem 1.5rem;
       background-color: #4caf50;
       color: white;
@@ -80,7 +97,7 @@
 
       @media (max-width: 768px) {
         grid-template-columns: 80px 1fr;
-        
+
         .item-cantidad,
         .item-subtotal {
           grid-column: 2;
@@ -113,6 +130,8 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        flex-wrap: wrap;
+        position: relative;
 
         .btn-cantidad {
           width: 32px;
@@ -133,6 +152,7 @@
           &:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            background-color: #f5f5f5;
           }
         }
 
@@ -140,6 +160,15 @@
           font-weight: bold;
           min-width: 30px;
           text-align: center;
+        }
+
+        .stock-error {
+          width: 100%;
+          font-size: 0.75rem;
+          color: #f44336;
+          font-weight: 500;
+          margin-top: 0.25rem;
+          display: block;
         }
       }
 

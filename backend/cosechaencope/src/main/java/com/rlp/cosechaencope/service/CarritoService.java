@@ -286,6 +286,8 @@ public class CarritoService {
         dto.setCantidad(detalle.getCantidad());
         dto.setPrecioUnitario(detalle.getPrecioUnitario());
         dto.setTotalLinea(detalle.getTotalLinea());
+        dto.setImagenUrl(detalle.getArticulo().getImagenUrl());
+        dto.setStockDisponible(detalle.getArticulo().getStock());
         return dto;
     }
 }

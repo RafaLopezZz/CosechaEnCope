@@ -27,6 +27,7 @@ export interface DetalleCarritoResponse {
   precioUnitario: number;
   totalLinea: number; // Cambiado de subtotal a totalLinea (backend usa totalLinea)
   imagenUrl?: string; // URL de la imagen del artículo
+  stockDisponible?: number; // Stock disponible del artículo
 }
 
 /**

@@ -41,11 +41,13 @@ import jakarta.validation.Valid;
  *
  * Endpoints disponibles:
  * <ul>
- * <li>POST     /cosechaencope/articulos                 → Crear un nuevo artículo</li>
- * <li>GET      /cosechaencope/articulos/{idArticulo}    → Obtener artículo por ID</li>
- * <li>GET      /cosechaencope/articulos                 → Listar todos los artículos</li>
- * <li>PUT      /cosechaencope/articulos/{idArticulo}    → Actualizar artículo por ID</li>
- * <li>DELETE   /cosechaencope/articulos/{idArticulo}    → Eliminar artículo por ID</li>
+ * <li>POST /cosechaencope/articulos → Crear un nuevo artículo</li>
+ * <li>GET /cosechaencope/articulos/{idArticulo} → Obtener artículo por ID</li>
+ * <li>GET /cosechaencope/articulos → Listar todos los artículos</li>
+ * <li>PUT /cosechaencope/articulos/{idArticulo} → Actualizar artículo por
+ * ID</li>
+ * <li>DELETE /cosechaencope/articulos/{idArticulo} → Eliminar artículo por
+ * ID</li>
  * </ul>
  *
  * @author rafalopezzz
@@ -178,4 +180,31 @@ public class ArticuloController {
         articuloService.eliminarArticulo(idArticulo);
         return ResponseEntity.ok("Artículo eliminado correctamente");
     }
+
+    /**
+     * Obtiene múltiples artículos por sus IDs en una sola petición. Útil para
+     * reducir el número de llamadas HTTP cuando se necesitan varios artículos
+     * (ej: carrito de invitado).
+     *
+     * @param idsArticulo Lista de IDs de los artículos a obtener
+     * @return ResponseEntity con la lista de artículos encontrados y HTTP 200
+     */
+    @Operation(summary = "Obtener múltiples artículos por IDs",
+            description = "Retorna una lista de artículos según los IDs proporcionados en el body")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200",
+                description = "Artículos encontrados",
+                content = @Content(schema = @Schema(implementation = ArticuloResponse.class))),
+        @ApiResponse(responseCode = "400",
+                description = "Lista de IDs inválida",
+                content = @Content)
+    })
+    @PostMapping("/batch")
+    public ResponseEntity<List<ArticuloResponse>> obtenerArticulosPorIds(
+            @RequestBody List<Long> idsArticulo) {
+
+        List<ArticuloResponse> response = articuloService.obtenerArticulosPorIds(idsArticulo);
+        return ResponseEntity.ok(response);
+    }
+
 }

@@ -39,6 +39,7 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id: number) => `${API_BASE_URL}/articulos/${id}`,
     UPDATE: (id: number) => `${API_BASE_URL}/articulos/${id}`,
     DELETE: (id: number) => `${API_BASE_URL}/articulos/${id}`,
+    BATCH: `${API_BASE_URL}/articulos/batch`
   },
 
   /**

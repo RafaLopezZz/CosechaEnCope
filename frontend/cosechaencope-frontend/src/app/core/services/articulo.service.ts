@@ -1,10 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  ArticuloRequest,
-  ArticuloResponse,
-} from '../../shared/models/articulo.models';
+import { ArticuloRequest, ArticuloResponse } from '../../shared/models/articulo.models';
 import { API_ENDPOINTS } from '../config';
 
 @Injectable({ providedIn: 'root' })
@@ -15,35 +12,26 @@ export class ArticuloService {
     return this.http.get<ArticuloResponse[]>(API_ENDPOINTS.ARTICULOS.GET_ALL);
   }
 
-  getArticulosPorCategoria(
-    idCategoria: number
-  ): Observable<ArticuloResponse[]> {
+  getArticulosPorCategoria(idCategoria: number): Observable<ArticuloResponse[]> {
     return this.http.get<ArticuloResponse[]>(
       API_ENDPOINTS.CATEGORIAS.GET_ARTICULOS_BY_CATEGORIA(idCategoria)
     );
   }
 
   getArticuloPorId(idArticulo: number): Observable<ArticuloResponse> {
-    return this.http.get<ArticuloResponse>(
-      API_ENDPOINTS.ARTICULOS.GET_BY_ID(idArticulo)
-    );
+    return this.http.get<ArticuloResponse>(API_ENDPOINTS.ARTICULOS.GET_BY_ID(idArticulo));
+  }
+
+  getArticulosPorIds(ids: number[]): Observable<ArticuloResponse[]> {
+    return this.http.post<ArticuloResponse[]>(`${API_ENDPOINTS.ARTICULOS.BATCH}`, ids);
   }
 
   crearArticulo(articulo: ArticuloRequest): Observable<ArticuloResponse> {
-    return this.http.post<ArticuloResponse>(
-      API_ENDPOINTS.ARTICULOS.CREATE,
-      articulo
-    );
+    return this.http.post<ArticuloResponse>(API_ENDPOINTS.ARTICULOS.CREATE, articulo);
   }
 
-  actualizarArticulo(
-    idArticulo: number,
-    articulo: ArticuloRequest
-  ): Observable<ArticuloResponse> {
-    return this.http.put<ArticuloResponse>(
-      API_ENDPOINTS.ARTICULOS.UPDATE(idArticulo),
-      articulo
-    );
+  actualizarArticulo(idArticulo: number, articulo: ArticuloRequest): Observable<ArticuloResponse> {
+    return this.http.put<ArticuloResponse>(API_ENDPOINTS.ARTICULOS.UPDATE(idArticulo), articulo);
   }
 
   eliminarArticulo(idArticulo: number): Observable<string> {
