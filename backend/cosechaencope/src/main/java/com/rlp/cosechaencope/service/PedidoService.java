@@ -4,10 +4,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +22,15 @@ import com.rlp.cosechaencope.model.Carrito;
 import com.rlp.cosechaencope.model.Cliente;
 import com.rlp.cosechaencope.model.DetalleCarrito;
 import com.rlp.cosechaencope.model.DetallePedido;
-import com.rlp.cosechaencope.model.OrdenVentaProductor;
-import com.rlp.cosechaencope.model.Pedido;
 import com.rlp.cosechaencope.model.EstadoOrdenVenta;
 import com.rlp.cosechaencope.model.EstadoPedido;
+import com.rlp.cosechaencope.model.OrdenVentaProductor;
+import com.rlp.cosechaencope.model.Pedido;
 import com.rlp.cosechaencope.repository.ArticuloRepository;
 import com.rlp.cosechaencope.repository.CarritoRepository;
 import com.rlp.cosechaencope.repository.ClienteRepository;
-import com.rlp.cosechaencope.repository.PedidoRepository;
 import com.rlp.cosechaencope.repository.OrdenVentaProductorRepository;
+import com.rlp.cosechaencope.repository.PedidoRepository;
 
 @Service
 public class PedidoService {
@@ -68,9 +68,19 @@ public class PedidoService {
         Cliente cliente = clienteRepository.findByUsuario_IdUsuario(idUsuario)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
-        // Obtener el carrito del cliente
-        Carrito carrito = carritoRepository.findByCliente(cliente)
-                .orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
+        // Validar que el cliente tenga dirección configurada
+        if (cliente.getDireccion() == null || cliente.getDireccion().trim().isEmpty()) {
+            throw new IllegalStateException("El cliente debe tener una dirección configurada para realizar un pedido");
+        }
+
+        // Validar que el cliente tenga teléfono configurado
+        if (cliente.getTelefono() == null || cliente.getTelefono().trim().isEmpty()) {
+            throw new IllegalStateException("El cliente debe tener un teléfono configurado para realizar un pedido");
+        }
+
+        // Obtener el carrito ACTIVO del cliente (no finalizado)
+        Carrito carrito = carritoRepository.findActivoConDetalles(cliente)
+                .orElseThrow(() -> new ResourceNotFoundException("Carrito activo no encontrado"));
 
         // Verificar que el carrito no esté vacío
         if (carrito.getDetalleList().isEmpty()) {
@@ -230,7 +240,6 @@ public class PedidoService {
         validarTransicionEstado(ovp.getEstado(), estadoEnum);
 
         // 6. Actualizar el estado
-        EstadoOrdenVenta estadoAnterior = ovp.getEstado();
         ovp.setEstado(estadoEnum);
         ovp.setFechaActualizacion(Instant.now());
         ordenVentaProductorRepository.save(ovp);

@@ -3,19 +3,23 @@
   <div class="container">
     <!-- Header -->
     <div class="gallery__header text-center mb-5">
-      <h2 class="gallery__title display-5 fw-bold mb-3 text-primary">Productos Destacados</h2>
-      <p class="gallery__subtitle lead text-muted">
-        Descubre lo mejor de nuestros productores locales
+      <h2 class="display-5 fw-bold mb-3 text-primary-content">Productos Destacados</h2>
+      <p class="lead text-muted">
+        Conoce lo mejor de nuestros productores locales
       </p>
     </div>
 
     <!-- Carousel -->
-    <div class="gallery__carousel position-relative" th:if="${articulos != null && !articulos.isEmpty()}">
+    <div
+      class="gallery__carousel position-relative"
+      th:if="${articulos != null && !articulos.isEmpty()}"
+    >
       <!-- Previous Arrow -->
-      <button 
-        class="gallery__arrow gallery__arrow--prev" 
+      <button
+        class="gallery__arrow gallery__arrow--prev"
         onclick="scrollGallery(-1)"
-        aria-label="Producto anterior">
+        aria-label="Producto anterior"
+      >
         <i class="fas fa-chevron-left"></i>
       </button>
 
@@ -23,39 +27,52 @@
       <div class="gallery__viewport">
         <div class="gallery__track" id="galleryTrack">
           <!-- Gallery Items -->
-          <div 
-            class="gallery__item" 
+          <div
+            class="gallery__item"
             th:each="articulo, iterStat : ${articulos}"
-            th:classappend="${iterStat.index == 0} ? 'active'">
-            
+            th:classappend="${iterStat.index == 0} ? 'active'"
+          >
             <div class="item__image-wrapper">
               <!-- Product Image -->
-              <img 
+              <img
                 th:src="${articulo.imagenUrl}"
                 th:alt="${articulo.nombre}"
                 class="item__image"
                 loading="lazy"
                 onerror="this.onerror=null; this.src='/images/placeholder-product.svg';"
               />
-              
+
               <!-- Overlay with product info -->
               <div class="item__overlay">
                 <div class="item__content">
-                  <h3 class="item__name" th:text="${articulo.nombre}">Nombre del producto</h3>
-                  <p class="item__producer" th:text="${articulo.nombreProductor}">Productor</p>
-                  <span class="item__category badge bg-success" th:text="${articulo.nombreCategoria}">Categoría</span>
-                  <span 
-                    class="item__price badge bg-primary mt-2" 
+                  <h3 class="item__name" th:text="${articulo.nombre}">
+                    Nombre del producto
+                  </h3>
+                  <p
+                    class="item__producer"
+                    th:text="${articulo.nombreProductor}"
+                  >
+                    Productor
+                  </p>
+                  <span
+                    class="item__category badge bg-success"
+                    th:text="${articulo.nombreCategoria}"
+                    >Categoría</span
+                  >
+                  <span
+                    class="item__price badge bg-primary mt-2"
                     th:if="${articulo.precio != null && articulo.precio > 0}"
-                    th:text="${#numbers.formatDecimal(articulo.precio, 1, 2)} + ' €'">
+                    th:text="${#numbers.formatDecimal(articulo.precio, 1, 2)} + ' €'"
+                  >
                     0.00 €
                   </span>
                 </div>
                 <div class="item__actions">
-                  <a 
-                    href="/app/articulos" 
+                  <a
+                    href="/app/articulos"
                     class="btn-view"
-                    aria-label="Ver productos">
+                    aria-label="Ver productos"
+                  >
                     <i class="fas fa-eye"></i>
                   </a>
                 </div>
@@ -66,35 +83,48 @@
       </div>
 
       <!-- Next Arrow -->
-      <button 
-        class="gallery__arrow gallery__arrow--next" 
+      <button
+        class="gallery__arrow gallery__arrow--next"
         onclick="scrollGallery(1)"
-        aria-label="Siguiente producto">
+        aria-label="Siguiente producto"
+      >
         <i class="fas fa-chevron-right"></i>
       </button>
     </div>
 
     <!-- Indicators -->
-    <div class="gallery__indicators text-center mt-4" th:if="${articulos != null && !articulos.isEmpty()}">
-      <button 
-        class="indicator" 
+    <div
+      class="gallery__indicators text-center mt-4"
+      th:if="${articulos != null && !articulos.isEmpty()}"
+    >
+      <button
+        class="indicator"
         th:each="articulo, iterStat : ${articulos}"
         th:classappend="${iterStat.index == 0} ? 'active'"
         th:onclick="'goToGallerySlide(' + ${iterStat.index} + ')'"
-        th:attr="aria-label='Ir al producto ' + ${iterStat.index + 1}">
-      </button>
+        th:attr="aria-label='Ir al producto ' + ${iterStat.index + 1}"
+      ></button>
     </div>
 
     <!-- CTA Button -->
-    <div class="gallery__cta text-center mt-5" th:if="${articulos != null && !articulos.isEmpty()}">
-      <a href="/app/articulos" class="btn-cta btn btn-primary btn-lg rounded-pill px-5 py-3">
+    <div
+      class="gallery__cta text-center mt-5"
+      th:if="${articulos != null && !articulos.isEmpty()}"
+    >
+      <a
+        href="/app/articulos"
+        class="btn-cta btn btn-primary btn-lg rounded-pill px-5 py-3"
+      >
         <span>Ver Todos los Productos</span>
         <i class="fas fa-arrow-right ms-2"></i>
       </a>
     </div>
 
     <!-- Empty State -->
-    <div class="text-center py-5" th:if="${articulos == null || articulos.isEmpty()}">
+    <div
+      class="text-center py-5"
+      th:if="${articulos == null || articulos.isEmpty()}"
+    >
       <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
       <h3 class="h4 text-muted">No hay productos disponibles</h3>
       <p class="text-muted">Pronto añadiremos nuevos productos frescos.</p>
@@ -107,12 +137,14 @@
 
 <!-- Carousel JavaScript -->
 <script th:inline="javascript">
-  document.addEventListener('DOMContentLoaded', function() {
-    const track = document.getElementById('galleryTrack');
+  document.addEventListener("DOMContentLoaded", function () {
+    const track = document.getElementById("galleryTrack");
     if (!track) return;
-    
-    const items = track.querySelectorAll('.gallery__item');
-    const indicators = document.querySelectorAll('.gallery__indicators .indicator');
+
+    const items = track.querySelectorAll(".gallery__item");
+    const indicators = document.querySelectorAll(
+      ".gallery__indicators .indicator"
+    );
     const totalSlides = items.length;
     let currentIndex = 0;
 
@@ -121,56 +153,56 @@
       if (items.length === 0) return 328;
       const firstItem = items[0];
       const style = getComputedStyle(track);
-      const gap = parseFloat(style.columnGap || style.gap || '32') || 32;
+      const gap = parseFloat(style.columnGap || style.gap || "32") || 32;
       return firstItem.getBoundingClientRect().width + gap;
     }
 
     // Actualizar la posición del carousel
     function updateGallery() {
       if (totalSlides === 0) return;
-      
+
       const cardWidth = getCardWidth();
       const offset = -(currentIndex * cardWidth);
-      
+
       track.style.transform = `translateX(${offset}px)`;
-      
+
       // Actualizar clases active en items
       items.forEach((item, index) => {
         if (index === currentIndex) {
-          item.classList.add('active');
+          item.classList.add("active");
         } else {
-          item.classList.remove('active');
+          item.classList.remove("active");
         }
       });
-      
+
       // Actualizar indicadores
       indicators.forEach((indicator, index) => {
         if (index === currentIndex) {
-          indicator.classList.add('active');
+          indicator.classList.add("active");
         } else {
-          indicator.classList.remove('active');
+          indicator.classList.remove("active");
         }
       });
     }
 
     // Navegar en el carousel
-    window.scrollGallery = function(direction) {
+    window.scrollGallery = function (direction) {
       if (totalSlides === 0) return;
-      
+
       currentIndex += direction;
-      
+
       // Loop infinito
       if (currentIndex < 0) {
         currentIndex = totalSlides - 1;
       } else if (currentIndex >= totalSlides) {
         currentIndex = 0;
       }
-      
+
       updateGallery();
     };
 
     // Ir a un slide específico
-    window.goToGallerySlide = function(index) {
+    window.goToGallerySlide = function (index) {
       currentIndex = index;
       updateGallery();
     };
@@ -181,13 +213,13 @@
     }, 5000);
 
     // Pausar auto-play al hacer hover
-    const carousel = document.querySelector('.gallery__carousel');
+    const carousel = document.querySelector(".gallery__carousel");
     if (carousel) {
-      carousel.addEventListener('mouseenter', () => {
+      carousel.addEventListener("mouseenter", () => {
         clearInterval(autoPlayInterval);
       });
 
-      carousel.addEventListener('mouseleave', () => {
+      carousel.addEventListener("mouseleave", () => {
         autoPlayInterval = setInterval(() => {
           scrollGallery(1);
         }, 5000);
@@ -195,8 +227,8 @@
     }
 
     // Actualizar al cambiar tamaño de ventana
-    window.addEventListener('resize', updateGallery);
-    
+    window.addEventListener("resize", updateGallery);
+
     // Inicializar
     updateGallery();
   });

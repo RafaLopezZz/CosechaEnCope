@@ -31,21 +31,26 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 /**
  * Controlador REST para la gestión de pedidos en RLP eCommerce.
  *
- * <p>Proporciona endpoints para crear y consultar pedidos de usuarios autenticados.
- * Los pedidos se generan a partir del carrito activo del usuario y procesan
- * automáticamente el inventario y cálculos de totales.</p>
+ * <p>
+ * Proporciona endpoints para crear y consultar pedidos de usuarios
+ * autenticados. Los pedidos se generan a partir del carrito activo del usuario
+ * y procesan automáticamente el inventario y cálculos de totales.</p>
  *
- * <p>Se habilita CORS con {@code @CrossOrigin(origins = "*")} para permitir peticiones
- * desde cualquier origen.</p>
+ * <p>
+ * Se habilita CORS con {@code @CrossOrigin(origins = "*")} para permitir
+ * peticiones desde cualquier origen.</p>
  *
- * <p>Endpoints disponibles:</p>
+ * <p>
+ * Endpoints disponibles:</p>
  * <ul>
- *   <li>POST /cosechaencope/pedidos → Crear pedido desde carrito activo</li>
- *   <li>GET  /cosechaencope/pedidos → Listar pedidos del usuario autenticado</li>
+ * <li>POST /cosechaencope/pedidos → Crear pedido desde carrito activo</li>
+ * <li>GET /cosechaencope/pedidos → Listar pedidos del usuario autenticado</li>
  * </ul>
  *
- * <p><strong>Nota:</strong> Todos los endpoints requieren autenticación JWT válida.</p>
- * 
+ * <p>
+ * <strong>Nota:</strong> Todos los endpoints requieren autenticación JWT
+ * válida.</p>
+ *
  * @author rafalopezzz
  */
 @RestController
@@ -57,64 +62,77 @@ public class PedidoController {
     @Autowired
     private PedidoService pedidoService;
 
-        /**
+    /**
      * Crea un nuevo pedido a partir del carrito activo del usuario autenticado.
      *
-     * <p>Este endpoint procesa el carrito del usuario y genera un pedido formal.
+     * <p>
+     * Este endpoint procesa el carrito del usuario y genera un pedido formal.
      * Durante el proceso se realizan las siguientes operaciones:</p>
      * <ul>
-     *   <li>Validación de stock disponible para todos los artículos</li>
-     *   <li>Cálculo de totales y aplicación de descuentos</li>
-     *   <li>Actualización del inventario</li>
-     *   <li>Vaciado del carrito una vez confirmado el pedido</li>
-     *   <li>Generación de número de pedido único</li>
+     * <li>Validación de datos del cliente (dirección y teléfono
+     * obligatorios)</li>
+     * <li>Validación de stock disponible para todos los artículos</li>
+     * <li>Cálculo de totales y aplicación de impuestos y gastos de envío</li>
+     * <li>Actualización del inventario (decremento de stock)</li>
+     * <li>Vaciado del carrito una vez confirmado el pedido</li>
+     * <li>Generación de número de pedido único</li>
      * </ul>
      *
-     * @param userDetails Detalles del usuario autenticado (inyectado automáticamente)
-     * @param metodoPago Método de pago seleccionado (TARJETA, EFECTIVO, TRANSFERENCIA).
-     *                   Por defecto es "TARJETA" si no se especifica
-     * @throws IllegalArgumentException si el carrito está vacío o el método de pago es inválido
-     * @throws StockInsuficienteException si no hay suficiente stock para uno o más artículos
-     * @throws ResourceNotFoundException si el usuario no existe o no tiene un carrito activo
-     * @return ResponseEntity con los datos del pedido creado incluyendo número de pedido,
-     *         artículos, totales y estado
+     * <p>
+     * <strong>Nota:</strong> El cliente debe tener configurados dirección y
+     * teléfono en su perfil antes de poder crear un pedido.</p>
+     *
+     * @param userDetails Detalles del usuario autenticado (inyectado
+     * automáticamente)
+     * @param metodoPago Método de pago seleccionado (TARJETA, EFECTIVO,
+     * TRANSFERENCIA, PAYPAL). Por defecto es "TARJETA" si no se especifica
+     * @throws IllegalStateException si el cliente no tiene dirección o teléfono
+     * configurados
+     * @throws IllegalArgumentException si el carrito está vacío o el método de
+     * pago es inválido
+     * @throws StockInsuficienteException si no hay suficiente stock para uno o
+     * más artículos
+     * @throws ResourceNotFoundException si el usuario no existe o no tiene un
+     * carrito activo
+     * @return ResponseEntity con los datos del pedido creado incluyendo número
+     * de pedido, artículos, totales y estado
      */
     @Operation(
-        summary = "Crear pedido desde carrito",
-        description = "Procesa el carrito activo del usuario y genera un pedido formal con validación de stock y cálculo de totales"
+            summary = "Crear pedido desde carrito",
+            description = "Procesa el carrito activo del usuario y genera un pedido formal con validación de stock, datos del cliente y cálculo de totales"
     )
     @ApiResponses({
         @ApiResponse(
-            responseCode = "201", 
-            description = "Pedido creado exitosamente",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = PedidoResponse.class)
-            )
+                responseCode = "201",
+                description = "Pedido creado exitosamente",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = PedidoResponse.class)
+                )
         ),
         @ApiResponse(
-            responseCode = "400", 
-            description = "Carrito vacío o método de pago inválido",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = MessageResponse.class)
-            )
+                responseCode = "400",
+                description = "Carrito vacío, método de pago inválido, o datos del cliente incompletos",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MessageResponse.class)
+                )
         ),
         @ApiResponse(
-            responseCode = "409", 
-            description = "Stock insuficiente para uno o más artículos",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = MessageResponse.class)
-            )
+                responseCode = "409",
+                description = "Stock insuficiente para uno o más artículos",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = MessageResponse.class)
+                )
         ),
         @ApiResponse(
-            responseCode = "401", 
-            description = "Usuario no autenticado"
+                responseCode = "401",
+                description = "Usuario no autenticado"
         ),
         @ApiResponse(
-            responseCode = "404", 
-            description = "Usuario no encontrado"
+                responseCode = "404",
+                description = "Usuario o carrito no encontrado"
         )
     })
     @PostMapping
@@ -125,69 +143,75 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoCreado);
     }
 
-        /**
+    /**
      * Lista todos los pedidos del usuario autenticado.
      *
-     * <p>Devuelve un historial completo de todos los pedidos realizados por el usuario,
-     * ordenados por fecha de creación (más recientes primero). Incluye información
-     * detallada de cada pedido como artículos, cantidades, precios, estado actual
-     * y método de pago utilizado.</p>
+     * <p>
+     * Devuelve un historial completo de todos los pedidos realizados por el
+     * usuario, ordenados por fecha de creación (más recientes primero). Incluye
+     * información detallada de cada pedido como artículos, cantidades, precios,
+     * estado actual y método de pago utilizado.</p>
      *
-     * @param userDetails Detalles del usuario autenticado (inyectado automáticamente)
+     * @param userDetails Detalles del usuario autenticado (inyectado
+     * automáticamente)
      * @return ResponseEntity con la lista de pedidos del usuario, incluyendo
-     *         detalles completos de cada pedido
-     * @throws IllegalArgumentException si el usuario no tiene pedidos registrados
+     * detalles completos de cada pedido
+     * @throws IllegalArgumentException si el usuario no tiene pedidos
+     * registrados
      * @throws ResourceNotFoundException si el usuario no existe en el sistema
      */
     @Operation(
-        summary = "Listar pedidos del usuario",
-        description = "Obtiene el historial completo de pedidos del usuario autenticado ordenados por fecha"
+            summary = "Listar pedidos del usuario",
+            description = "Obtiene el historial completo de pedidos del usuario autenticado ordenados por fecha"
     )
     @ApiResponses({
         @ApiResponse(
-            responseCode = "200", 
-            description = "Lista de pedidos obtenida exitosamente",
-            content = @Content(
-                mediaType = "application/json",
-                array = @ArraySchema(schema = @Schema(implementation = PedidoResponse.class))
-            )
+                responseCode = "200",
+                description = "Lista de pedidos obtenida exitosamente",
+                content = @Content(
+                        mediaType = "application/json",
+                        array = @ArraySchema(schema = @Schema(implementation = PedidoResponse.class))
+                )
         ),
         @ApiResponse(
-            responseCode = "204", 
-            description = "El usuario no tiene pedidos registrados"
+                responseCode = "204",
+                description = "El usuario no tiene pedidos registrados"
         ),
         @ApiResponse(
-            responseCode = "401", 
-            description = "Usuario no autenticado"
+                responseCode = "401",
+                description = "Usuario no autenticado"
         ),
         @ApiResponse(
-            responseCode = "404", 
-            description = "Usuario no encontrado"
+                responseCode = "404",
+                description = "Usuario no encontrado"
         )
     })
     @GetMapping
-    public ResponseEntity<List<PedidoResponse>> listar(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<List<PedidoResponse>> listar(
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<PedidoResponse> pedidos = pedidoService.listarPorCliente(userDetails.getId());
         return ResponseEntity.ok(pedidos);
     }
 
     @GetMapping("/pedidos/{idPedido}")
-    public ResponseEntity<PedidoResponse> obtenerPedidoPorId(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long idPedido) {
+    public ResponseEntity<PedidoResponse> obtenerPedidoPorId(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long idPedido) {
         PedidoResponse pedido = pedidoService.obtenerPedidoPorId(userDetails.getId(), idPedido);
-        return ResponseEntity.ok(pedido); 
+        return ResponseEntity.ok(pedido);
     }
 
     @PatchMapping("/pedidos/{idPedido}/ordenes-venta-productores/{idOvp}/estado")
-        public ResponseEntity<PedidoResponse> actualizarEstadoOrdenVentaProductor(
-                @AuthenticationPrincipal UserDetailsImpl userDetails,
-                @PathVariable Long idPedido,
-                @PathVariable Long idOvp,
-                @RequestParam String nuevoEstado) {
-            // Lógica para actualizar el estado de la orden de venta al productor
-            // Esto podría implicar llamar a un servicio que maneje esta lógica
-            PedidoResponse pedidoActualizado = pedidoService.actualizarEstadoOrdenVentaProductor(
-                    userDetails.getId(), idPedido, idOvp, nuevoEstado);
-            return ResponseEntity.ok(pedidoActualizado);
+    public ResponseEntity<PedidoResponse> actualizarEstadoOrdenVentaProductor(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long idPedido,
+            @PathVariable Long idOvp,
+            @RequestParam String nuevoEstado) {
+        // Lógica para actualizar el estado de la orden de venta al productor
+        // Esto podría implicar llamar a un servicio que maneje esta lógica
+        PedidoResponse pedidoActualizado = pedidoService.actualizarEstadoOrdenVentaProductor(
+                userDetails.getId(), idPedido, idOvp, nuevoEstado);
+        return ResponseEntity.ok(pedidoActualizado);
     }
-    
+
 }

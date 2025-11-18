@@ -39,7 +39,6 @@
           th:classappend="${currentPath == '/'} ? ' active'"
           onclick="window.location.href='/'; return false;"
         >
-          <i class="fas fa-home me-2"></i>
           <span>Inicio</span>
         </a>
         
@@ -48,7 +47,6 @@
           href="/app/articulos"
           th:classappend="${currentPath == '/app/articulos'} ? ' active'"
         >
-          <i class="fas fa-shopping-basket me-2"></i>
           <span>Productos</span>
         </a>
         
@@ -57,7 +55,6 @@
           href="/app/categorias"
           th:classappend="${currentPath == '/app/categorias'} ? ' active'"
         >
-          <i class="fas fa-tags me-2"></i>
           <span>Categorías</span>
         </a>
         
@@ -67,7 +64,6 @@
           th:classappend="${currentPath == '/nosotros'} ? ' active'"
           onclick="window.location.href='/nosotros'; return false;"
         >
-          <i class="fas fa-users me-2"></i>
           <span>¿Quiénes somos?</span>
         </a>
         
@@ -77,7 +73,6 @@
           th:classappend="${currentPath == '/contacto'} ? ' active'"
           onclick="window.location.href='/contacto'; return false;"
         >
-          <i class="fas fa-envelope me-2"></i>
           <span>Contacto</span>
         </a>
         
@@ -98,14 +93,83 @@
       <!-- CTA Actions -->
       <div class="navbar-nav">
         <a 
+          id="authButton"
           class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
           href="/app/auth"
         >
-          <i class="fas fa-user-plus me-2"></i>
+          <i id="authIcon" class="fas fa-user-plus me-2"></i>
+          <span id="authText">Acceder</span>
         </a>
       </div>
     </div>
   </div>
+  
+  <!-- Script para gestión dinámica del botón de autenticación -->
+  <script>
+    (function() {
+      /**
+       * Actualiza el botón de autenticación según el estado del usuario
+       * Lee desde sessionStorage para detectar si hay un usuario autenticado
+       */
+      function actualizarBotonAuth() {
+        const authButton = document.getElementById('authButton');
+        const authIcon = document.getElementById('authIcon');
+        const authText = document.getElementById('authText');
+        
+        if (!authButton || !authIcon || !authText) return;
+        
+        // Verificar si el usuario está autenticado
+        const token = sessionStorage.getItem('authToken');
+        const currentUser = sessionStorage.getItem('currentUser');
+        
+        if (token && currentUser) {
+          try {
+            const user = JSON.parse(currentUser);
+            
+            // Determinar la ruta del dashboard según el tipo de usuario
+            let dashboardRoute = '/app/auth';
+            let buttonText = 'Acceder';
+            let iconClass = 'fas fa-user-plus me-2';
+            
+            if (user.tipoUsuario === 'CLIENTE') {
+              dashboardRoute = '/app/cliente/dashboard';
+              buttonText = 'Mi Panel';
+              iconClass = 'fas fa-user-circle me-2';
+            } else if (user.tipoUsuario === 'PRODUCTOR') {
+              dashboardRoute = '/app/productor/dashboard';
+              buttonText = 'Panel Productor';
+              iconClass = 'fas fa-tachometer-alt me-2';
+            }
+            
+            // Actualizar el botón
+            authButton.href = dashboardRoute;
+            authIcon.className = iconClass;
+            authText.textContent = buttonText;
+          } catch (e) {
+            console.error('Error al parsear usuario autenticado:', e);
+          }
+        } else {
+          // Usuario no autenticado: resetear a valores por defecto
+          authButton.href = '/app/auth';
+          authIcon.className = 'fas fa-user-plus me-2';
+          authText.textContent = 'Acceder';
+        }
+      }
+      
+      // Actualizar al cargar la página
+      actualizarBotonAuth();
+      
+      // Escuchar cambios en sessionStorage (para sincronización entre tabs)
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'authToken' || e.key === 'currentUser') {
+          actualizarBotonAuth();
+        }
+      });
+      
+      // Actualizar periódicamente (cada 2 segundos) para detectar cambios de sesión
+      setInterval(actualizarBotonAuth, 2000);
+    })();
+  </script>
   
   <!-- Script para actualizar el contador del carrito desde localStorage -->
   <script>

@@ -19,8 +19,6 @@
   --color-primary-dark: #433a3d;
   --color-secondary-light: #3ca7b8;
   --color-secondary-dark: #24707c;
-
-  --color-black: #000000;
   
   /* Colores funcionales */
   --color-success: #2E7D32;
@@ -113,7 +111,7 @@ body {
   font-family: var(--font-family);
   font-weight: var(--font-weight-normal);
   line-height: 1.6;
-  color: var(--text-primary-content) !important;
+  color: var(--text-primary);
   background-color: var(--bg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -291,7 +289,7 @@ body {
   gap: var(--spacing-sm);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
-  color: var(--color-black);
+  color: var(--text-secondary);
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-base);
@@ -338,8 +336,6 @@ body {
   overflow: hidden;
   background-color: var(--bg-secondary);
   padding: var(--spacing-3xl) 0;
-  padding-top: 0 !important;
-  padding-bottom: 6rem !important;
 }
 
 .min-vh-75 {
@@ -355,8 +351,8 @@ body {
   margin-bottom: var(--spacing-lg);
 }
 
-.hero-content .text-primary-content {
-  color: var(--color-secondary-dark) !important;
+.hero-content .text-primary {
+  color: var(--color-primary);
 }
 
 .hero-content p {
@@ -400,7 +396,7 @@ body {
 }
 
 .hero-trust .trust-item i {
-  color: var(--color-secondary);
+  color: var(--color-success);
 }
 
 /* ========================================
@@ -408,7 +404,6 @@ body {
    ======================================== */
 .features {
   padding: var(--spacing-3xl) 0;
-  padding-bottom: 6rem !important;
   background: var(--bg-primary);
 }
 
@@ -514,7 +509,6 @@ body {
    ======================================== */
 .gallery {
   padding: var(--spacing-3xl) 0;
-  padding-bottom: 6rem !important;
   background: var(--bg-secondary);
 }
 

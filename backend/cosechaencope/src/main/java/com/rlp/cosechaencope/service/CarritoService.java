@@ -198,7 +198,7 @@ public class CarritoService {
      * @param idUsuario ID del usuario autenticado (del JWT)
      * @return {@link CarritoResponse} con el contenido del carrito
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public CarritoResponse verCarrito(Long idUsuario) {
         // Buscar carrito activo con detalles, o crear uno nuevo si no existe
         Carrito carrito = carritoRepository.findActivoByUsuarioIdConDetalles(idUsuario)
