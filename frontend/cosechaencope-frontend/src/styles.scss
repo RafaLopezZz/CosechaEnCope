@@ -13,11 +13,21 @@
 /* 2. Font Awesome 6 */
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 
-/* 3. Variables globales y resets */
+/* 3. Sistema de Diseño - Design Tokens */
+@import 'styles/variables';
+@import 'styles/utilities';
+
+/* 4. Variables globales legacy (mantener para compatibilidad) */
 :root {
-  --primary-color: #28a745;
-  --primary-hover: #20c997;
-  --text-dark: #2c5c2d;
+  // Nuevas variables del sistema de diseño
+  --color-primary: #574b51;
+  --color-secondary: #2e8a99;
+  --color-tertiary: #222222;
+  
+  // Variables legacy (deprecated - migrar gradualmente)
+  --primary-color: #574b51;
+  --primary-hover: #2e8a99;
+  --text-dark: #222222;
   --text-muted: #495057;
   --border-radius: 12px;
   --transition: all 0.3s ease;

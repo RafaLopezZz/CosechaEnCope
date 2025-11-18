@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { finalize } from 'rxjs/operators';
 import { NavbarComponent } from '../../home/navbar/navbar.component';
@@ -26,7 +26,9 @@ export class ClienteSignUpComponent {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   loading = false;
+  returnUrl: string = '/articulos';
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -38,6 +40,13 @@ export class ClienteSignUpComponent {
     terms: [false, Validators.requiredTrue],
   }, { validators: match('password', 'confirm') });
 
+  ngOnInit() {
+    // Obtener returnUrl de los query params
+    this.route.queryParams.subscribe(params => {
+      this.returnUrl = params['returnUrl'] || '/articulos';
+    });
+  }
+
   onSubmit() {
     if (this.form.invalid) return;
     
@@ -47,7 +56,9 @@ export class ClienteSignUpComponent {
     this.auth.registerCliente({ email, password, nombre, direccion, telefono })
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: () => this.router.navigate(['/cliente/login'], { queryParams: { ok: 1 } }),
+        next: () => this.router.navigate(['/cliente/login'], { 
+          queryParams: { ok: 1, returnUrl: this.returnUrl } 
+        }),
         error: (e) => this.router.navigate(['/error'], { 
           queryParams: { code: e?.status ?? 0, m: 'Error en el registro de cliente' } 
         })

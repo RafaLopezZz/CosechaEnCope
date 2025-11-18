@@ -1,0 +1,368 @@
+@import '../../../../styles/variables';
+
+.perfil-container {
+  min-height: 100vh;
+  background-color: $bg-secondary;
+  padding: 40px 20px;
+}
+
+.perfil-header {
+  max-width: 800px;
+  margin: 0 auto 30px;
+  
+  .btn-back {
+    background: transparent;
+    border: 1px solid $border-color;
+    color: $text-secondary;
+    padding: 10px 20px;
+    border-radius: $border-radius-md;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-weight: 500;
+    transition: all $transition-base;
+    margin-bottom: 20px;
+
+    &:hover {
+      background: $bg-primary;
+      color: $color-primary;
+    }
+  }
+
+  h1 {
+    color: $color-tertiary;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+  }
+}
+
+.perfil-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// Info Card
+.info-card {
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+}
+
+.info-card__header {
+  background: $color-secondary;
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.info-card__body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: $bg-secondary;
+  border-radius: $border-radius-md;
+
+  label {
+    font-weight: 600;
+    color: $text-secondary;
+    font-size: 14px;
+  }
+
+  span {
+    color: $text-primary;
+    font-size: 15px;
+  }
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: $border-radius-full;
+  font-size: 13px;
+  font-weight: 600;
+
+  &--primary {
+    background: rgba($color-secondary, 0.1);
+    color: $color-secondary;
+  }
+}
+
+// Form Card
+.form-card {
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+}
+
+.form-card__header {
+  background: $color-primary;
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.form-card__body {
+  padding: 30px;
+}
+
+// Alerts
+.alert {
+  padding: 14px 18px;
+  border-radius: $border-radius-md;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+
+  &--success {
+    background: rgba($color-success, 0.1);
+    color: darken($color-success, 20%);
+    border: 1px solid rgba($color-success, 0.3);
+  }
+
+  &--error {
+    background: rgba($color-error, 0.1);
+    color: darken($color-error, 10%);
+    border: 1px solid rgba($color-error, 0.3);
+  }
+}
+
+// Form Groups
+.form-group {
+  margin-bottom: 24px;
+
+  label {
+    display: block;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid $border-color;
+    border-radius: $border-radius-md;
+    font-size: 15px;
+    transition: all $transition-base;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    }
+
+    &::placeholder {
+      color: $text-disabled;
+    }
+
+    &.is-invalid {
+      border-color: $color-error;
+      
+      &:focus {
+        box-shadow: 0 0 0 3px rgba($color-error, 0.1);
+      }
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+}
+
+.form-error {
+  color: $color-error;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.form-hint {
+  color: $text-muted;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+// Form Actions
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 2px solid $border-color;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: $border-radius-md;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  transition: all $transition-base;
+  border: none;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background: $color-primary;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: darken($color-primary, 8%);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: $text-secondary;
+    border: 2px solid $border-color;
+
+    &:hover:not(:disabled) {
+      border-color: $color-primary;
+      color: $color-primary;
+      background: rgba($color-primary, 0.05);
+    }
+  }
+}
+
+// Help Card
+.help-card {
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: 24px;
+  border-left: 4px solid $color-warning;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 16px 0;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 10px 0;
+      padding-left: 20px;
+      color: $text-secondary;
+      font-size: 14px;
+      line-height: 1.5;
+      position: relative;
+
+      &::before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: $color-success;
+        font-weight: bold;
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid $border-color;
+    border-top: 4px solid $color-primary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .perfil-container {
+    padding: 20px 15px;
+  }
+
+  .perfil-header h1 {
+    font-size: 26px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .form-card__body {
+    padding: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

@@ -1,27 +1,19 @@
-// Navbar Styles - Bootstrap Compatible
+// Navbar Styles - Refactored (minimalista funcional)
+@use 'sass:color';
+@import '../../../../styles/variables';
 
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  z-index: $z-index-sticky;
+  background: $bg-primary;
+  border-bottom: $border-width solid $border-color;
+  box-shadow: $shadow-sm;
+  transition: box-shadow $transition-base;
   min-height: 80px;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
-  }
-
   &.navbar--scrolled {
-    background: rgba(255, 255, 255, 0.98);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    box-shadow: $shadow-md;
   }
 }
 
@@ -29,144 +21,110 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 11rem;
+  gap: 2rem;
   min-height: 80px;
 }
 
 .navbar-brand {
-  transition: transform 0.3s ease;
+  transition: opacity $transition-base;
 
   &:hover {
-    transform: scale(1.05);
+    opacity: 0.85;
   }
 }
 
 .navbar-logo {
-  transition: filter 0.3s ease;
-
-  &:hover {
-    filter: brightness(1.1);
-  }
+  transition: none; // Eliminar efectos innecesarios
 }
 
 .navbar-nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $spacing-xs;
 }
 
 @media (max-width: 575.98px) {
   .navbar-nav {
-    gap: 0.25rem;
+    gap: $spacing-xs;
   }
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  color: #495057;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  color: $text-secondary;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-sm;
+  transition: all $transition-base;
   position: relative;
 
   &:hover {
-    background: rgba(40, 167, 69, 0.1);
-    color: #2c5c2d;
-    transform: translateY(-1px);
+    background: rgba($color-primary, 0.08);
+    color: $color-primary;
 
     i {
-      opacity: 1;
-      color: #28a745;
-      transform: scale(1.1);
+      color: $color-primary;
     }
   }
 
   &.active {
-    background: linear-gradient(135deg, rgba(40, 167, 69, 0.15), rgba(32, 201, 151, 0.15));
-    color: #2c5c2d;
-    font-weight: 600;
+    background: rgba($color-primary, 0.12);
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
 
     i {
-      color: #28a745;
-      opacity: 1;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 3px;
-      background: linear-gradient(135deg, #28a745, #20c997);
-      border-radius: 2px;
+      color: $color-primary;
     }
   }
   
-  // =============================
-  // BADGE DEL CARRITO
-  // =============================
-  
+  // Badge del carrito (sin animación pulsante)
   .badge {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.25rem 0.5rem;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    padding: $spacing-xs $spacing-sm;
     min-width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: badgePulse 2s ease-in-out infinite;
-  }
-  
-  @keyframes badgePulse {
-    0%, 100% {
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-      transform: translate(-50%, -50%) scale(1.1);
-    }
   }
 }
 
+// Botón principal del navbar (usa clases utility del sistema de diseño)
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.8rem 1.5rem;
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white !important;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 25px;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-lg;
+  background-color: $color-primary;
+  color: $text-on-primary !important;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
+  border-radius: $border-radius-full;
   text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  transition: all $transition-base;
   border: none;
 
   i {
-    font-size: 1.1rem;
-    transition: transform 0.3s ease;
+    font-size: 1rem;
+    transition: transform $transition-fast;
   }
 
   &:hover {
-    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    background-color: darken($color-primary, 10%);
+    transform: translateY(-1px);
 
     i {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
   }
 
   &:active {
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
 }
 
@@ -184,17 +142,17 @@
   .navbar-nav {
     flex-direction: column;
     width: 100%;
-    gap: 0.25rem;
-    margin-top: 1rem;
+    gap: $spacing-xs;
+    margin-top: $spacing-md;
   }
   
   .nav-link {
     width: 100%;
-    padding: 0.75rem 1rem;
+    padding: $spacing-sm $spacing-md;
   }
   
   .btn-primary {
-    margin-top: 1rem;
+    margin-top: $spacing-md;
     width: 100%;
     justify-content: center;
   }

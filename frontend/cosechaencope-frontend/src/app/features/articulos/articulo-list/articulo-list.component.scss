@@ -1,42 +1,41 @@
+// Gallery Section (Productos Destacados) - Refactored
+@use 'sass:color';
+@import '../../../../styles/variables';
+
 :host {
   display: block;
 }
 
-/* ========================================
-   Gallery Section (Productos Destacados)
-   Adaptado del componente Thymeleaf
-   ======================================== */
-
 /* Gallery Container */
 .gallery {
-  padding: 112px 0;
-  background: #f8f9fa;
+  padding: $spacing-3xl 0;
+  background: $bg-secondary;
 }
 
 .container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 $spacing-lg;
 }
 
 .gallery__header {
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: $spacing-2xl;
 }
 
 .gallery__title {
-  font-size: 3rem;
-  font-weight: 700;
+  font-size: $font-size-4xl;
+  font-weight: $font-weight-bold;
   line-height: 1.2;
-  margin: 0 0 16px 0;
-  color: var(--bs-primary, #28a745);
+  margin: 0 0 $spacing-md 0;
+  color: $color-primary;
 }
 
 .gallery__subtitle {
-  font-size: 1.125rem;
+  font-size: $font-size-lg;
   line-height: 1.5;
   margin: 0;
-  color: #6c757d;
+  color: $text-secondary;
 }
 
 /* Gallery Item */
@@ -44,17 +43,17 @@
   width: 100%;
   height: 296px;
   position: relative;
-  border-radius: 8px;
+  border-radius: $border-radius-md;
   overflow: hidden;
-  background: #eaeaea;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  background: $bg-tertiary;
+  border: $border-width solid $border-color;
+  transition: transform $transition-base, box-shadow $transition-base;
   cursor: pointer;
-}
 
-.gallery__item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
 }
 
 /* Image Wrapper */
@@ -70,28 +69,28 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform $transition-base;
 }
 
 .gallery__item:hover .item__image {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
-/* Overlay with product info */
+/* Overlay con info del producto (simplificado - sin gradiente complejo) */
 .item__overlay {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
-  padding: 1.5rem 1rem;
+  background: rgba($color-tertiary, 0.85);
+  padding: $spacing-lg $spacing-md;
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   min-height: 140px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity $transition-base;
 }
 
 .gallery__item:hover .item__overlay {
@@ -100,51 +99,51 @@
 
 /* Content */
 .item__content {
-  margin-bottom: 0.75rem;
+  margin-bottom: $spacing-sm;
 }
 
 .item__name {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  margin: 0 0 $spacing-sm 0;
   color: white;
   line-height: 1.3;
 }
 
 .item__producer {
-  font-size: 0.875rem;
-  margin: 0 0 0.5rem 0;
+  font-size: $font-size-sm;
+  margin: 0 0 $spacing-sm 0;
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.4;
 }
 
 .item__category {
   display: inline-block;
-  background: #28a745;
+  background: $color-success;
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-right: 0.5rem;
-  margin-bottom: 0.25rem;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  margin-right: $spacing-sm;
+  margin-bottom: $spacing-xs;
 }
 
 .item__price {
   display: inline-block;
-  background: #007bff;
+  background: $color-secondary;
   color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
 }
 
 /* Actions */
 .item__actions {
   opacity: 0;
   transform: translateY(10px);
-  transition: all 0.3s ease;
+  transition: all $transition-base;
 }
 
 .gallery__item:hover .item__actions {
@@ -159,38 +158,39 @@
   width: 36px;
   height: 36px;
   background: white;
-  color: #28a745;
+  color: $color-success;
   border: none;
-  border-radius: 50%;
+  border-radius: $border-radius-full;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all $transition-base;
   font-size: 1rem;
-}
 
-.btn-add-cart:hover {
-  background: #28a745;
-  color: white;
-  transform: scale(1.1);
+  &:hover {
+    background: $color-success;
+    color: white;
+    transform: scale(1.1);
+  }
 }
 
 /* Filtro de categorías */
 .form-select {
   max-width: 300px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-md;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-base;
+  transition: all $transition-fast;
 
-.form-select:focus {
-  border-color: #28a745;
-  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+  &:focus {
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    outline: none;
+  }
 }
 
 /* Empty State */
 .text-center .fa-box-open {
-  color: #6c757d;
+  color: $text-secondary;
 }
 
 /* Responsive */
@@ -202,15 +202,15 @@
 
 @media (max-width: 768px) {
   .gallery {
-    padding: 64px 0;
+    padding: $spacing-3xl 0;
   }
   
   .gallery__title {
-    font-size: 2rem;
+    font-size: $font-size-2xl;
   }
   
   .gallery__subtitle {
-    font-size: 1rem;
+    font-size: $font-size-base;
   }
   
   .gallery__item {
@@ -224,10 +224,10 @@
   }
   
   .item__name {
-    font-size: 1rem;
+    font-size: $font-size-base;
   }
   
   .item__producer {
-    font-size: 0.8rem;
+    font-size: $font-size-xs;
   }
 }

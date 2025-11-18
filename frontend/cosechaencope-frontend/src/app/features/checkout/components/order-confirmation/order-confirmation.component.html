@@ -1,0 +1,108 @@
+<div class="confirmation-container" *ngIf="pedido">
+  <div class="confirmation-card">
+    <!-- Icono de éxito -->
+    <div class="success-icon">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+
+    <!-- Título -->
+    <h1 class="confirmation-title">¡Pedido confirmado!</h1>
+    <p class="confirmation-subtitle">
+      Gracias por tu compra. Hemos recibido tu pedido correctamente.
+    </p>
+
+    <!-- Número de pedido -->
+    <div class="order-number">
+      <span class="label">Número de pedido:</span>
+      <strong>{{ pedido.idTransaccion }}</strong>
+    </div>
+
+    <!-- Resumen del pedido -->
+    <div class="order-summary">
+      <h3 class="summary-title">Resumen del pedido</h3>
+
+      <div class="summary-row">
+        <span>Subtotal:</span>
+        <span>{{ pedido.subTotal | currency : 'EUR' : 'symbol' : '1.2-2' }}</span>
+      </div>
+
+      <div class="summary-row">
+        <span>IVA:</span>
+        <span>{{ pedido.iva | currency : 'EUR' : 'symbol' : '1.2-2' }}</span>
+      </div>
+
+      <div class="summary-row">
+        <span>Gastos de envío:</span>
+        <span>{{ pedido.gastosEnvio | currency : 'EUR' : 'symbol' : '1.2-2' }}</span>
+      </div>
+
+      <div class="summary-row total">
+        <strong>Total:</strong>
+        <strong class="total-amount">{{
+          pedido.total | currency : 'EUR' : 'symbol' : '1.2-2'
+        }}</strong>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="info-boxes">
+      <div class="info-box">
+        <i class="bi bi-envelope"></i>
+        <div>
+          <strong>Email de confirmación</strong>
+          <p>Hemos enviado los detalles a {{ pedido.emailUsuario }}</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <i class="bi bi-truck"></i>
+        <div>
+          <strong>Envío a domicilio</strong>
+          <p>{{ pedido.direccionCliente }}</p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <i class="bi bi-credit-card"></i>
+        <div>
+          <strong>Método de pago</strong>
+          <p>{{ pedido.metodoPago }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+      <button type="button" class="btn btn-primary btn-lg" (click)="verPedidos()">
+        Ver mis pedidos
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline-secondary btn-lg"
+        href="/"
+        [class.active]="isRootPath()"
+        (click)="navigateToRoot($event)"
+      >
+        Volver al inicio
+      </button>
+    </div>
+
+    <!-- Mensaje final -->
+    <p class="final-message">
+      <i class="bi bi-heart-fill text-danger"></i>
+      Gracias por confiar en Cosecha en Cope
+    </p>
+  </div>
+</div>
+
+<div class="confirmation-container" *ngIf="!pedido">
+  <div class="confirmation-card">
+    <div class="loading-state">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p>Cargando información del pedido...</p>
+    </div>
+  </div>
+</div>

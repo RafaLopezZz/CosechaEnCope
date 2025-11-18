@@ -1,3 +1,5 @@
+@use '../../../../styles/variables' as *;
+
 // Estilos específicos para el login de clientes
 .auth {
   min-height: calc(100vh - 120px);
@@ -12,13 +14,13 @@
 }
 
 .auth__card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: $bg-primary;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
   padding: 2.5rem;
   width: 100%;
   max-width: 420px;
-  border: 1px solid #e9ecef;
+  border: $border-width solid $border-color;
 }
 
 .auth__head {
@@ -27,14 +29,14 @@
 }
 
 .auth__title {
-  color: #2c5c2d;
+  color: $color-primary;
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   margin-bottom: 0.5rem;
 }
 
 .auth__subtitle {
-  color: #6c757d;
+  color: $text-secondary;
   font-size: 1rem;
   margin: 0;
 }
@@ -62,8 +64,8 @@
 
 .form__label {
   display: block;
-  font-weight: 600;
-  color: #2c5c2d;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
 }
@@ -71,29 +73,29 @@
 .form__input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
+  border: 2px solid $border-color;
+  border-radius: $border-radius-md;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  transition: all $transition-base;
   
   &:focus {
     outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
   }
   
   &[aria-invalid="true"] {
-    border-color: #dc3545;
+    border-color: $color-error;
     
     &:focus {
-      border-color: #dc3545;
-      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+      border-color: $color-error;
+      box-shadow: 0 0 0 3px rgba($color-error, 0.1);
     }
   }
 }
 
 .form__hint {
-  color: #dc3545;
+  color: $color-error;
   font-size: 0.875rem;
   margin: 0.25rem 0 0 0;
   min-height: 1.2rem;
@@ -125,23 +127,23 @@
 }
 
 .btn--primary {
-  background: #28a745;
-  color: white;
+  background-color: $color-primary;
+  color: $text-on-primary;
   
   &:hover:not(:disabled) {
-    background: #218838;
+    background-color: $color-primary-dark;
     transform: translateY(-1px);
   }
 }
 
 .btn--outline {
   background: transparent;
-  color: #28a745;
-  border: 2px solid #28a745;
+  color: $color-primary;
+  border: 2px solid $color-primary;
   
   &:hover {
-    background: #28a745;
-    color: white;
+    background-color: $color-primary;
+    color: $text-on-primary;
     text-decoration: none;
   }
 }
@@ -151,15 +153,15 @@
   margin-top: 1rem;
   
   p {
-    color: #6c757d;
+    color: $text-secondary;
     font-size: 0.95rem;
     margin: 0;
   }
   
   a {
-    color: #28a745;
+    color: $color-primary;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     
     &:hover {
       text-decoration: underline;

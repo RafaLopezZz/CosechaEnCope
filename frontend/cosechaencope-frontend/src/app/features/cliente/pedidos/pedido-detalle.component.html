@@ -1,0 +1,186 @@
+<div class="detalle-container">
+  <div class="detalle-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver a Pedidos
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando detalles del pedido...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-container" *ngIf="error && !loading">
+    <i class="fas fa-exclamation-triangle"></i>
+    <h2>Error al cargar el pedido</h2>
+    <p>No se pudo cargar la información del pedido. Puede que no exista o no tengas permisos para verlo.</p>
+    <button class="btn btn--primary" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver a Pedidos
+    </button>
+  </div>
+
+  <!-- Contenido del pedido -->
+  <div class="detalle-content" *ngIf="pedido && !loading && !error">
+    <!-- Encabezado del pedido -->
+    <div class="pedido-header-card">
+      <div class="pedido-title">
+        <h1>
+          <i class="fas fa-receipt"></i>
+          Pedido #{{ pedido.idPedido }}
+        </h1>
+        <span class="pedido-date">
+          <i class="fas fa-calendar"></i>
+          {{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+      <div class="pedido-status">
+        <span class="badge" [ngClass]="getEstadoClass(pedido.estadoPedido)">
+          <i class="fas" [ngClass]="getEstadoIcon(pedido.estadoPedido)"></i>
+          {{ getEstadoLabel(pedido.estadoPedido) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Tracking del pedido -->
+    <div class="tracking-card" *ngIf="pedido.estadoPedido !== 'CANCELADO'">
+      <h2>
+        <i class="fas fa-route"></i>
+        Estado del Envío
+      </h2>
+      <div class="tracking-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getEstadoProgress(pedido.estadoPedido)"></div>
+        </div>
+        <div class="tracking-steps">
+          <div class="step" [class.active]="getEstadoProgress(pedido.estadoPedido) >= 20">
+            <div class="step-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <span>Pendiente</span>
+          </div>
+          <div class="step" [class.active]="getEstadoProgress(pedido.estadoPedido) >= 40">
+            <div class="step-icon">
+              <i class="fas fa-check"></i>
+            </div>
+            <span>Confirmado</span>
+          </div>
+          <div class="step" [class.active]="getEstadoProgress(pedido.estadoPedido) >= 60">
+            <div class="step-icon">
+              <i class="fas fa-box"></i>
+            </div>
+            <span>Preparando</span>
+          </div>
+          <div class="step" [class.active]="getEstadoProgress(pedido.estadoPedido) >= 80">
+            <div class="step-icon">
+              <i class="fas fa-truck"></i>
+            </div>
+            <span>Enviado</span>
+          </div>
+          <div class="step" [class.active]="getEstadoProgress(pedido.estadoPedido) >= 100">
+            <div class="step-icon">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <span>Entregado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información del cliente -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>
+          <i class="fas fa-user"></i>
+          Información del Cliente
+        </h3>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="label">Nombre:</span>
+            <span class="value">{{ pedido.nombreCliente }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ pedido.emailUsuario }}</span>
+          </div>
+          <div class="info-item" *ngIf="pedido.telefonoCliente">
+            <span class="label">Teléfono:</span>
+            <span class="value">{{ pedido.telefonoCliente }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>
+          <i class="fas fa-map-marker-alt"></i>
+          Dirección de Envío
+        </h3>
+        <p class="direccion">{{ pedido.direccionCliente }}</p>
+      </div>
+
+      <div class="info-card">
+        <h3>
+          <i class="fas fa-credit-card"></i>
+          Método de Pago
+        </h3>
+        <p class="metodo-pago">
+          <i class="fas fa-check-circle"></i>
+          {{ pedido.metodoPago }}
+        </p>
+        <p class="transaction-id">
+          <small>ID de transacción: {{ pedido.idTransaccion }}</small>
+        </p>
+      </div>
+    </div>
+
+    <!-- Artículos del pedido -->
+    <div class="articulos-card">
+      <h2>
+        <i class="fas fa-shopping-basket"></i>
+        Artículos del Pedido
+      </h2>
+      <div class="articulos-list">
+        <div class="articulo-item" *ngFor="let detalle of pedido.detalles">
+          <div class="articulo-info">
+            <h4>{{ detalle.nombreArticulo }}</h4>
+            <p class="articulo-precio">
+              {{ detalle.precioUnitario | number:'1.2-2' }}€ × {{ detalle.cantidad }}
+            </p>
+          </div>
+          <div class="articulo-total">
+            {{ detalle.totalLinea | number:'1.2-2' }}€
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen de precios -->
+    <div class="resumen-card">
+      <h2>
+        <i class="fas fa-calculator"></i>
+        Resumen del Pedido
+      </h2>
+      <div class="resumen-list">
+        <div class="resumen-item">
+          <span>Subtotal:</span>
+          <span>{{ pedido.subTotal | number:'1.2-2' }}€</span>
+        </div>
+        <div class="resumen-item">
+          <span>IVA ({{ (pedido.iva / pedido.subTotal * 100) | number:'1.0-0' }}%):</span>
+          <span>{{ pedido.iva | number:'1.2-2' }}€</span>
+        </div>
+        <div class="resumen-item">
+          <span>Gastos de envío:</span>
+          <span>{{ pedido.gastosEnvio | number:'1.2-2' }}€</span>
+        </div>
+        <div class="resumen-item resumen-item--total">
+          <span>Total:</span>
+          <strong>{{ pedido.total | number:'1.2-2' }}€</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

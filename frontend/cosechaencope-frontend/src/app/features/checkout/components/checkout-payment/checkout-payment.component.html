@@ -1,0 +1,103 @@
+<div class="payment-container">
+  <div class="payment-card">
+    <h2 class="section-title">
+      <i class="bi bi-credit-card me-2"></i>
+      Método de pago
+    </h2>
+
+    <p class="section-subtitle">
+      Selecciona cómo deseas realizar el pago
+    </p>
+
+    <form [formGroup]="paymentForm" (ngSubmit)="confirmarPedido()">
+      <!-- Opciones de pago -->
+      <div class="payment-methods">
+        <label class="payment-option" [class.selected]="paymentForm.value.metodoPago === MetodoPago.TARJETA">
+          <input 
+            type="radio" 
+            name="metodoPago" 
+            [value]="MetodoPago.TARJETA"
+            formControlName="metodoPago">
+          <div class="option-content">
+            <i class="bi bi-credit-card-2-front"></i>
+            <div>
+              <strong>Tarjeta de crédito/débito</strong>
+              <span>Visa, Mastercard, American Express</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="payment-option" [class.selected]="paymentForm.value.metodoPago === MetodoPago.TRANSFERENCIA">
+          <input 
+            type="radio" 
+            name="metodoPago" 
+            [value]="MetodoPago.TRANSFERENCIA"
+            formControlName="metodoPago">
+          <div class="option-content">
+            <i class="bi bi-bank"></i>
+            <div>
+              <strong>Transferencia bancaria</strong>
+              <span>Recibirás los datos por email</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="payment-option" [class.selected]="paymentForm.value.metodoPago === MetodoPago.PAYPAL">
+          <input 
+            type="radio" 
+            name="metodoPago" 
+            [value]="MetodoPago.PAYPAL"
+            formControlName="metodoPago">
+          <div class="option-content">
+            <i class="bi bi-paypal"></i>
+            <div>
+              <strong>PayPal</strong>
+              <span>Pago rápido y seguro</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="payment-option" [class.selected]="paymentForm.value.metodoPago === MetodoPago.EFECTIVO">
+          <input 
+            type="radio" 
+            name="metodoPago" 
+            [value]="MetodoPago.EFECTIVO"
+            formControlName="metodoPago">
+          <div class="option-content">
+            <i class="bi bi-cash-coin"></i>
+            <div>
+              <strong>Pago contraentrega</strong>
+              <span>Paga al recibir tu pedido</span>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Resumen del total -->
+      <div class="total-summary">
+        <div class="total-label">Total a pagar:</div>
+        <div class="total-amount">{{ total | currency:'EUR':'symbol':'1.2-2' }}</div>
+      </div>
+
+      <!-- Botón confirmar -->
+      <button
+        type="submit"
+        class="btn btn-success btn-lg w-100"
+        [disabled]="isProcessing || paymentForm.invalid">
+        <span *ngIf="!isProcessing">
+          <i class="bi bi-check-circle me-2"></i>
+          Confirmar y realizar pedido
+        </span>
+        <span *ngIf="isProcessing">
+          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          Procesando...
+        </span>
+      </button>
+
+      <p class="security-note">
+        <i class="bi bi-shield-lock-fill me-1"></i>
+        Pago seguro con encriptación SSL
+      </p>
+    </form>
+  </div>
+</div>

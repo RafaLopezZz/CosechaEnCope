@@ -21,5 +21,5 @@ export * from './user-store.service';
 export type { AddToCarritoRequest, CarritoResponse, DetalleCarritoResponse } from '../../shared/models/carrito.models';
 export type { ImageUploadResponse } from './imagen.service';
 export type { ImageValidationOptions, ImageValidationResult } from './image-upload-utils.service';
-export type { PedidoResponse, PedidoItemResponse } from './pedido.service';
+export type { PedidoResponse, DetallePedidoResponse } from '../../shared/models/pedido.models';
 export type { ClienteRequest, ClienteResponse } from './cliente.service';

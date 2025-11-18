@@ -1,0 +1,124 @@
+/* ========================================
+   DESIGN TOKENS - COSECHA EN COPE
+   Sistema de diseño minimalista funcional
+   ======================================== */
+
+// ===================================
+// COLORES
+// ===================================
+
+// Colores principales
+$color-primary: #574b51;      // Marrón terroso (color primario)
+$color-secondary: #2e8a99;    // Verde azulado (color secundario)
+$color-tertiary: #222222;     // Gris oscuro (color terciario)
+
+// Colores derivados (automático)
+$color-primary-light: lighten($color-primary, 10%);
+$color-primary-dark: darken($color-primary, 10%);
+$color-secondary-light: lighten($color-secondary, 10%);
+$color-secondary-dark: darken($color-secondary, 10%);
+
+// Colores funcionales
+$color-success: #2E7D32;      // Verde para éxito
+$color-warning: #F57C00;      // Naranja para advertencias
+$color-error: #D32F2F;        // Rojo para errores
+$color-info: $color-secondary; // Usar secundario para info
+
+// Colores de texto
+$text-primary: $color-tertiary;
+$text-secondary: rgba($color-tertiary, 0.7);
+$text-muted: rgba($color-tertiary, 0.6);
+$text-disabled: rgba($color-tertiary, 0.4);
+$text-on-primary: #ffffff;
+$text-on-secondary: #ffffff;
+
+// Fondos
+$bg-primary: #ffffff;
+$bg-secondary: #f5f5f5;
+$bg-tertiary: #e0e0e0;
+
+// ===================================
+// TIPOGRAFÍA
+// ===================================
+
+$font-family-base: 'Inter', 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$font-family-heading: $font-family-base;
+
+// Tamaños de fuente
+$font-size-xs: 0.75rem;    // 12px
+$font-size-sm: 0.875rem;   // 14px
+$font-size-base: 1rem;     // 16px
+$font-size-lg: 1.125rem;   // 18px
+$font-size-xl: 1.25rem;    // 20px
+$font-size-2xl: 1.5rem;    // 24px
+$font-size-3xl: 1.875rem;  // 30px
+$font-size-4xl: 2.25rem;   // 36px
+
+// Pesos de fuente
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ===================================
+// ESPACIADO
+// ===================================
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+$spacing-3xl: 64px;
+
+// ===================================
+// BORDES
+// ===================================
+
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-full: 9999px;
+
+$border-width: 1px;
+$border-color: rgba($color-tertiary, 0.12);
+
+// ===================================
+// SOMBRAS (solo 3 niveles)
+// ===================================
+
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// ===================================
+// TRANSICIONES
+// ===================================
+
+$transition-fast: 150ms ease-in-out;
+$transition-base: 250ms ease-in-out;
+$transition-slow: 350ms ease-in-out;
+
+// ===================================
+// BREAKPOINTS (compatibilidad con Bootstrap)
+// ===================================
+
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px;
+
+// ===================================
+// Z-INDEX LAYERS
+// ===================================
+
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;

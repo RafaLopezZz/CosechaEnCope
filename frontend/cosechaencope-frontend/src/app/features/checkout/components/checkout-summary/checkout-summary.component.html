@@ -1,0 +1,117 @@
+<div class="checkout-summary">
+  <div class="summary-card">
+    <h2 class="section-title">
+      <i class="bi bi-cart-check me-2"></i>
+      Resumen de tu pedido
+    </h2>
+
+    <div class="items-count">
+      {{ getTotalItems() }} {{ getTotalItems() === 1 ? 'artículo' : 'artículos' }}
+    </div>
+
+    <!-- Lista de items -->
+    <div class="items-list">
+      <div 
+        *ngFor="let item of carrito.items" 
+        class="cart-item"
+        [class.updating]="isUpdating">
+        
+        <!-- Imagen del producto -->
+        <div class="item-image">
+          <img 
+            [src]="item.imagenUrl || '/assets/placeholder-product.jpg'" 
+            [alt]="item.nombreArticulo"
+            loading="lazy">
+        </div>
+
+        <!-- Información del producto -->
+        <div class="item-info">
+          <h3 class="item-name">{{ item.nombreArticulo }}</h3>
+          <p class="item-price">{{ item.precioUnitario | currency:'EUR':'symbol':'1.2-2' }} / unidad</p>
+          
+          <!-- Controles de cantidad -->
+          <div class="quantity-controls">
+            <button 
+              type="button"
+              class="btn-quantity btn-decrement"
+              (click)="decrementarItem(item.idArticulo)"
+              [disabled]="isUpdating"
+              aria-label="Disminuir cantidad">
+              <i class="bi bi-dash"></i>
+            </button>
+            
+            <span class="quantity-display" aria-live="polite">
+              {{ item.cantidad }}
+            </span>
+            
+            <button 
+              type="button"
+              class="btn-quantity btn-increment"
+              (click)="incrementarItem(item.idArticulo)"
+              [disabled]="isUpdating || (item.stockDisponible !== undefined && item.cantidad >= item.stockDisponible)"
+              aria-label="Aumentar cantidad">
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+
+          <!-- Stock disponible (si aplica) -->
+          <p *ngIf="item.stockDisponible !== undefined && item.stockDisponible < 10" class="stock-warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Solo {{ item.stockDisponible }} disponibles
+          </p>
+        </div>
+
+        <!-- Subtotal del item -->
+        <div class="item-total">
+          <strong>{{ item.totalLinea | currency:'EUR':'symbol':'1.2-2' }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Totales del carrito -->
+    <div class="cart-totals">
+      <div class="total-row">
+        <span>Subtotal:</span>
+        <span>{{ carrito.subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      
+      <div class="total-row">
+        <span>IVA (21%):</span>
+        <span>{{ carrito.impuestos | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      
+      <div class="total-row">
+        <span>Gastos de envío:</span>
+        <span 
+          [class.free-shipping]="carrito.gastosEnvio === 0">
+          {{ carrito.gastosEnvio === 0 ? 'GRATIS' : (carrito.gastosEnvio | currency:'EUR':'symbol':'1.2-2') }}
+        </span>
+      </div>
+
+      <div class="total-row total-final">
+        <strong>Total:</strong>
+        <strong class="total-amount">{{ carrito.total | currency:'EUR':'symbol':'1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <!-- Nota de envío gratis -->
+    <div *ngIf="carrito.gastosEnvio === 0" class="shipping-note">
+      <i class="bi bi-check-circle-fill text-success"></i>
+      ¡Envío gratuito en tu pedido!
+    </div>
+    <div *ngIf="carrito.gastosEnvio > 0 && carrito.subtotal < 50" class="shipping-note">
+      <i class="bi bi-info-circle-fill text-info"></i>
+      Añade {{ 50 - carrito.subtotal | currency:'EUR':'symbol':'1.2-2' }} más para envío gratis
+    </div>
+
+    <!-- Botón continuar -->
+    <button 
+      type="button"
+      class="btn btn-primary btn-lg w-100 btn-continue"
+      (click)="continuar()"
+      [disabled]="isUpdating || carrito.items.length === 0">
+      Continuar con el pedido
+      <i class="bi bi-arrow-right ms-2"></i>
+    </button>
+  </div>
+</div>

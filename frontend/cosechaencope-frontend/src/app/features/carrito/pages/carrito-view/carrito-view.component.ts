@@ -237,7 +237,7 @@ export class CarritoViewComponent implements OnInit {
         }
       } else {
         // Usuario autenticado: ir al checkout
-        this.router.navigate(['/app/checkout']);
+        this.router.navigate(['/checkout']);
       }
     }
   }

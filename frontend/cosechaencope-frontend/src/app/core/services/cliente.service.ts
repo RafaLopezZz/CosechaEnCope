@@ -2,32 +2,28 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_ENDPOINTS } from '../config';
+import { UsuarioResponse } from '../../shared/models/usuario.models';
 
+/**
+ * DTO para actualizar perfil de cliente (debe coincidir con backend)
+ */
 export interface ClienteRequest {
-  nombre: string;
-  apellidos: string;
-  telefono: string;
-  direccion: string;
-  ciudad: string;
-  codigoPostal: string;
-  fechaNacimiento?: string;
+  idUsuario?: number;
+  nombre?: string;
+  telefono?: string;
+  direccion?: string;
 }
 
+/**
+ * Respuesta del backend con datos del cliente
+ */
 export interface ClienteResponse {
   idCliente: number;
   nombre: string;
-  apellidos: string;
   telefono: string;
   direccion: string;
-  ciudad: string;
-  codigoPostal: string;
-  fechaNacimiento?: string;
   fechaRegistro: string;
-  usuario: {
-    id: number;
-    email: string;
-    fechaCreacion: string;
-  };
+  usuario: UsuarioResponse;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -49,9 +45,12 @@ export class ClienteService {
   }
 
   /**
-   * Actualizar datos del cliente
+   * Actualizar datos del cliente (dirección y teléfono)
+   * Este método se usa antes de crear un pedido para asegurar
+   * que el cliente tiene los datos requeridos
    */
   updateCliente(idUsuario: number, cliente: ClienteRequest): Observable<ClienteResponse> {
+    console.log('[ClienteService] 📝 Actualizando datos del cliente:', { idUsuario, cliente });
     return this.http.put<ClienteResponse>(
       API_ENDPOINTS.CLIENTES.UPDATE_BY_USER_ID(idUsuario), 
       cliente

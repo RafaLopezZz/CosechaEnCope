@@ -1,0 +1,93 @@
+<div class="checkout-container">
+  <!-- Header con progreso -->
+  <header class="checkout-header">
+    <div class="container">
+      <button 
+        type="button"
+        class="btn-back"
+        *ngIf="canGoBack()"
+        (click)="goBack()"
+        aria-label="Volver al paso anterior">
+        <i class="bi bi-arrow-left"></i>
+        Atrás
+      </button>
+
+      <div class="progress-section">
+        <h1 class="checkout-title">{{ getStepTitle() }}</h1>
+        <div class="progress-bar" role="progressbar" [attr.aria-valuenow]="getProgressPercentage()" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+        </div>
+        <p class="step-indicator">Paso {{ getStepNumber() }} de 4</p>
+      </div>
+
+      <button 
+        type="button"
+        class="btn-cancel"
+        (click)="cancelarCheckout()"
+        [attr.aria-label]="checkoutState?.step === CheckoutStep.CONFIRMACION ? 'Ir al inicio' : 'Cancelar compra'">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido principal según el paso -->
+  <main class="checkout-content">
+    <div class="container">
+      <!-- Loading state -->
+      <div *ngIf="isLoadingCarrito" class="loading-state">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p>Cargando información del carrito...</p>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="checkoutState?.error" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ checkoutState?.error }}
+      </div>
+
+      <!-- Step 1: Resumen del carrito -->
+      <app-checkout-summary
+        *ngIf="checkoutState?.step === CheckoutStep.RESUMEN && carrito"
+        [carrito]="carrito">
+      </app-checkout-summary>
+
+      <!-- Step 2: Datos del cliente -->
+      <app-checkout-form
+        *ngIf="checkoutState?.step === CheckoutStep.DATOS">
+      </app-checkout-form>
+
+      <!-- Step 3: Método de pago -->
+      <app-checkout-payment
+        *ngIf="checkoutState?.step === CheckoutStep.PAGO && carrito"
+        [total]="carrito.total">
+      </app-checkout-payment>
+
+      <!-- Step 4: Confirmación -->
+      <app-order-confirmation
+        *ngIf="checkoutState?.step === CheckoutStep.CONFIRMACION">
+      </app-order-confirmation>
+    </div>
+  </main>
+
+  <!-- Footer informativo (no se muestra en confirmación) -->
+  <footer class="checkout-footer" *ngIf="checkoutState?.step !== CheckoutStep.CONFIRMACION">
+    <div class="container">
+      <div class="security-badges">
+        <div class="badge-item">
+          <i class="bi bi-shield-check"></i>
+          <span>Pago seguro</span>
+        </div>
+        <div class="badge-item">
+          <i class="bi bi-truck"></i>
+          <span>Envío garantizado</span>
+        </div>
+        <div class="badge-item">
+          <i class="bi bi-arrow-return-left"></i>
+          <span>Devolución fácil</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

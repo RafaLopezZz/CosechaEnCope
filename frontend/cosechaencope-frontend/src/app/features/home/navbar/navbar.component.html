@@ -91,14 +91,26 @@
       </nav>
 
       <!-- CTA Actions -->
-      <div class="navbar-nav">
-        <a 
-          class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
-          routerLink="/auth"
-        >
-          <i class="fas fa-user-plus me-2"></i>
-          <span>Acceder</span>
-        </a>
+      <div class="navbar-nav d-flex align-items-center gap-2">
+        @if (isAuthenticated()) {
+          <!-- Usuario autenticado: mostrar enlace al panel -->
+          <a 
+            class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
+            [routerLink]="getPanelRoute()"
+          >
+            <i class="fas {{ getButtonIcon() }} me-2"></i>
+            <span>{{ getButtonText() }}</span>
+          </a>
+        } @else {
+          <!-- Usuario no autenticado: mostrar botón de acceso -->
+          <a 
+            class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
+            routerLink="/auth"
+          >
+            <i class="fas fa-user-plus me-2"></i>
+            <span>Acceder</span>
+          </a>
+        }
       </div>
     </div>
   </div>

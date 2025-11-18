@@ -1,0 +1,156 @@
+<div class="pedidos-container">
+  <div class="pedidos-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </button>
+    <h1>
+      <i class="fas fa-shopping-bag"></i>
+      Mis Pedidos
+    </h1>
+  </div>
+
+  <div class="pedidos-content" *ngIf="!loading; else loadingTemplate">
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="filtroEstado">
+          <i class="fas fa-filter"></i>
+          Filtrar por estado:
+        </label>
+        <select 
+          id="filtroEstado" 
+          [(ngModel)]="filtroEstado" 
+          (change)="onFiltroChange()"
+          class="filter-select">
+          <option *ngFor="let estado of estadosPedido" [value]="estado.value">
+            {{ estado.label }}
+          </option>
+        </select>
+      </div>
+      <div class="results-count">
+        <i class="fas fa-list"></i>
+        {{ pedidosFiltrados.length }} pedido(s) encontrado(s)
+      </div>
+    </div>
+
+    <!-- Lista de pedidos -->
+    <div class="pedidos-list" *ngIf="pedidosFiltrados.length > 0; else noPedidos">
+      <div class="pedido-card" *ngFor="let pedido of pedidosFiltrados">
+        <!-- Header del pedido -->
+        <div class="pedido-card__header">
+          <div class="pedido-info">
+            <h3>
+              <i class="fas fa-receipt"></i>
+              Pedido #{{ pedido.idPedido }}
+            </h3>
+            <span class="pedido-fecha">
+              <i class="fas fa-calendar"></i>
+              {{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+          <span class="badge" [ngClass]="getEstadoClass(pedido.estadoPedido)">
+            <i class="fas" [ngClass]="getEstadoIcon(pedido.estadoPedido)"></i>
+            {{ getEstadoLabel(pedido.estadoPedido) }}
+          </span>
+        </div>
+
+        <!-- Contenido del pedido -->
+        <div class="pedido-card__body">
+          <div class="pedido-details">
+            <!-- Artículos -->
+            <div class="detail-item">
+              <div class="detail-label">
+                <i class="fas fa-box"></i>
+                Artículos
+              </div>
+              <div class="detail-value">
+                {{ pedido.detalles.length }} producto(s)
+              </div>
+            </div>
+
+            <!-- Método de pago -->
+            <div class="detail-item">
+              <div class="detail-label">
+                <i class="fas fa-credit-card"></i>
+                Método de pago
+              </div>
+              <div class="detail-value">
+                {{ pedido.metodoPago }}
+              </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="detail-item detail-item--full">
+              <div class="detail-label">
+                <i class="fas fa-map-marker-alt"></i>
+                Dirección de envío
+              </div>
+              <div class="detail-value">
+                {{ pedido.direccionCliente }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Resumen de precios -->
+          <div class="pedido-pricing">
+            <div class="pricing-row">
+              <span>Subtotal:</span>
+              <span>{{ pedido.subTotal | number:'1.2-2' }}€</span>
+            </div>
+            <div class="pricing-row">
+              <span>IVA ({{ (pedido.iva / pedido.subTotal * 100) | number:'1.0-0' }}%):</span>
+              <span>{{ pedido.iva | number:'1.2-2' }}€</span>
+            </div>
+            <div class="pricing-row">
+              <span>Gastos de envío:</span>
+              <span>{{ pedido.gastosEnvio | number:'1.2-2' }}€</span>
+            </div>
+            <div class="pricing-row pricing-row--total">
+              <span>Total:</span>
+              <strong>{{ pedido.total | number:'1.2-2' }}€</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer del pedido -->
+        <div class="pedido-card__footer">
+          <button 
+            class="btn btn--primary" 
+            (click)="verDetalle(pedido.idPedido)">
+            <i class="fas fa-eye"></i>
+            Ver Detalles Completos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sin pedidos -->
+    <ng-template #noPedidos>
+      <div class="no-pedidos">
+        <i class="fas fa-inbox"></i>
+        <h3>No se encontraron pedidos</h3>
+        <p *ngIf="filtroEstado !== 'TODOS'">
+          No tienes pedidos con el estado seleccionado
+        </p>
+        <p *ngIf="filtroEstado === 'TODOS'">
+          Aún no has realizado ningún pedido. ¡Explora nuestros productos!
+        </p>
+        <button 
+          class="btn btn--primary" 
+          routerLink="/articulos"
+          *ngIf="filtroEstado === 'TODOS'">
+          <i class="fas fa-store"></i>
+          Explorar Productos
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando tus pedidos...</p>
+    </div>
+  </ng-template>
+</div>

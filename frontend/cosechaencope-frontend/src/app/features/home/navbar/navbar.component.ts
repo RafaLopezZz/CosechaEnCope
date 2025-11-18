@@ -3,7 +3,9 @@ import { Component, OnInit, OnDestroy, HostListener, ElementRef, inject, AfterVi
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CarritoService } from '../../../core/services/carrito.service';
+import { UserStoreService } from '../../../core/services/user-store.service';
 import { Subscription } from 'rxjs';
+import { JwtResponse } from '../../../shared/models/auth.models';
 
 /**
  * Componente de navbar mejorado con contador de carrito
@@ -23,10 +25,25 @@ import { Subscription } from 'rxjs';
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   private elementRef = inject(ElementRef);
   private carritoService = inject(CarritoService);
+  private userStore = inject(UserStoreService);
   
   isMenuOpen = false;
   isScrolled = false;
   private ticking = false;
+  
+  // =============================
+  // ESTADO DE AUTENTICACIÓN
+  // =============================
+  
+  /**
+   * Usuario actual autenticado (null si no hay sesión)
+   */
+  currentUser: JwtResponse | null = null;
+  
+  /**
+   * Suscripción al observable del usuario
+   */
+  private userSubscription?: Subscription;
   
   // =============================
   // CONTADOR DEL CARRITO
@@ -46,6 +63,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     // Detectar scroll inicial
     this.checkScrollPosition();
     
+    // Suscribirse al estado del usuario
+    this.userSubscription = this.userStore.user$.subscribe(user => {
+      this.currentUser = user;
+    });
+    
     // Suscribirse al estado del carrito para actualizar el contador
     this.carritoSubscription = this.carritoService.carrito$.subscribe(() => {
       this.actualizarContadorCarrito();
@@ -64,6 +86,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     // Limpiar suscripciones
+    this.userSubscription?.unsubscribe();
     this.carritoSubscription?.unsubscribe();
   }
   
@@ -200,5 +223,51 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+  
+  /**
+   * Verifica si hay un usuario autenticado
+   */
+  isAuthenticated(): boolean {
+    return this.currentUser !== null;
+  }
+  
+  /**
+   * Obtiene la ruta del panel según el tipo de usuario
+   */
+  getPanelRoute(): string {
+    if (!this.currentUser) return '/auth';
+    // Rutas sin prefijo /app/ porque Angular ya está montado en /app/**
+    return this.currentUser.tipoUsuario === 'CLIENTE' ? '/cliente/dashboard' : '/productor/dashboard';
+  }
+  
+  /**
+   * Obtiene el texto del botón según el estado de autenticación
+   */
+  getButtonText(): string {
+    if (!this.isAuthenticated()) return 'Acceder';
+    // Personalizar según el tipo de usuario
+    return this.currentUser?.tipoUsuario === 'CLIENTE' ? 'Mi Panel' : 'Panel Productor';
+  }
+  
+  /**
+   * Obtiene el icono del botón según el estado de autenticación
+   */
+  getButtonIcon(): string {
+    if (!this.isAuthenticated()) return 'fa-user-plus';
+    // Icono específico según el tipo de usuario
+    return this.currentUser?.tipoUsuario === 'CLIENTE' ? 'fa-user-circle' : 'fa-tachometer-alt';
+  }
+  
+  /**
+   * Cierra sesión del usuario
+   */
+  logout(): void {
+    // Limpiar el estado del usuario
+    this.userStore.clear();
+    // Limpiar el token de sesión
+    sessionStorage.removeItem('authToken');
+    // Redirigir a la página de inicio
+    window.location.href = '/';
   }
 }

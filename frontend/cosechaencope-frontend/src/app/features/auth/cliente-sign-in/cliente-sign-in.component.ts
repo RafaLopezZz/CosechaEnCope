@@ -22,6 +22,7 @@ export class ClienteSignInComponent {
   private route = inject(ActivatedRoute);
   loading = false;
   registroExitoso = false;
+  returnUrl: string = '/articulos';
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -32,6 +33,7 @@ export class ClienteSignInComponent {
     // Verificar si viene de un registro exitoso
     this.route.queryParams.subscribe(params => {
       this.registroExitoso = params['ok'] === '1';
+      this.returnUrl = params['returnUrl'] || '/articulos';
     });
   }
 
@@ -56,8 +58,8 @@ export class ClienteSignInComponent {
             return;
           }
           
-          // Redirigir al área de clientes
-          this.router.navigateByUrl('/articulos');
+          // Redirigir a la URL de retorno o al área de clientes
+          this.router.navigateByUrl(this.returnUrl);
         },
         error: (ex: HttpErrorResponse) => {
           this.router.navigate(['/error'], {

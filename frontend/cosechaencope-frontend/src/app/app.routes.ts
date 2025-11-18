@@ -108,6 +108,59 @@ export const routes: Routes = [
       ),
     title: 'Mi Carrito',
   },
+  {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./features/checkout/pages/checkout-page/checkout-page.component').then(
+        (m) => m.CheckoutPageComponent
+      ),
+    title: 'Finalizar Compra',
+  },
+
+  // Rutas del panel de cliente (protegidas por autenticación y tipo de usuario)
+  {
+    path: 'cliente/dashboard',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'CLIENTE' },
+    loadComponent: () =>
+      import('./features/cliente/dashboard/dashboard.component').then(
+        (m) => m.DashboardClienteComponent
+      ),
+  },
+  {
+    path: 'cliente/perfil',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'CLIENTE' },
+    loadComponent: () =>
+      import('./features/cliente/perfil/perfil.component').then(
+        (m) => m.PerfilClienteComponent
+      ),
+  },
+  {
+    path: 'cliente/pedidos',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'CLIENTE' },
+    loadComponent: () =>
+      import('./features/cliente/pedidos/pedidos.component').then(
+        (m) => m.PedidosClienteComponent
+      ),
+  },
+  {
+    path: 'cliente/pedidos/:id',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'CLIENTE' },
+    loadComponent: () =>
+      import('./features/cliente/pedidos/pedido-detalle.component').then(
+        (m) => m.PedidoDetalleComponent
+      ),
+  },
+
+  // Redirección por defecto del cliente
+  {
+    path: 'cliente',
+    redirectTo: 'cliente/dashboard',
+    pathMatch: 'full',
+  },
 
   // Redirección por defecto del productor
   {

@@ -1,8 +1,10 @@
+@use '../../../../styles/variables' as *;
+
 // Estilos para el selector de tipo de usuario
 .auth-selector {
   min-height: calc(100vh - 120px);
   padding: 3rem 0;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+  background-color: $bg-secondary;
 }
 
 .auth-selector__container {
@@ -25,14 +27,14 @@
 
 .auth-selector__title {
   font-size: 2.5rem;
-  font-weight: 700;
-  color: #2c5c2d;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
   margin-bottom: 1rem;
 }
 
 .auth-selector__subtitle {
   font-size: 1.2rem;
-  color: #6c757d;
+  color: $text-secondary;
   margin: 0;
   line-height: 1.5;
 }
@@ -47,67 +49,50 @@
 }
 
 .user-card {
-  background: white;
-  border-radius: 16px;
+  background: $bg-primary;
+  border-radius: $border-radius-lg;
   padding: 2.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
-  transition: all 0.3s ease;
+  box-shadow: $shadow-sm;
+  border: $border-width solid $border-color;
+  transition: all $transition-base;
   text-align: center;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #28a745, #20c997);
-    transition: all 0.3s ease;
-  }
   
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
-  }
-  
-  &--productor::before {
-    background: linear-gradient(90deg, #d63384, #fd7e14);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
   }
 }
 
 .user-card__icon {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
+  border-radius: $border-radius-full;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  background: linear-gradient(135deg, #28a745, #20c997);
-  color: white;
+  background-color: $color-secondary;
+  color: $text-on-secondary;
   font-size: 2rem;
   
   .user-card--productor & {
-    background: linear-gradient(135deg, #d63384, #fd7e14);
+    background-color: $color-primary;
   }
 }
 
 .user-card__title {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #2c5c2d;
+  font-weight: $font-weight-bold;
+  color: $color-secondary;
   margin-bottom: 1rem;
   
   .user-card--productor & {
-    color: #d63384;
+    color: $color-primary;
   }
 }
 
 .user-card__description {
-  color: #6c757d;
+  color: $text-secondary;
   line-height: 1.6;
   margin-bottom: 1.5rem;
   font-size: 1rem;
@@ -121,7 +106,7 @@
   
   li {
     padding: 0.5rem 0;
-    color: #495057;
+    color: $text-primary;
     position: relative;
     padding-left: 1.5rem;
     
@@ -129,11 +114,11 @@
       content: '✓';
       position: absolute;
       left: 0;
-      color: #28a745;
+      color: $color-secondary;
       font-weight: bold;
       
       .user-card--productor & {
-        color: #d63384;
+        color: $color-primary;
       }
     }
   }
@@ -159,42 +144,42 @@
 }
 
 .btn--primary {
-  background: #28a745;
-  color: white;
+  background-color: $color-secondary;
+  color: $text-on-secondary;
   
   &:hover {
-    background: #218838;
+    background-color: $color-secondary-dark;
     text-decoration: none;
     transform: translateY(-1px);
   }
   
   .user-card--productor & {
-    background: #d63384;
+    background-color: $color-primary;
     
     &:hover {
-      background: #b02a5b;
+      background-color: $color-primary-dark;
     }
   }
 }
 
 .btn--outline {
   background: transparent;
-  color: #28a745;
-  border: 2px solid #28a745;
+  color: $color-secondary;
+  border: 2px solid $color-secondary;
   
   &:hover {
-    background: #28a745;
-    color: white;
+    background-color: $color-secondary;
+    color: $text-on-secondary;
     text-decoration: none;
   }
   
   .user-card--productor & {
-    color: #d63384;
-    border-color: #d63384;
+    color: $color-primary;
+    border-color: $color-primary;
     
     &:hover {
-      background: #d63384;
-      color: white;
+      background-color: $color-primary;
+      color: $text-on-primary;
     }
   }
 }
@@ -204,15 +189,15 @@
   margin-top: 2rem;
   
   p {
-    color: #6c757d;
+    color: $text-secondary;
     font-size: 1rem;
     margin: 0;
   }
   
   a {
-    color: #2c5c2d;
+    color: $color-primary;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: $font-weight-semibold;
     
     &:hover {
       text-decoration: underline;

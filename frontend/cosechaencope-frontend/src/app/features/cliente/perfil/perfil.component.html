@@ -1,0 +1,155 @@
+<div class="perfil-container">
+  <div class="perfil-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver al Panel
+    </button>
+    <h1>
+      <i class="fas fa-user-edit"></i>
+      Mi Perfil
+    </h1>
+  </div>
+
+  <div class="perfil-content" *ngIf="!loading; else loadingTemplate">
+    <!-- Información de cuenta -->
+    <div class="info-card">
+      <div class="info-card__header">
+        <i class="fas fa-info-circle"></i>
+        <h2>Información de Cuenta</h2>
+      </div>
+      <div class="info-card__body">
+        <div class="info-item">
+          <label>Email:</label>
+          <span>{{ currentUser?.email }}</span>
+        </div>
+        <div class="info-item">
+          <label>Tipo de cuenta:</label>
+          <span class="badge badge--primary">Cliente</span>
+        </div>
+        <div class="info-item" *ngIf="cliente">
+          <label>Miembro desde:</label>
+          <span>{{ cliente.fechaRegistro | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de datos personales -->
+    <div class="form-card">
+      <div class="form-card__header">
+        <i class="fas fa-edit"></i>
+        <h2>Datos Personales</h2>
+      </div>
+      
+      <!-- Mensajes de feedback -->
+      <div class="alert alert--success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+      <div class="alert alert--error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card__body">
+        <!-- Nombre -->
+        <div class="form-group">
+          <label for="nombre">
+            <i class="fas fa-user"></i>
+            Nombre Completo *
+          </label>
+          <input 
+            type="text" 
+            id="nombre" 
+            formControlName="nombre"
+            placeholder="Ej: Juan García López"
+            [class.is-invalid]="nombreControl?.invalid && nombreControl?.touched">
+          <div class="form-error" *ngIf="nombreControl?.invalid && nombreControl?.touched">
+            <span *ngIf="nombreControl?.errors?.['required']">El nombre es obligatorio</span>
+            <span *ngIf="nombreControl?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres</span>
+          </div>
+        </div>
+
+        <!-- Dirección -->
+        <div class="form-group">
+          <label for="direccion">
+            <i class="fas fa-map-marker-alt"></i>
+            Dirección de Envío *
+          </label>
+          <textarea 
+            id="direccion" 
+            formControlName="direccion"
+            rows="3"
+            placeholder="Ej: Calle Mayor 123, Bajo A, 28001 Madrid"
+            [class.is-invalid]="direccionControl?.invalid && direccionControl?.touched"></textarea>
+          <div class="form-error" *ngIf="direccionControl?.invalid && direccionControl?.touched">
+            <span *ngIf="direccionControl?.errors?.['required']">La dirección es obligatoria</span>
+            <span *ngIf="direccionControl?.errors?.['minlength']">La dirección debe ser más completa (mínimo 10 caracteres)</span>
+          </div>
+          <small class="form-hint">
+            <i class="fas fa-info-circle"></i>
+            Esta dirección se usará para las entregas de tus pedidos
+          </small>
+        </div>
+
+        <!-- Teléfono -->
+        <div class="form-group">
+          <label for="telefono">
+            <i class="fas fa-phone"></i>
+            Teléfono de Contacto *
+          </label>
+          <input 
+            type="tel" 
+            id="telefono" 
+            formControlName="telefono"
+            placeholder="Ej: 612345678"
+            maxlength="9"
+            [class.is-invalid]="telefonoControl?.invalid && telefonoControl?.touched">
+          <div class="form-error" *ngIf="telefonoControl?.invalid && telefonoControl?.touched">
+            <span *ngIf="telefonoControl?.errors?.['required']">El teléfono es obligatorio</span>
+            <span *ngIf="telefonoControl?.errors?.['pattern']">El teléfono debe tener 9 dígitos</span>
+          </div>
+          <small class="form-hint">
+            <i class="fas fa-info-circle"></i>
+            Solo números, sin espacios (9 dígitos)
+          </small>
+        </div>
+
+        <!-- Botones -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn--outline" 
+            (click)="goBack()"
+            [disabled]="saving">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn--primary" 
+            [disabled]="form.invalid || saving">
+            <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
+            <i class="fas fa-save" *ngIf="!saving"></i>
+            {{ saving ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="help-card">
+      <i class="fas fa-lightbulb"></i>
+      <h3>Consejos</h3>
+      <ul>
+        <li>Mantén tu dirección actualizada para recibir tus pedidos sin problemas</li>
+        <li>El teléfono es importante para que el productor pueda contactarte</li>
+        <li>Tu email no se puede cambiar desde aquí por seguridad</li>
+      </ul>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando tu perfil...</p>
+    </div>
+  </ng-template>
+</div>

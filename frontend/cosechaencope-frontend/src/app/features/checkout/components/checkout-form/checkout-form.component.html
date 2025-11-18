@@ -1,0 +1,120 @@
+<!-- Modal de autenticación -->
+<app-checkout-auth-modal
+  *ngIf="showAuthModal"
+  (authSuccess)="onAuthSuccess()"
+  (closeModal)="onAuthModalClose()">
+</app-checkout-auth-modal>
+
+<!-- Mensaje de carga mientras se verifican los datos -->
+<div class="checkout-form-container" *ngIf="cargandoDatosCliente">
+  <div class="form-card text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-muted">Verificando datos del cliente...</p>
+  </div>
+</div>
+
+<!-- Formulario (solo se muestra si los datos están incompletos) -->
+<div class="checkout-form-container" *ngIf="!cargandoDatosCliente && !datosClienteCompletos">
+  <div class="form-card">
+    <h2 class="section-title">
+      <i class="bi bi-person-circle me-2"></i>
+      Datos de envío
+    </h2>
+
+    <p class="section-subtitle">
+      Confirma o actualiza tus datos para el envío del pedido
+    </p>
+
+    <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Nombre completo -->
+      <div class="form-group">
+        <label for="nombre" class="form-label">
+          Nombre completo <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="nombre"
+          class="form-control"
+          formControlName="nombre"
+          [class.is-invalid]="clienteForm.get('nombre')?.invalid && clienteForm.get('nombre')?.touched"
+          placeholder="Ej: Juan Pérez García"
+          autocomplete="name">
+        <div class="invalid-feedback" *ngIf="clienteForm.get('nombre')?.invalid && clienteForm.get('nombre')?.touched">
+          {{ getErrorMessage('nombre') }}
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          Email <span class="required">*</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+          [class.is-invalid]="clienteForm.get('email')?.invalid && clienteForm.get('email')?.touched"
+          placeholder="tu@email.com"
+          autocomplete="email">
+        <div class="invalid-feedback" *ngIf="clienteForm.get('email')?.invalid && clienteForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </div>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="form-group">
+        <label for="telefono" class="form-label">
+          Teléfono <span class="required">*</span>
+        </label>
+        <input
+          type="tel"
+          id="telefono"
+          class="form-control"
+          formControlName="telefono"
+          [class.is-invalid]="clienteForm.get('telefono')?.invalid && clienteForm.get('telefono')?.touched"
+          placeholder="612345678"
+          autocomplete="tel">
+        <div class="invalid-feedback" *ngIf="clienteForm.get('telefono')?.invalid && clienteForm.get('telefono')?.touched">
+          {{ getErrorMessage('telefono') }}
+        </div>
+      </div>
+
+      <!-- Dirección -->
+      <div class="form-group">
+        <label for="direccion" class="form-label">
+          Dirección completa <span class="required">*</span>
+        </label>
+        <textarea
+          id="direccion"
+          class="form-control"
+          formControlName="direccion"
+          [class.is-invalid]="clienteForm.get('direccion')?.invalid && clienteForm.get('direccion')?.touched"
+          placeholder="Calle, número, piso, puerta, código postal, ciudad"
+          rows="3"
+          autocomplete="street-address"></textarea>
+        <div class="invalid-feedback" *ngIf="clienteForm.get('direccion')?.invalid && clienteForm.get('direccion')?.touched">
+          {{ getErrorMessage('direccion') }}
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg"
+          [disabled]="isSubmitting || clienteForm.invalid">
+          Continuar al pago
+          <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </form>
+
+    <p class="form-note">
+      <i class="bi bi-shield-lock me-1"></i>
+      Tus datos están seguros y protegidos
+    </p>
+  </div>
+</div>
