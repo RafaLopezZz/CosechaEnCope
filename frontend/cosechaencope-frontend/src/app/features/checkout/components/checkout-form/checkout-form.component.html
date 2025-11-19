@@ -82,21 +82,70 @@
         </div>
       </div>
 
-      <!-- Dirección -->
+      <!-- Dirección Desglosada -->
       <div class="form-group">
-        <label for="direccion" class="form-label">
-          Dirección completa <span class="required">*</span>
+        <label class="form-label">
+          Dirección de envío <span class="required">*</span>
         </label>
-        <textarea
-          id="direccion"
-          class="form-control"
-          formControlName="direccion"
-          [class.is-invalid]="clienteForm.get('direccion')?.invalid && clienteForm.get('direccion')?.touched"
-          placeholder="Calle, número, piso, puerta, código postal, ciudad"
-          rows="3"
-          autocomplete="street-address"></textarea>
-        <div class="invalid-feedback" *ngIf="clienteForm.get('direccion')?.invalid && clienteForm.get('direccion')?.touched">
-          {{ getErrorMessage('direccion') }}
+        
+        <!-- Calle -->
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            formControlName="calle"
+            [class.is-invalid]="clienteForm.get('calle')?.invalid && clienteForm.get('calle')?.touched"
+            placeholder="Calle y número (Ej: Calle Mayor 123, 4º B)"
+            autocomplete="street-address">
+          <div class="invalid-feedback" *ngIf="clienteForm.get('calle')?.invalid && clienteForm.get('calle')?.touched">
+            La calle es obligatoria
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- CP -->
+          <div class="col-md-6 mb-3">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="cp"
+              [class.is-invalid]="clienteForm.get('cp')?.invalid && clienteForm.get('cp')?.touched"
+              placeholder="Código Postal"
+              maxlength="5"
+              autocomplete="postal-code">
+            <div class="invalid-feedback" *ngIf="clienteForm.get('cp')?.invalid && clienteForm.get('cp')?.touched">
+              CP inválido (5 dígitos)
+            </div>
+          </div>
+
+          <!-- Localidad -->
+          <div class="col-md-6 mb-3">
+            <input
+              type="text"
+              class="form-control"
+              formControlName="localidad"
+              [class.is-invalid]="clienteForm.get('localidad')?.invalid && clienteForm.get('localidad')?.touched"
+              placeholder="Localidad"
+              autocomplete="address-level2">
+            <div class="invalid-feedback" *ngIf="clienteForm.get('localidad')?.invalid && clienteForm.get('localidad')?.touched">
+              Localidad obligatoria
+            </div>
+          </div>
+        </div>
+
+        <!-- Provincia -->
+        <div class="mb-3">
+          <select
+            class="form-select form-control"
+            formControlName="provincia"
+            [class.is-invalid]="clienteForm.get('provincia')?.invalid && clienteForm.get('provincia')?.touched"
+            autocomplete="address-level1">
+            <option value="" disabled selected>Selecciona una provincia</option>
+            <option *ngFor="let prov of provincias" [value]="prov">{{ prov }}</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="clienteForm.get('provincia')?.invalid && clienteForm.get('provincia')?.touched">
+            Selecciona una provincia
+          </div>
         </div>
       </div>
 

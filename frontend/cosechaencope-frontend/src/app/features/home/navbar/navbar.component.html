@@ -25,92 +25,82 @@
 
     <!-- Navigation Links -->
     <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarNav">
-      <nav class="navbar-nav me-auto" aria-label="Navegación principal">
+      <nav class="navbar-nav mx-auto gap-3" aria-label="Navegación principal">
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/"
           [class.active]="isRootPath()"
           (click)="navigateToRoot($event)"
         >
-          <i class="fas fa-home me-2"></i>
           <span>Inicio</span>
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           routerLink="/articulos"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: false}"
         >
-          <i class="fas fa-shopping-basket me-2"></i>
           <span>Productos</span>
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           routerLink="/categorias"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: false}"
         >
-          <i class="fas fa-tags me-2"></i>
           <span>Categorías</span>
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/nosotros"
           (click)="navigateExternal($event, '/nosotros')"
         >
-          <i class="fas fa-users me-2"></i>
           <span>¿Quiénes somos?</span>
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/contacto"
           (click)="navigateExternal($event, '/contacto')"
         >
-          <i class="fas fa-envelope me-2"></i>
           <span>Contacto</span>
         </a>
-        
+      </nav>
+
+      <!-- User Section -->
+      <div class="navbar-nav d-flex flex-row align-items-center gap-3">
+        <!-- Search Icon -->
+        <a class="nav-link" href="#" (click)="$event.preventDefault()" aria-label="Buscar">
+          <i class="fas fa-search fa-lg"></i>
+        </a>
+
+        <!-- User Icon -->
         <a 
-          class="nav-link px-3 py-2 rounded-2 position-relative" 
+          class="nav-link" 
+          [routerLink]="isAuthenticated() ? getPanelRoute() : '/auth'"
+          [attr.aria-label]="isAuthenticated() ? 'Mi Panel' : 'Acceder'"
+        >
+          <i class="fas fa-lg" [ngClass]="getButtonIcon()"></i>
+        </a>
+
+        <!-- Cart Icon -->
+        <a 
+          class="nav-link position-relative" 
           routerLink="/carrito"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: false}"
+          aria-label="Carrito"
         >
-          <i class="fas fa-shopping-cart me-2"></i>
-          <span>Carrito</span>
+          <i class="fas fa-shopping-cart fa-lg"></i>
           @if (carritoItemCount > 0) {
-            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" style="font-size: 0.65rem;">
               {{ carritoItemCount }}
             </span>
           }
         </a>
-      </nav>
-
-      <!-- CTA Actions -->
-      <div class="navbar-nav d-flex align-items-center gap-2">
-        @if (isAuthenticated()) {
-          <!-- Usuario autenticado: mostrar enlace al panel -->
-          <a 
-            class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
-            [routerLink]="getPanelRoute()"
-          >
-            <i class="fas {{ getButtonIcon() }} me-2"></i>
-            <span>{{ getButtonText() }}</span>
-          </a>
-        } @else {
-          <!-- Usuario no autenticado: mostrar botón de acceso -->
-          <a 
-            class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
-            routerLink="/auth"
-          >
-            <i class="fas fa-user-plus me-2"></i>
-            <span>Acceder</span>
-          </a>
-        }
       </div>
     </div>
   </div>

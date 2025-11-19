@@ -29,9 +29,22 @@ export class PerfilClienteComponent implements OnInit {
 
   form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
-    direccion: ['', [Validators.required, Validators.minLength(10)]],
+    // Desglose de dirección
+    calle: ['', [Validators.required]],
+    cp: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
+    localidad: ['', [Validators.required]],
+    provincia: ['', [Validators.required]],
     telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
   });
+
+  provincias = [
+    'Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila', 'Badajoz', 'Barcelona', 'Burgos', 'Cáceres',
+    'Cádiz', 'Cantabria', 'Castellón', 'Ciudad Real', 'Córdoba', 'La Coruña', 'Cuenca', 'Gerona', 'Granada', 'Guadalajara',
+    'Guipúzcoa', 'Huelva', 'Huesca', 'Islas Baleares', 'Jaén', 'León', 'Lérida', 'Lugo', 'Madrid', 'Málaga', 'Murcia',
+    'Navarra', 'Ourense', 'Palencia', 'Las Palmas', 'Pontevedra', 'La Rioja', 'Salamanca', 'Segovia', 'Sevilla', 'Soria',
+    'Tarragona', 'Santa Cruz de Tenerife', 'Teruel', 'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza',
+    'Ceuta', 'Melilla'
+  ];
 
   ngOnInit() {
     if (!this.currentUser || this.currentUser.tipoUsuario !== 'CLIENTE') {
@@ -48,9 +61,25 @@ export class PerfilClienteComponent implements OnInit {
     this.clienteService.getClientePorUsuario(this.currentUser.idUsuario).subscribe({
       next: (cliente) => {
         this.cliente = cliente;
+        
+        // Parsear dirección
+        let calle = '', cp = '', localidad = '', provincia = '';
+        if (cliente.direccion) {
+          const parts = cliente.direccion.split(', ');
+          if (parts.length === 4) {
+            [calle, cp, localidad, provincia] = parts;
+          } else {
+            // Fallback para direcciones antiguas
+            calle = cliente.direccion;
+          }
+        }
+
         this.form.patchValue({
           nombre: cliente.nombre || '',
-          direccion: cliente.direccion,
+          calle,
+          cp,
+          localidad,
+          provincia,
           telefono: cliente.telefono,
         });
         this.loading = false;
@@ -71,11 +100,14 @@ export class PerfilClienteComponent implements OnInit {
     this.errorMessage = '';
     
     const formData = this.form.getRawValue();
+    
+    // Concatenar dirección
+    const direccionCompleta = `${formData.calle}, ${formData.cp}, ${formData.localidad}, ${formData.provincia}`;
 
     const request: ClienteRequest = {
       idUsuario: this.currentUser!.idUsuario,
       nombre: formData.nombre,
-      direccion: formData.direccion,
+      direccion: direccionCompleta,
       telefono: formData.telefono,
     };
 

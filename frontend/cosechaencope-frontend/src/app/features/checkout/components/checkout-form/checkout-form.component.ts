@@ -54,12 +54,25 @@ export class CheckoutFormComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, Validators.minLength(9)]],
-      direccion: ['', [Validators.required, Validators.minLength(10)]]
+      // Desglose de dirección
+      calle: ['', [Validators.required]],
+      cp: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
+      localidad: ['', [Validators.required]],
+      provincia: ['', [Validators.required]]
     });
 
     // Verificar si el usuario está autenticado y tiene datos completos
     this.verificarDatosClienteAutenticado();
   }
+
+  provincias = [
+    'Álava', 'Albacete', 'Alicante', 'Almería', 'Asturias', 'Ávila', 'Badajoz', 'Barcelona', 'Burgos', 'Cáceres',
+    'Cádiz', 'Cantabria', 'Castellón', 'Ciudad Real', 'Córdoba', 'La Coruña', 'Cuenca', 'Gerona', 'Granada', 'Guadalajara',
+    'Guipúzcoa', 'Huelva', 'Huesca', 'Islas Baleares', 'Jaén', 'León', 'Lérida', 'Lugo', 'Madrid', 'Málaga', 'Murcia',
+    'Navarra', 'Ourense', 'Palencia', 'Las Palmas', 'Pontevedra', 'La Rioja', 'Salamanca', 'Segovia', 'Sevilla', 'Soria',
+    'Tarragona', 'Santa Cruz de Tenerife', 'Teruel', 'Toledo', 'Valencia', 'Valladolid', 'Vizcaya', 'Zamora', 'Zaragoza',
+    'Ceuta', 'Melilla'
+  ];
 
   onSubmit(): void {
     if (this.clienteForm.invalid) {
@@ -72,7 +85,17 @@ export class CheckoutFormComponent implements OnInit {
       return;
     }
 
-    const clienteData: CheckoutClienteData = this.clienteForm.value;
+    const formData = this.clienteForm.value;
+    
+    // Concatenar dirección
+    const direccionCompleta = `${formData.calle}, ${formData.cp}, ${formData.localidad}, ${formData.provincia}`;
+
+    const clienteData: CheckoutClienteData = {
+      nombre: formData.nombre,
+      email: formData.email,
+      telefono: formData.telefono,
+      direccion: direccionCompleta
+    };
     
     if (this.pedidoService.validarDatosCliente(clienteData)) {
       // Guardar datos del cliente
@@ -133,12 +156,27 @@ export class CheckoutFormComponent implements OnInit {
           this.pedidoService.avanzarPaso(CheckoutStep.PAGO);
         } else {
           console.log('[CheckoutForm] ⚠️ Cliente tiene datos incompletos, mostrando formulario');
+          
+          // Parsear dirección
+          let calle = '', cp = '', localidad = '', provincia = '';
+          if (clienteData.direccion) {
+            const parts = clienteData.direccion.split(', ');
+            if (parts.length === 4) {
+              [calle, cp, localidad, provincia] = parts;
+            } else {
+              calle = clienteData.direccion;
+            }
+          }
+
           // Prellenar formulario con los datos existentes
           this.clienteForm.patchValue({
             nombre: clienteData.nombre || '',
             email: clienteData.usuario.email,
             telefono: clienteData.telefono || '',
-            direccion: clienteData.direccion || ''
+            calle,
+            cp,
+            localidad,
+            provincia
           });
         }
         
@@ -149,7 +187,24 @@ export class CheckoutFormComponent implements OnInit {
         // En caso de error, mostrar formulario con datos del checkout state si existen
         const checkoutState = this.pedidoService.getCheckoutState();
         if (checkoutState.clienteData) {
-          this.clienteForm.patchValue(checkoutState.clienteData);
+          // Parsear dirección del estado si existe
+          let calle = '', cp = '', localidad = '', provincia = '';
+          if (checkoutState.clienteData.direccion) {
+            const parts = checkoutState.clienteData.direccion.split(', ');
+            if (parts.length === 4) {
+              [calle, cp, localidad, provincia] = parts;
+            } else {
+              calle = checkoutState.clienteData.direccion;
+            }
+          }
+
+          this.clienteForm.patchValue({
+            ...checkoutState.clienteData,
+            calle,
+            cp,
+            localidad,
+            provincia
+          });
         }
         this.cargandoDatosCliente = false;
       }

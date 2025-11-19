@@ -22,6 +22,7 @@
   // Nuevas variables del sistema de diseño
   --color-primary: #574b51;
   --color-secondary: #2e8a99;
+  --color-secondary-dark: #{$color-secondary-dark};
   --color-tertiary: #222222;
   
   // Variables legacy (deprecated - migrar gradualmente)

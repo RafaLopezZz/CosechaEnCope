@@ -67,26 +67,72 @@
           </div>
         </div>
 
-        <!-- Dirección -->
+        <!-- Dirección Desglosada -->
         <div class="form-group">
-          <label for="direccion">
+          <label>
             <i class="fas fa-map-marker-alt"></i>
-            Dirección de Envío *
+            Dirección de Envío
           </label>
-          <textarea 
-            id="direccion" 
-            formControlName="direccion"
-            rows="3"
-            placeholder="Ej: Calle Mayor 123, Bajo A, 28001 Madrid"
-            [class.is-invalid]="direccionControl?.invalid && direccionControl?.touched"></textarea>
-          <div class="form-error" *ngIf="direccionControl?.invalid && direccionControl?.touched">
-            <span *ngIf="direccionControl?.errors?.['required']">La dirección es obligatoria</span>
-            <span *ngIf="direccionControl?.errors?.['minlength']">La dirección debe ser más completa (mínimo 10 caracteres)</span>
+          
+          <!-- Calle -->
+          <div class="mb-3">
+            <label for="calle" class="sub-label">Calle y número *</label>
+            <input 
+              type="text" 
+              id="calle" 
+              formControlName="calle"
+              placeholder="Ej: Calle Mayor 123, 4º B"
+              [class.is-invalid]="form.get('calle')?.invalid && form.get('calle')?.touched">
+            <div class="form-error" *ngIf="form.get('calle')?.invalid && form.get('calle')?.touched">
+              <span>La calle es obligatoria</span>
+            </div>
           </div>
-          <small class="form-hint">
-            <i class="fas fa-info-circle"></i>
-            Esta dirección se usará para las entregas de tus pedidos
-          </small>
+
+          <div class="row-grid">
+            <!-- CP -->
+            <div>
+              <label for="cp" class="sub-label">Código Postal *</label>
+              <input 
+                type="text" 
+                id="cp" 
+                formControlName="cp"
+                placeholder="28001"
+                maxlength="5"
+                [class.is-invalid]="form.get('cp')?.invalid && form.get('cp')?.touched">
+              <div class="form-error" *ngIf="form.get('cp')?.invalid && form.get('cp')?.touched">
+                <span>CP inválido (5 dígitos)</span>
+              </div>
+            </div>
+
+            <!-- Localidad -->
+            <div>
+              <label for="localidad" class="sub-label">Localidad *</label>
+              <input 
+                type="text" 
+                id="localidad" 
+                formControlName="localidad"
+                placeholder="Madrid"
+                [class.is-invalid]="form.get('localidad')?.invalid && form.get('localidad')?.touched">
+              <div class="form-error" *ngIf="form.get('localidad')?.invalid && form.get('localidad')?.touched">
+                <span>Localidad obligatoria</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Provincia -->
+          <div class="mt-3">
+            <label for="provincia" class="sub-label">Provincia *</label>
+            <select 
+              id="provincia" 
+              formControlName="provincia"
+              [class.is-invalid]="form.get('provincia')?.invalid && form.get('provincia')?.touched">
+              <option value="" disabled selected>Selecciona una provincia</option>
+              <option *ngFor="let prov of provincias" [value]="prov">{{ prov }}</option>
+            </select>
+            <div class="form-error" *ngIf="form.get('provincia')?.invalid && form.get('provincia')?.touched">
+              <span>Selecciona una provincia</span>
+            </div>
+          </div>
         </div>
 
         <!-- Teléfono -->

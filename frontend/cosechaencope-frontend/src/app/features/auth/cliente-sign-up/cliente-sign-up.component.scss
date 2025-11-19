@@ -77,6 +77,37 @@
   }
 }
 
+.form__select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid $border-color;
+  border-radius: $border-radius-md;
+  font-size: 1rem;
+  transition: all $transition-base;
+  background-color: white;
+  
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+  
+  &[aria-invalid="true"] {
+    border-color: $color-error;
+  }
+}
+
+.form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
 .form__hint {
   color: $color-error;
   font-size: 0.875rem;

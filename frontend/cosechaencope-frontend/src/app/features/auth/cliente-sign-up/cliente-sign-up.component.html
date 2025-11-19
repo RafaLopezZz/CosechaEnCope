@@ -68,9 +68,69 @@
           </p>
         </div>
 
+        <!-- Dirección Desglosada -->
         <div class="form__row">
-          <label class="form__label" for="direccion">Dirección</label>
-          <input id="direccion" class="form__input" type="text" formControlName="direccion" />
+          <label class="form__label" for="calle">Calle y número *</label>
+          <input 
+            id="calle" 
+            class="form__input" 
+            type="text" 
+            formControlName="calle" 
+            required
+            placeholder="Ej: Calle Mayor 123, 4º B"
+            [attr.aria-invalid]="form.controls.calle.invalid && form.controls.calle.touched" />
+          <p class="form__hint" aria-live="polite">
+            {{ form.controls.calle.touched && form.controls.calle.invalid ? 'La calle es obligatoria' : '' }}
+          </p>
+        </div>
+
+        <div class="form__grid">
+          <div class="form__row">
+            <label class="form__label" for="cp">Código Postal *</label>
+            <input 
+              id="cp" 
+              class="form__input" 
+              type="text" 
+              formControlName="cp" 
+              required
+              maxlength="5"
+              placeholder="28001"
+              [attr.aria-invalid]="form.controls.cp.invalid && form.controls.cp.touched" />
+            <p class="form__hint" aria-live="polite">
+              {{ form.controls.cp.touched && form.controls.cp.invalid ? 'CP inválido (5 dígitos)' : '' }}
+            </p>
+          </div>
+
+          <div class="form__row">
+            <label class="form__label" for="localidad">Localidad *</label>
+            <input 
+              id="localidad" 
+              class="form__input" 
+              type="text" 
+              formControlName="localidad" 
+              required
+              placeholder="Madrid"
+              [attr.aria-invalid]="form.controls.localidad.invalid && form.controls.localidad.touched" />
+            <p class="form__hint" aria-live="polite">
+              {{ form.controls.localidad.touched && form.controls.localidad.invalid ? 'Localidad obligatoria' : '' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="provincia">Provincia *</label>
+          <select 
+            id="provincia" 
+            class="form__select" 
+            formControlName="provincia" 
+            required
+            [attr.aria-invalid]="form.controls.provincia.invalid && form.controls.provincia.touched">
+            <option value="" disabled selected>Selecciona una provincia</option>
+            <option *ngFor="let prov of provincias" [value]="prov">{{ prov }}</option>
+          </select>
+          <p class="form__hint" aria-live="polite">
+            {{ form.controls.provincia.touched && form.controls.provincia.invalid ? 'Selecciona una provincia' : '' }}
+          </p>
         </div>
 
         <div class="form__row">
