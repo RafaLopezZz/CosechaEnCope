@@ -32,9 +32,10 @@
 
     <!-- Navigation Links -->
     <div class="collapse navbar-collapse" id="navbarNav">
-      <nav class="navbar-nav me-auto" aria-label="Navegación principal">
+      <!-- Sección Links (Centrada) -->
+      <nav class="navbar-nav mx-auto gap-3" aria-label="Navegación principal">
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/"
           th:classappend="${currentPath == '/'} ? ' active'"
           onclick="window.location.href='/'; return false;"
@@ -43,7 +44,7 @@
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/app/articulos"
           th:classappend="${currentPath == '/app/articulos'} ? ' active'"
         >
@@ -51,7 +52,7 @@
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/app/categorias"
           th:classappend="${currentPath == '/app/categorias'} ? ' active'"
         >
@@ -59,7 +60,7 @@
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/nosotros"
           th:classappend="${currentPath == '/nosotros'} ? ' active'"
           onclick="window.location.href='/nosotros'; return false;"
@@ -68,37 +69,44 @@
         </a>
         
         <a 
-          class="nav-link px-3 py-2 rounded-2" 
+          class="nav-link rounded-2" 
           href="/contacto"
           th:classappend="${currentPath == '/contacto'} ? ' active'"
           onclick="window.location.href='/contacto'; return false;"
         >
           <span>Contacto</span>
         </a>
-        
-        <a 
-          class="nav-link px-3 py-2 rounded-2 position-relative" 
-          href="/app/carrito"
-          th:classappend="${currentPath == '/app/carrito'} ? ' active'"
-        >
-          <i class="fas fa-shopping-cart me-2"></i>
-          <span>Carrito</span>
-          <!-- Badge contador dinámico (se actualiza con JavaScript) -->
-          <span id="carritoCounter" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" style="display: none;">
-            0
-          </span>
-        </a>
       </nav>
 
-      <!-- CTA Actions -->
-      <div class="navbar-nav">
+      <!-- Sección Usuario (Derecha) -->
+      <div class="navbar-nav d-flex flex-row align-items-center gap-3">
+        <!-- Icono Buscar -->
+        <a class="nav-link" href="#" aria-label="Buscar">
+          <i class="fas fa-search fa-lg"></i>
+        </a>
+
+        <!-- Icono Usuario -->
         <a 
           id="authButton"
-          class="btn btn-primary btn-sm px-4 py-2 rounded-pill fw-semibold d-flex align-items-center" 
+          class="nav-link" 
           href="/app/auth"
+          aria-label="Acceder"
         >
-          <i id="authIcon" class="fas fa-user-plus me-2"></i>
-          <span id="authText">Acceder</span>
+          <i id="authIcon" class="fas fa-user fa-lg"></i>
+        </a>
+
+        <!-- Icono Carrito -->
+        <a 
+          class="nav-link position-relative" 
+          href="/app/carrito"
+          th:classappend="${currentPath == '/app/carrito'} ? ' active'"
+          aria-label="Carrito"
+        >
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <!-- Badge contador dinámico -->
+          <span id="carritoCounter" class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" style="display: none; font-size: 0.65rem;">
+            0
+          </span>
         </a>
       </div>
     </div>
@@ -114,9 +122,8 @@
       function actualizarBotonAuth() {
         const authButton = document.getElementById('authButton');
         const authIcon = document.getElementById('authIcon');
-        const authText = document.getElementById('authText');
         
-        if (!authButton || !authIcon || !authText) return;
+        if (!authButton || !authIcon) return;
         
         // Verificar si el usuario está autenticado
         const token = sessionStorage.getItem('authToken');
@@ -128,31 +135,28 @@
             
             // Determinar la ruta del dashboard según el tipo de usuario
             let dashboardRoute = '/app/auth';
-            let buttonText = 'Acceder';
-            let iconClass = 'fas fa-user-plus me-2';
+            let iconClass = 'fas fa-user fa-lg'; // Default
             
             if (user.tipoUsuario === 'CLIENTE') {
               dashboardRoute = '/app/cliente/dashboard';
-              buttonText = 'Mi Panel';
-              iconClass = 'fas fa-user-circle me-2';
+              iconClass = 'fas fa-user-circle fa-lg';
             } else if (user.tipoUsuario === 'PRODUCTOR') {
               dashboardRoute = '/app/productor/dashboard';
-              buttonText = 'Panel Productor';
-              iconClass = 'fas fa-tachometer-alt me-2';
+              iconClass = 'fas fa-tachometer-alt fa-lg';
             }
             
             // Actualizar el botón
             authButton.href = dashboardRoute;
             authIcon.className = iconClass;
-            authText.textContent = buttonText;
+            authButton.setAttribute('aria-label', 'Mi Panel');
           } catch (e) {
             console.error('Error al parsear usuario autenticado:', e);
           }
         } else {
           // Usuario no autenticado: resetear a valores por defecto
           authButton.href = '/app/auth';
-          authIcon.className = 'fas fa-user-plus me-2';
-          authText.textContent = 'Acceder';
+          authIcon.className = 'fas fa-user fa-lg';
+          authButton.setAttribute('aria-label', 'Acceder');
         }
       }
       
