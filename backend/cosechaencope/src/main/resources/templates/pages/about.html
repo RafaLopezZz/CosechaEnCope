@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="es" 
       xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/base :: html}">
-<head>
-    <th:block th:fragment="additional-head">
-        <!-- Additional meta tags for about page -->
-        <meta name="geo.region" content="ES-AN">
-        <meta name="geo.placename" content="Cabo Cope, Murcia">
-    </th:block>
-</head>
+        th:replace="~{layout/base :: layout(~{::title}, 
+        ~{::meta[@name='description']}, 
+        ~{::meta[@name='keywords']}, 
+        ~{::link[@rel='canonical']}, 
+        ~{::meta[@property='og:image']}, 
+        null, ~{::main})}"
+>
+  <head>
+    <title th:text="${pageTitle}">
+      Cosecha en Cope - Sobre Nosotros
+    </title>
+
+    <meta name="description" th:content="${pageDescription}" />
+    <meta name="keywords" th:content="${keywords}" />
+    <link rel="canonical" th:href="${canonicalUrl}" />
+    <meta property="og:image" th:content="${ogImage}" />
+  </head>
 
 <body>
     <main th:fragment="content">

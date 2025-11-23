@@ -7,7 +7,7 @@
   <div class="container">
     
     <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center" href="/" aria-label="Ir a inicio" onclick="window.location.href='/'; return false;">
+    <a class="navbar-brand d-flex align-items-center" th:href="@{/}" aria-label="Ir a inicio">
       <img
         src="/images/logo_test.svg"
         width="160"
@@ -36,16 +36,15 @@
       <nav class="navbar-nav mx-auto gap-3" aria-label="Navegación principal">
         <a 
           class="nav-link rounded-2" 
-          href="/"
+          th:href="@{/}"
           th:classappend="${currentPath == '/'} ? ' active'"
-          onclick="window.location.href='/'; return false;"
         >
           <span>Inicio</span>
         </a>
         
         <a 
           class="nav-link rounded-2" 
-          href="/app/articulos"
+          th:href="@{/app/articulos}"
           th:classappend="${currentPath == '/app/articulos'} ? ' active'"
         >
           <span>Productos</span>
@@ -53,7 +52,7 @@
         
         <a 
           class="nav-link rounded-2" 
-          href="/app/categorias"
+          th:href="@{/app/categorias}"
           th:classappend="${currentPath == '/app/categorias'} ? ' active'"
         >
           <span>Categorías</span>
@@ -61,18 +60,16 @@
         
         <a 
           class="nav-link rounded-2" 
-          href="/nosotros"
+          th:href="@{/nosotros}"
           th:classappend="${currentPath == '/nosotros'} ? ' active'"
-          onclick="window.location.href='/nosotros'; return false;"
         >
           <span>¿Quiénes somos?</span>
         </a>
         
         <a 
           class="nav-link rounded-2" 
-          href="/contacto"
+          th:href="@{/contacto}"
           th:classappend="${currentPath == '/contacto'} ? ' active'"
-          onclick="window.location.href='/contacto'; return false;"
         >
           <span>Contacto</span>
         </a>
@@ -89,7 +86,7 @@
         <a 
           id="authButton"
           class="nav-link" 
-          href="/app/auth"
+          th:href="@{/app/auth}"
           aria-label="Acceder"
         >
           <i id="authIcon" class="fas fa-user fa-lg"></i>
@@ -98,7 +95,7 @@
         <!-- Icono Carrito -->
         <a 
           class="nav-link position-relative" 
-          href="/app/carrito"
+          th:href="@{/app/carrito}"
           th:classappend="${currentPath == '/app/carrito'} ? ' active'"
           aria-label="Carrito"
         >

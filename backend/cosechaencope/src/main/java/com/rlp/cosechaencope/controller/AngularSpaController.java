@@ -46,6 +46,10 @@ public class AngularSpaController {
         "/",
         "/auth",
         "/auth/**",
+        "/login",
+        "/login/**",
+        "/registro",
+        "/registro/**",
         "/articulos",
         "/articulos/**",
         "/categorias",
@@ -57,14 +61,19 @@ public class AngularSpaController {
         "/pedidos",
         "/pedidos/**",
         "/carrito",
-        "/carrito/**"
+        "/carrito/**",
+        "/checkout",
+        "/checkout/**",
+        "/error"
     })
     public ResponseEntity<String> handleAngularRoutes(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        // Normalizamos a /app/... (ya que el controlador está mapeado en /app)
-        if (path.equals("/app")) {
-            path = "/app/";
+        // Redirección real para /app -> /app/ para evitar problemas con base href
+        if (path.endsWith("/app")) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.FOUND)
+                    .header("Location", path + "/")
+                    .build();
         }
 
         log.debug("[SPA] Sirviendo index.html para ruta: {}", path);

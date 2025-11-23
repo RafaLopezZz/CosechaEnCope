@@ -1,168 +1,207 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<body>
+  <body>
+    <!-- Footer Fragment -->
+    <footer th:fragment="footer" class="footer text-light py-5 mt-5">
+      <div class="container">
+        <div class="row">
+          <!-- Company Info Section -->
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="footer-about">
+              <!-- Logo -->
+              <div class="footer-logo mb-3">
+                <img
+                  src="/images/logo.png"
+                  width="150"
+                  height="50"
+                  alt="Cosecha en Cope Logo"
+                  class="img-fluid"
+                />
+              </div>
 
-<!-- Footer Fragment -->
-<footer th:fragment="footer" class="footer text-light py-5 mt-5">
-  <div class="container">
-    <div class="row">
-      
-      <!-- Company Info Section -->
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="footer-about">
-          <!-- Logo -->
-          <div class="footer-logo mb-3">
-            <img
-              src="/images/logo.png"
-              width="150"
-              height="50"
-              alt="Cosecha en Cope Logo"
-              class="img-fluid"
-            />
-          </div>
+              <!-- Address -->
+              <div class="footer-block mb-3">
+                <h6 class="fw-bold text-white">Dirección:</h6>
+                <p class="text-light mb-0">Calle Tal 69, Cabo Cope</p>
+              </div>
 
-          <!-- Address -->
-          <div class="footer-block mb-3">
-            <h6 class="fw-bold text-white">Dirección:</h6>
-            <p class="text-light mb-0">Calle Tal 69, Cabo Cope</p>
-          </div>
+              <!-- Contact -->
+              <div class="footer-block mb-3">
+                <h6 class="fw-bold text-white">Contacto:</h6>
+                <div class="footer-links">
+                  <a
+                    href="tel:+5491112345678"
+                    class="text-light text-decoration-none d-block mb-1"
+                  >
+                    <i class="fas fa-phone me-2"></i>
+                    +54 9 11 1234 5678
+                  </a>
+                  <a
+                    href="mailto:contacto@cosechaencope.com"
+                    class="text-light text-decoration-none d-block"
+                  >
+                    <i class="fas fa-envelope me-2"></i>
+                    contacto@cosechaencope.com
+                  </a>
+                </div>
+              </div>
 
-          <!-- Contact -->
-          <div class="footer-block mb-3">
-            <h6 class="fw-bold text-white">Contacto:</h6>
-            <div class="footer-links">
-              <a href="tel:+5491112345678" class="text-light text-decoration-none d-block mb-1">
-                <i class="fas fa-phone me-2"></i>
-                +54 9 11 1234 5678
-              </a>
-              <a href="mailto:contacto@cosechaencope.com" class="text-light text-decoration-none d-block">
-                <i class="fas fa-envelope me-2"></i>
-                contacto@cosechaencope.com
-              </a>
+              <!-- Social Media -->
+              <div class="footer-social">
+                <h6 class="fw-bold text-white mb-3">Síguenos:</h6>
+                <div class="d-flex gap-3">
+                  <a
+                    aria-label="Facebook"
+                    href="https://facebook.com/cosechaencope"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-light fs-5 hover-primary"
+                  >
+                    <i class="fab fa-facebook"></i>
+                  </a>
+                  <a
+                    aria-label="Instagram"
+                    href="https://instagram.com/cosechaencope"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-light fs-5 hover-primary"
+                  >
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                  <a
+                    aria-label="LinkedIn"
+                    href="https://linkedin.com/company/cosechaencope"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-light fs-5 hover-primary"
+                  >
+                    <i class="fab fa-linkedin"></i>
+                  </a>
+                  <a
+                    aria-label="X (Twitter)"
+                    href="https://x.com/cosechaencope"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-light fs-5 hover-primary"
+                  >
+                    <i class="fab fa-x-twitter"></i>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Social Media -->
-          <div class="footer-social">
-            <h6 class="fw-bold text-white mb-3">Síguenos:</h6>
-            <div class="d-flex gap-3">
-              <a
-                aria-label="Facebook"
-                href="https://facebook.com/cosechaencope"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-light fs-5 hover-primary"
+          <!-- Navigation Links Section 1 -->
+          <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+            <h6 class="fw-bold text-white mb-3">Navegación</h6>
+            <nav class="footer-nav">
+              <a th:href="@{/}" class="text-light ...">Inicio</a>
+              <a th:href="@{/app/articulos}" class="text-light ..."
+                >Productos</a
               >
-                <i class="fab fa-facebook"></i>
+              <a th:href="@{/app/categorias}" class="text-light ..."
+                >Categorías</a
+              >
+              <a th:href="@{/nosotros}" class="text-light ..."
+                >¿Quiénes somos?</a
+              >
+              <a th:href="@{/contacto}" class="text-light ...">Contacto</a>
+            </nav>
+          </div>
+
+          <!-- Navigation Links Section 2 -->
+          <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
+            <h6 class="fw-bold text-white mb-3">Categorías</h6>
+            <nav class="footer-nav">
+              <a
+                href="/productos/frutas"
+                class="text-light text-decoration-none d-block mb-2 hover-primary"
+                >Frutas</a
+              >
+              <a
+                href="/productos/verduras"
+                class="text-light text-decoration-none d-block mb-2 hover-primary"
+                >Verduras</a
+              >
+              <a
+                href="/productos/hortalizas"
+                class="text-light text-decoration-none d-block mb-2 hover-primary"
+                >Hortalizas</a
+              >
+              <a
+                href="/productos/cereales"
+                class="text-light text-decoration-none d-block mb-2 hover-primary"
+                >Cereales</a
+              >
+              <a
+                href="/app/auth"
+                class="text-light text-decoration-none d-block mb-2 hover-primary"
+                >Únete como Productor</a
+              >
+            </nav>
+          </div>
+
+          <!-- Newsletter Section -->
+          <div class="col-lg-4 col-md-6 mb-4">
+            <h6 class="fw-bold text-white mb-3">Mantente Informado</h6>
+            <p class="text-light mb-3">
+              Suscríbete a nuestro boletín para recibir noticias sobre nuevos
+              productos y productores.
+            </p>
+            <form class="newsletter-form mb-3">
+              <div class="input-group">
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="Tu email"
+                  aria-label="Email para newsletter"
+                  required
+                />
+                <button class="btn btn-primary" type="submit">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </form>
+            <small class="text-white">
+              Al suscribirte, aceptas nuestra política de privacidad.
+            </small>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <hr class="border-secondary my-4" />
+
+        <!-- Footer Bottom -->
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center text-md-start">
+            <p class="text-white mb-0">
+              © 2025 Cosecha en Cope. Todos los derechos reservados.
+            </p>
+          </div>
+          <div class="col-md-6">
+            <nav class="footer-legal text-center text-md-end">
+              <a
+                href="/privacidad"
+                class="text-white text-decoration-none me-3 hover-primary"
+              >
+                Política de privacidad
               </a>
               <a
-                aria-label="Instagram"
-                href="https://instagram.com/cosechaencope"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-light fs-5 hover-primary"
+                href="/terminos"
+                class="text-white text-decoration-none me-3 hover-primary"
               >
-                <i class="fab fa-instagram"></i>
+                Términos de servicio
               </a>
               <a
-                aria-label="LinkedIn"
-                href="https://linkedin.com/company/cosechaencope"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-light fs-5 hover-primary"
+                href="/cookies"
+                class="text-white text-decoration-none hover-primary"
               >
-                <i class="fab fa-linkedin"></i>
+                Configuración de cookies
               </a>
-              <a
-                aria-label="X (Twitter)"
-                href="https://x.com/cosechaencope"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-light fs-5 hover-primary"
-              >
-                <i class="fab fa-x-twitter"></i>
-              </a>
-            </div>
+            </nav>
           </div>
         </div>
       </div>
-
-      <!-- Navigation Links Section 1 -->
-      <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
-        <h6 class="fw-bold text-white mb-3">Navegación</h6>
-        <nav class="footer-nav">
-          <a href="/" class="text-light text-decoration-none d-block mb-2 hover-primary">Inicio</a>
-          <a href="/app/articulos" class="text-light text-decoration-none d-block mb-2 hover-primary">Productos</a>
-          <a href="/nosotros" class="text-light text-decoration-none d-block mb-2 hover-primary">¿Quiénes somos?</a>
-          <a href="/categorias" class="text-light text-decoration-none d-block mb-2 hover-primary">Categorías</a>
-          <a href="/contacto" class="text-light text-decoration-none d-block mb-2 hover-primary">Contacto</a>
-        </nav>
-      </div>
-
-      <!-- Navigation Links Section 2 -->
-      <div class="col-lg-2 col-md-3 col-sm-6 mb-4">
-        <h6 class="fw-bold text-white mb-3">Categorías</h6>
-        <nav class="footer-nav">
-          <a href="/productos/frutas" class="text-light text-decoration-none d-block mb-2 hover-primary">Frutas</a>
-          <a href="/productos/verduras" class="text-light text-decoration-none d-block mb-2 hover-primary">Verduras</a>
-          <a href="/productos/hortalizas" class="text-light text-decoration-none d-block mb-2 hover-primary">Hortalizas</a>
-          <a href="/productos/cereales" class="text-light text-decoration-none d-block mb-2 hover-primary">Cereales</a>
-          <a href="/app/auth" class="text-light text-decoration-none d-block mb-2 hover-primary">Únete como Productor</a>
-        </nav>
-      </div>
-
-      <!-- Newsletter Section -->
-      <div class="col-lg-4 col-md-6 mb-4">
-        <h6 class="fw-bold text-white mb-3">Mantente Informado</h6>
-        <p class="text-light mb-3">
-          Suscríbete a nuestro boletín para recibir noticias sobre nuevos productos y productores.
-        </p>
-        <form class="newsletter-form mb-3">
-          <div class="input-group">
-            <input 
-              type="email" 
-              class="form-control" 
-              placeholder="Tu email"
-              aria-label="Email para newsletter"
-              required
-            >
-            <button class="btn btn-primary" type="submit">
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </div>
-        </form>
-        <small class="text-white">
-          Al suscribirte, aceptas nuestra política de privacidad.
-        </small>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <hr class="border-secondary my-4">
-
-    <!-- Footer Bottom -->
-    <div class="row align-items-center">
-      <div class="col-md-6 text-center text-md-start">
-        <p class="text-white mb-0">
-          © 2025 Cosecha en Cope. Todos los derechos reservados.
-        </p>
-      </div>
-      <div class="col-md-6">
-        <nav class="footer-legal text-center text-md-end">
-          <a href="/privacidad" class="text-white text-decoration-none me-3 hover-primary">
-            Política de privacidad
-          </a>
-          <a href="/terminos" class="text-white text-decoration-none me-3 hover-primary">
-            Términos de servicio
-          </a>
-          <a href="/cookies" class="text-white text-decoration-none hover-primary">
-            Configuración de cookies
-          </a>
-        </nav>
-      </div>
-    </div>
-  </div>
-</footer>
-
-</body>
+    </footer>
+  </body>
 </html>

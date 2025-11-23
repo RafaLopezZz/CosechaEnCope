@@ -9,10 +9,7 @@
       Cosecha en Cope - Productos Agrícolas Frescos
     </title>
 
-    <meta
-      name="description"
-      th:content="${pageDescription}"
-    />
+    <meta name="description" th:content="${pageDescription}" />
     <meta name="keywords" th:content="${keywords}" />
     <link rel="canonical" th:href="${canonicalUrl}" />
     <meta property="og:image" th:content="${ogImage}" />
@@ -25,7 +22,7 @@
 
       <!-- Features Section (Categorías) -->
       <div th:replace="~{fragments/landing/features-section :: features}"></div>
-      
+
       <!-- Gallery Carousel (Artículos Destacados) -->
       <div th:replace="~{fragments/landing/gallery-carousel :: gallery}"></div>
 
@@ -35,8 +32,8 @@
       <!-- Testimonials Section -->
       <div th:replace="~{fragments/landing/testimonials :: testimonials}"></div>
 
-      <!-- CTA Section -->
-      <div th:replace="~{fragments/landing/cta-section :: cta}"></div>
+      <!-- CTA Section 
+      <div th:replace="~{fragments/landing/cta-section :: cta}"></div> -->
     </main>
   </body>
 </html>
