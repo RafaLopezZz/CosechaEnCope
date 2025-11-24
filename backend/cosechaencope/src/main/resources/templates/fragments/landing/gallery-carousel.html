@@ -1,9 +1,9 @@
 <!-- Gallery Carousel (Productos Destacados) Fragment -->
-<section class="gallery py-5 bg-light" th:fragment="gallery">
+<section class="gallery py-5" th:fragment="gallery">
   <div class="container">
     <!-- Header -->
     <div class="gallery__header text-center mb-5">
-      <h2 class="display-5 fw-bold mb-3 text-primary-content">Productos Destacados</h2>
+      <h2 class="display-5 fw-bold mb-3">Productos Destacados</h2>
       <p class="lead text-muted">
         Conoce lo mejor de nuestros productores locales
       </p>
@@ -55,12 +55,12 @@
                     Productor
                   </p>
                   <span
-                    class="item__category badge bg-success"
+                    class="item__category"
                     th:text="${articulo.nombreCategoria}"
                     >Categoría</span
                   >
                   <span
-                    class="item__price badge bg-primary mt-2"
+                    class="item__price"
                     th:if="${articulo.precio != null && articulo.precio > 0}"
                     th:text="${#numbers.formatDecimal(articulo.precio, 1, 2)} + ' €'"
                   >
@@ -113,7 +113,7 @@
     >
       <a
         href="/app/articulos"
-        class="btn-cta btn btn-primary btn-lg rounded-pill px-5 py-3"
+        class="btn btn-primary btn-lg rounded-pill px-5 py-3"
       >
         <span>Ver Todos los Productos</span>
         <i class="fas fa-arrow-right ms-2"></i>
@@ -136,79 +136,83 @@
 </section>
 
 <!-- Carousel JavaScript -->
-<script th:inline="javascript">
+<script>
+  // Variables globales para el carousel
+  let galleryCurrentIndex = 0;
+  let galleryTotalSlides = 0;
+  let galleryAutoPlayInterval = null;
+
+  // Función para calcular el ancho de una tarjeta + gap
+  function getGalleryCardWidth() {
+    const track = document.getElementById("galleryTrack");
+    if (!track) return 328;
+    
+    const items = track.querySelectorAll(".gallery__item");
+    if (items.length === 0) return 328;
+    
+    const firstItem = items[0];
+    const style = getComputedStyle(track);
+    const gap = parseFloat(style.columnGap || style.gap || "32") || 32;
+    return firstItem.getBoundingClientRect().width + gap;
+  }
+
+  // Actualizar la posición del carousel
+  function updateGallery() {
+    const track = document.getElementById("galleryTrack");
+    if (!track || galleryTotalSlides === 0) return;
+
+    const cardWidth = getGalleryCardWidth();
+    const offset = -(galleryCurrentIndex * cardWidth);
+
+    track.style.transform = `translateX(${offset}px)`;
+
+    // Actualizar clases active en items
+    const items = track.querySelectorAll(".gallery__item");
+    items.forEach((item, index) => {
+      item.classList.toggle("active", index === galleryCurrentIndex);
+    });
+
+    // Actualizar indicadores
+    const indicators = document.querySelectorAll(".gallery__indicators .indicator");
+    indicators.forEach((indicator, index) => {
+      indicator.classList.toggle("active", index === galleryCurrentIndex);
+    });
+  }
+
+  // Navegar en el carousel (función global para onclick)
+  function scrollGallery(direction) {
+    if (galleryTotalSlides === 0) return;
+
+    galleryCurrentIndex += direction;
+
+    // Loop infinito
+    if (galleryCurrentIndex < 0) {
+      galleryCurrentIndex = galleryTotalSlides - 1;
+    } else if (galleryCurrentIndex >= galleryTotalSlides) {
+      galleryCurrentIndex = 0;
+    }
+
+    updateGallery();
+  }
+
+  // Ir a un slide específico (función global para onclick)
+  function goToGallerySlide(index) {
+    galleryCurrentIndex = index;
+    updateGallery();
+  }
+
+  // Inicializar cuando el DOM esté listo
   document.addEventListener("DOMContentLoaded", function () {
     const track = document.getElementById("galleryTrack");
     if (!track) return;
 
     const items = track.querySelectorAll(".gallery__item");
-    const indicators = document.querySelectorAll(
-      ".gallery__indicators .indicator"
-    );
-    const totalSlides = items.length;
-    let currentIndex = 0;
+    galleryTotalSlides = items.length;
+    
+    if (galleryTotalSlides === 0) return;
 
-    // Función para calcular el ancho de una tarjeta + gap
-    function getCardWidth() {
-      if (items.length === 0) return 328;
-      const firstItem = items[0];
-      const style = getComputedStyle(track);
-      const gap = parseFloat(style.columnGap || style.gap || "32") || 32;
-      return firstItem.getBoundingClientRect().width + gap;
-    }
-
-    // Actualizar la posición del carousel
-    function updateGallery() {
-      if (totalSlides === 0) return;
-
-      const cardWidth = getCardWidth();
-      const offset = -(currentIndex * cardWidth);
-
-      track.style.transform = `translateX(${offset}px)`;
-
-      // Actualizar clases active en items
-      items.forEach((item, index) => {
-        if (index === currentIndex) {
-          item.classList.add("active");
-        } else {
-          item.classList.remove("active");
-        }
-      });
-
-      // Actualizar indicadores
-      indicators.forEach((indicator, index) => {
-        if (index === currentIndex) {
-          indicator.classList.add("active");
-        } else {
-          indicator.classList.remove("active");
-        }
-      });
-    }
-
-    // Navegar en el carousel
-    window.scrollGallery = function (direction) {
-      if (totalSlides === 0) return;
-
-      currentIndex += direction;
-
-      // Loop infinito
-      if (currentIndex < 0) {
-        currentIndex = totalSlides - 1;
-      } else if (currentIndex >= totalSlides) {
-        currentIndex = 0;
-      }
-
-      updateGallery();
-    };
-
-    // Ir a un slide específico
-    window.goToGallerySlide = function (index) {
-      currentIndex = index;
-      updateGallery();
-    };
-
-    // Auto-play opcional (cada 5 segundos)
-    let autoPlayInterval = setInterval(() => {
+    // Auto-play (cada 5 segundos)
+    galleryAutoPlayInterval = setInterval(() => {
       scrollGallery(1);
     }, 5000);
 
@@ -216,13 +220,18 @@
     const carousel = document.querySelector(".gallery__carousel");
     if (carousel) {
       carousel.addEventListener("mouseenter", () => {
-        clearInterval(autoPlayInterval);
+        if (galleryAutoPlayInterval) {
+          clearInterval(galleryAutoPlayInterval);
+          galleryAutoPlayInterval = null;
+        }
       });
 
       carousel.addEventListener("mouseleave", () => {
-        autoPlayInterval = setInterval(() => {
-          scrollGallery(1);
-        }, 5000);
+        if (!galleryAutoPlayInterval) {
+          galleryAutoPlayInterval = setInterval(() => {
+            scrollGallery(1);
+          }, 5000);
+        }
       });
     }
 

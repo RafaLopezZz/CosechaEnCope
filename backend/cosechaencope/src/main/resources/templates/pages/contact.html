@@ -22,155 +22,29 @@
 <body>
     <main th:fragment="content">
         
-        <!-- Hero Section -->
-        <section class="contact-hero bg-light py-5">
+        <!-- Hero Section - Con imagen de fondo -->
+        <section class="contact-hero py-5">
             <div class="container">
-                <div class="row text-center">
-                    <div class="col-lg-8 mx-auto">
-                        <h1 class="display-4 fw-bold text-dark mb-4">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto text-center py-5">
+                        <h1 class="display-5 fw-bold text-white mb-3">
                             Contacto
                         </h1>
-                        <p class="lead text-muted">
+                        <p class="lead text-white mb-0">
                             ¿Tienes preguntas sobre nuestros productos o servicios? 
-                            Estamos aquí para ayudarte. Contáctanos y te responderemos lo antes posible.
+                            Estamos aquí para ayudarte.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Information & Form Section -->
+        <!-- Contact Form Section - Centrado y minimalista -->
         <section class="contact-main py-5">
             <div class="container">
-                <div class="row g-5">
-                    
-                    <!-- Contact Information -->
-                    <div class="col-lg-5">
-                        <div class="contact-info">
-                            <h2 class="h3 fw-bold text-dark mb-4">
-                                Información de Contacto
-                            </h2>
-                            <p class="text-muted mb-4">
-                                Puedes contactarnos a través de cualquiera de estos medios. 
-                                Nuestro equipo estará encantado de atenderte.
-                            </p>
-                            
-                            <!-- Contact Cards -->
-                            <div class="contact-cards">
-                                
-                                <!-- Address -->
-                                <div class="contact-card d-flex align-items-start mb-4 p-3 bg-light rounded-3">
-                                    <div class="contact-icon me-3">
-                                        <i class="fas fa-map-marker-alt text-primary fs-4"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Dirección</h5>
-                                        <p class="text-muted mb-0">
-                                            Calle Tal 69<br>
-                                            Cabo Cope, Murcia<br>
-                                            España
-                                        </p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Phone -->
-                                <div class="contact-card d-flex align-items-start mb-4 p-3 bg-light rounded-3">
-                                    <div class="contact-icon me-3">
-                                        <i class="fas fa-phone text-primary fs-4"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Teléfono</h5>
-                                        <a href="tel:+5491112345678" class="text-muted text-decoration-none">
-                                            +54 9 11 1234 5678
-                                        </a>
-                                    </div>
-                                </div>
-                                
-                                <!-- Email -->
-                                <div class="contact-card d-flex align-items-start mb-4 p-3 bg-light rounded-3">
-                                    <div class="contact-icon me-3">
-                                        <i class="fas fa-envelope text-primary fs-4"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Email</h5>
-                                        <a href="mailto:contacto@cosechaencope.com" class="text-muted text-decoration-none">
-                                            contacto@cosechaencope.com
-                                        </a>
-                                    </div>
-                                </div>
-                                
-                                <!-- Business Hours -->
-                                <div class="contact-card d-flex align-items-start mb-4 p-3 bg-light rounded-3">
-                                    <div class="contact-icon me-3">
-                                        <i class="fas fa-clock text-primary fs-4"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="fw-bold mb-1">Horario de Atención</h5>
-                                        <p class="text-muted mb-0">
-                                            Lunes a Viernes: 9:00 - 18:00<br>
-                                            Sábados: 10:00 - 14:00<br>
-                                            Domingos: Cerrado
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Social Media -->
-                            <div class="social-media mt-4">
-                                <h5 class="fw-bold mb-3">Síguenos en Redes Sociales</h5>
-                                <div class="d-flex gap-3">
-                                    <a 
-                                        href="https://facebook.com/cosechaencope" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        class="btn btn-outline-primary rounded-circle p-3"
-                                        aria-label="Facebook"
-                                    >
-                                        <i class="fab fa-facebook"></i>
-                                    </a>
-                                    <a 
-                                        href="https://instagram.com/cosechaencope" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        class="btn btn-outline-primary rounded-circle p-3"
-                                        aria-label="Instagram"
-                                    >
-                                        <i class="fab fa-instagram"></i>
-                                    </a>
-                                    <a 
-                                        href="https://linkedin.com/company/cosechaencope" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        class="btn btn-outline-primary rounded-circle p-3"
-                                        aria-label="LinkedIn"
-                                    >
-                                        <i class="fab fa-linkedin"></i>
-                                    </a>
-                                    <a 
-                                        href="https://x.com/cosechaencope" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        class="btn btn-outline-primary rounded-circle p-3"
-                                        aria-label="X (Twitter)"
-                                    >
-                                        <i class="fab fa-x-twitter"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact Form -->
-                    <div class="col-lg-7">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 col-md-8">
                         <div class="contact-form">
-                            <h2 class="h3 fw-bold text-dark mb-4">
-                                Envíanos un Mensaje
-                            </h2>
-                            <p class="text-muted mb-4">
-                                Completa el formulario y nos pondremos en contacto contigo 
-                                en un plazo máximo de 24 horas.
-                            </p>
-                            
                             <form id="contactForm" class="needs-validation" novalidate>
                                 <div class="row g-3">
                                     
@@ -181,7 +55,7 @@
                                         </label>
                                         <input 
                                             type="text" 
-                                            class="form-control form-control-lg" 
+                                            class="form-control" 
                                             id="name" 
                                             name="name"
                                             required
@@ -199,7 +73,7 @@
                                         </label>
                                         <input 
                                             type="email" 
-                                            class="form-control form-control-lg" 
+                                            class="form-control" 
                                             id="email" 
                                             name="email"
                                             required
@@ -217,7 +91,7 @@
                                         </label>
                                         <input 
                                             type="tel" 
-                                            class="form-control form-control-lg" 
+                                            class="form-control" 
                                             id="phone" 
                                             name="phone"
                                             placeholder="+34 123 456 789"
@@ -229,7 +103,12 @@
                                         <label for="subject" class="form-label fw-semibold">
                                             Asunto *
                                         </label>
-                                        <select class="form-select form-select-lg" id="subject" name="subject" required>
+                                        <select 
+                                            class="form-select" 
+                                            id="subject" 
+                                            name="subject" 
+                                            required
+                                        >
                                             <option value="">Selecciona un asunto</option>
                                             <option value="info-general">Información general</option>
                                             <option value="problemas-pedido">Problemas con un pedido</option>
@@ -249,7 +128,7 @@
                                             Mensaje *
                                         </label>
                                         <textarea 
-                                            class="form-control form-control-lg" 
+                                            class="form-control" 
                                             id="message" 
                                             name="message"
                                             rows="5" 
@@ -271,9 +150,9 @@
                                                 name="privacy"
                                                 required
                                             >
-                                            <label class="form-check-label text-muted small" for="privacy">
+                                            <label class="form-check-label small" for="privacy">
                                                 Acepto la 
-                                                <a href="/privacidad" class="text-primary">política de privacidad</a> 
+                                                <a href="/privacidad" class="contact-link">política de privacidad</a> 
                                                 y el tratamiento de mis datos personales.
                                             </label>
                                             <div class="invalid-feedback">
@@ -283,12 +162,11 @@
                                     </div>
                                     
                                     <!-- Submit Button -->
-                                    <div class="col-12">
+                                    <div class="col-12 text-center mt-4">
                                         <button 
                                             type="submit" 
-                                            class="btn btn-primary btn-lg px-5 py-3 fw-semibold"
+                                            class="btn btn-primary btn-lg px-5 py-2 fw-semibold rounded-3"
                                         >
-                                            <i class="fas fa-paper-plane me-2"></i>
                                             Enviar Mensaje
                                         </button>
                                     </div>
@@ -296,14 +174,12 @@
                             </form>
                             
                             <!-- Success Message -->
-                            <div id="successMessage" class="alert alert-success mt-4 d-none">
-                                <i class="fas fa-check-circle me-2"></i>
+                            <div id="successMessage" class="alert alert-success mt-4 d-none rounded-3 text-center">
                                 ¡Mensaje enviado exitosamente! Te responderemos pronto.
                             </div>
                             
                             <!-- Error Message -->
-                            <div id="errorMessage" class="alert alert-danger mt-4 d-none">
-                                <i class="fas fa-exclamation-circle me-2"></i>
+                            <div id="errorMessage" class="alert alert-danger mt-4 d-none rounded-3 text-center">
                                 Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.
                             </div>
                         </div>
@@ -313,18 +189,18 @@
         </section>
 
         <!-- FAQ Section -->
-        <section class="faq py-5 bg-light">
+        <section class="faq py-5">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8 mx-auto">
-                        <h2 class="display-6 fw-bold text-dark text-center mb-5">
+                        <h2 class="h3 fw-bold text-center mb-5">
                             Preguntas Frecuentes
                         </h2>
                         
                         <div class="accordion" id="faqAccordion">
                             
                             <!-- FAQ 1 -->
-                            <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                            <div class="accordion-item mb-3 rounded-3 overflow-hidden">
                                 <h3 class="accordion-header">
                                     <button 
                                         class="accordion-button fw-semibold" 
@@ -338,7 +214,7 @@
                                     </button>
                                 </h3>
                                 <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
+                                    <div class="accordion-body">
                                         Para hacer un pedido, simplemente navega por nuestro catálogo de productos, 
                                         añade los artículos que desees a tu carrito y procede al checkout. 
                                         Necesitarás crear una cuenta para completar la compra.
@@ -347,7 +223,7 @@
                             </div>
                             
                             <!-- FAQ 2 -->
-                            <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                            <div class="accordion-item mb-3 rounded-3 overflow-hidden">
                                 <h3 class="accordion-header">
                                     <button 
                                         class="accordion-button collapsed fw-semibold" 
@@ -361,7 +237,7 @@
                                     </button>
                                 </h3>
                                 <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
+                                    <div class="accordion-body">
                                         Aceptamos tarjetas de crédito y débito (Visa, Mastercard), 
                                         transferencia bancaria y pago contra reembolso para pedidos superiores a 30€.
                                     </div>
@@ -369,7 +245,7 @@
                             </div>
                             
                             <!-- FAQ 3 -->
-                            <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                            <div class="accordion-item mb-3 rounded-3 overflow-hidden">
                                 <h3 class="accordion-header">
                                     <button 
                                         class="accordion-button collapsed fw-semibold" 
@@ -383,7 +259,7 @@
                                     </button>
                                 </h3>
                                 <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
+                                    <div class="accordion-body">
                                         Si eres productor local y quieres vender tus productos en nuestra plataforma, 
                                         puedes registrarte como productor desde nuestra página de registro. 
                                         Nuestro equipo revisará tu solicitud y te contactará.
@@ -392,7 +268,7 @@
                             </div>
                             
                             <!-- FAQ 4 -->
-                            <div class="accordion-item border-0 mb-3 rounded-3 overflow-hidden">
+                            <div class="accordion-item mb-3 rounded-3 overflow-hidden">
                                 <h3 class="accordion-header">
                                     <button 
                                         class="accordion-button collapsed fw-semibold" 
@@ -406,7 +282,7 @@
                                     </button>
                                 </h3>
                                 <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
+                                    <div class="accordion-body">
                                         Actualmente cubrimos toda la región de Murcia y zonas limítrofes. 
                                         Estamos trabajando para ampliar nuestra zona de entrega a otras provincias.
                                     </div>
@@ -441,7 +317,7 @@
                         // Show loading state
                         const submitBtn = form.querySelector('button[type="submit"]');
                         const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enviando...';
+                        submitBtn.innerHTML = 'Enviando...';
                         submitBtn.disabled = true;
                         
                         // Simulate API call

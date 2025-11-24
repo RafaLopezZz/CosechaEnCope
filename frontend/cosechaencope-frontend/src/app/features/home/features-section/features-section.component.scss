@@ -3,12 +3,36 @@
 }
 
 /* ========================================
+   CATEGORIES HERO SECTION
+   ======================================== */
+.categories-hero {
+  position: relative;
+  background: url('/thymeleaf/images/torre-de-cope.webp') center/cover no-repeat;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(87, 75, 81, 0.7);
+  }
+  
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .lead {
+    opacity: 0.95;
+  }
+}
+
+/* ========================================
    Features Section (Categorías)
    Replicando exactamente el diseño de Thymeleaf
    ======================================== */
 .features {
   background: #ffffff;
-  padding: 112px 0;
+  padding: 80px 0;
 }
 
 .container {

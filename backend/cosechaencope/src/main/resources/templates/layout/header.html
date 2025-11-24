@@ -45,7 +45,7 @@
         <a 
           class="nav-link rounded-2" 
           th:href="@{/app/articulos}"
-          th:classappend="${currentPath == '/app/articulos'} ? ' active'"
+          th:classappend="${currentPath == '/app/articulos' or currentPath == '/articulos'} ? ' active'"
         >
           <span>Productos</span>
         </a>
@@ -53,7 +53,7 @@
         <a 
           class="nav-link rounded-2" 
           th:href="@{/app/categorias}"
-          th:classappend="${currentPath == '/app/categorias'} ? ' active'"
+          th:classappend="${currentPath == '/app/categorias' or currentPath == '/categorias'} ? ' active'"
         >
           <span>Categorías</span>
         </a>
@@ -96,7 +96,7 @@
         <a 
           class="nav-link position-relative" 
           th:href="@{/app/carrito}"
-          th:classappend="${currentPath == '/app/carrito'} ? ' active'"
+          th:classappend="${currentPath == '/app/carrito' or currentPath == '/carrito'} ? ' active'"
           aria-label="Carrito"
         >
           <i class="fas fa-shopping-cart fa-lg"></i>
