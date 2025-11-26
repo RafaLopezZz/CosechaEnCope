@@ -37,7 +37,6 @@
 /* Gallery Container */
 .gallery {
   padding: $spacing-3xl 0;
-  background: $bg-secondary;
 }
 
 .container {
@@ -104,7 +103,7 @@
   transform: scale(1.05);
 }
 
-/* Overlay con info del producto (simplificado - sin gradiente complejo) */
+/* Overlay con info del producto */
 .item__overlay {
   position: absolute;
   bottom: 0;

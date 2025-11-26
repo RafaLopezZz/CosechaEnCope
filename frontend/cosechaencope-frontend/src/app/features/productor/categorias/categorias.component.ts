@@ -1,32 +1,37 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+
+import { UserStoreService } from '../../../core/services/user-store.service';
 import { ProductorService } from '../../../core/services/productor.service';
-import { ImagenService } from '../../../core/services/imagen.service';
-import { ImageUploadUtilsService } from '../../../core/services/image-upload-utils.service';
+import { ProductorResponse } from '../../../shared/models/productor.models';
+import { ImageUploadPanelComponent } from '../../../shared/components/image-upload/panel/image-upload-panel.component';
 import { CategoriaResponse, CategoriaRequest } from '../../../shared/models/categoria.models';
 
 @Component({
   selector: 'app-categorias-productor',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ImageUploadPanelComponent],
   templateUrl: './categorias.component.html',
-  styleUrls: ['./categorias.component.scss']
+  styleUrls: ['./categorias.component.scss'],
 })
-
 export class CategoriasProductorComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private userStore = inject(UserStoreService);
   private productorService = inject(ProductorService);
-  public imagenService = inject(ImagenService);
-  public imagenUtils = inject(ImageUploadUtilsService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
+  productor: ProductorResponse | null = null;
   categorias: CategoriaResponse[] = [];
   loading = true;
   showForm = false;
   editingCategoria: CategoriaResponse | null = null;
   saving = false;
+  imagePrwview: string | null = null;
+
+  currentUser = this.userStore.snapshot();
 
   // Propiedades para gestión de imágenes
   selectedFile: File | null = null;
@@ -35,44 +40,162 @@ export class CategoriasProductorComponent implements OnInit {
 
   form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.minLength(2)]],
-    descripcion: ['', [Validators.required, Validators.minLength(10)]]
+    descripcion: ['', [Validators.required, Validators.minLength(10)]],
+    imagenUrl: [''],
   });
 
   ngOnInit() {
-    this.loadCategorias();
-  }
+    // 1. Obtener el usuario actual de forma reactiva
+    this.currentUser = this.userStore.snapshot();
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      
-      // Validar archivo
-      const validationResult = this.imagenUtils.validateFile(file);
-      if (!validationResult.valid) {
-        alert(this.imagenUtils.buildErrorMessage(validationResult, {}));
+    // 2. Si no hay usuario, intentar verificar el token en sessionStorage
+    if (!this.currentUser) {
+      const token = sessionStorage.getItem('authToken');
+      if (!token) {
+        console.error('No user found and no token in sessionStorage');
+        this.router.navigateByUrl('/login/productores');
         return;
       }
 
-      this.selectedFile = file;
-      
-      // Crear preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imagePreview = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
+      // Intentar decodificar el token para obtener la información del usuario
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('Token payload:', payload);
+
+        // Si el token existe pero no hay usuario en el store, hay un problema
+        alert('Error: Sesión inconsistente. Por favor, inicie sesión nuevamente.');
+        this.router.navigateByUrl('/login/productores');
+        return;
+      } catch (e) {
+        console.error('Error decoding token:', e);
+        this.router.navigateByUrl('/login/productores');
+        return;
+      }
     }
+
+    // 3. Verificar tipo de usuario
+    if (this.currentUser.tipoUsuario !== 'PRODUCTOR') {
+      console.error('User is not a producer:', this.currentUser);
+      this.router.navigateByUrl('/login/productores');
+      return;
+    }
+
+    console.log('Current user validated:', this.currentUser);
+    console.log('User properties:', Object.keys(this.currentUser));
+    console.log('User ID field value:', this.currentUser.idUsuario);
+
+    // 4. Verificar si viene de crear nueva categoría (opcional, igual que en artículos)
+    const nuevo = this.route.snapshot.url.some((segment) => segment.path === 'nuevo');
+    if (nuevo) {
+      this.showForm = true;
+    }
+
+    // 5. Cargar datos
+    this.loadData();
   }
 
-  removeSelectedImage() {
-    this.selectedFile = null;
-    this.imagePreview = null;
-    // Reset file input
-    const fileInput = document.getElementById('imagen') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
+  loadData() {
+    // Verificar el estado actual del usuario
+    this.currentUser = this.userStore.snapshot();
+
+    if (!this.currentUser) {
+      console.error('No current user found in store');
+      alert('Error: No se ha iniciado sesión correctamente');
+      this.router.navigateByUrl('/login/productores');
+      return;
     }
+
+    if (!this.currentUser.idUsuario) {
+      console.error('Current user has no ID:', this.currentUser);
+      alert('Error: El usuario no tiene un ID válido');
+      this.router.navigateByUrl('/login/productores');
+      return;
+    }
+
+    console.log('Loading data for user:', this.currentUser);
+
+    // Verificar el token antes de hacer requests
+    const token = sessionStorage.getItem('authToken');
+    console.log('Token in sessionStorage:', token ? token.substring(0, 50) + '...' : 'null');
+
+    if (!token) {
+      console.error('No token found in sessionStorage');
+      alert('Error: No se encontró token de autenticación. Por favor, inicie sesión nuevamente.');
+      this.router.navigateByUrl('/login/productores');
+      return;
+    }
+
+    // Verificar si el token ha expirado
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Math.floor(Date.now() / 1000);
+      console.log('Token payload:', payload);
+      console.log('Token exp:', payload.exp, 'Current time:', now);
+
+      if (payload.exp && payload.exp < now) {
+        console.error('Token has expired');
+        alert('Su sesión ha expirado. Por favor, inicie sesión nuevamente.');
+        console.warn('🚨 Token expired - but NOT clearing session for debugging');
+        // this.clearAuthSession(); // Comentado para debugging
+        return;
+      }
+    } catch (e) {
+      console.error('Error decoding token:', e);
+      alert('Token inválido. Por favor, inicie sesión nuevamente.');
+      console.warn('🚨 Invalid token - but NOT clearing session for debugging');
+      // this.clearAuthSession(); // Comentado para debugging
+      return;
+    }
+
+    // Cargar datos del productor
+    console.log('Attempting to load productor for user ID:', this.currentUser.idUsuario);
+
+    this.productorService.getProductorPorUsuario(this.currentUser.idUsuario).subscribe({
+      next: (productor) => {
+        console.log('Productor loaded:', productor);
+        this.productor = productor;
+
+        // AQUÍ ESTÁ EL CAMBIO CLAVE: Cargar Categorías en vez de Artículos
+        this.loadCategorias();
+      },
+      error: (error) => {
+        console.error('Error loading productor:', error);
+        console.log('Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url,
+        });
+
+        // Asumiendo que tienes una variable loading en categorías también
+        // this.loading = false;
+
+        let errorMessage = 'Error al cargar la información del productor. ';
+        if (error.status === 401) {
+          errorMessage +=
+            'Su sesión ha expirado o no tiene permisos. Por favor, inicie sesión nuevamente.';
+          console.warn('🚨 401 error detected - but NOT clearing session for debugging');
+        } else if (error.status === 404) {
+          errorMessage += 'No se encontró información de productor para este usuario.';
+        } else if (error.status === 0) {
+          errorMessage += 'No se pudo conectar con el servidor. Verifique su conexión a internet.';
+        } else {
+          errorMessage += `Error del servidor (${error.status}). Inténtelo de nuevo más tarde.`;
+        }
+
+        alert(errorMessage);
+      },
+    });
+  }
+
+  onImageUploaded(url: string) {
+    this.form.patchValue({ imagenUrl: url });
+    this.imagePreview = url;
+  }
+
+  onImageRemoved() {
+    this.form.patchValue({ imagenUrl: '' });
+    this.imagePreview = null;
   }
 
   loadCategorias() {
@@ -83,7 +206,7 @@ export class CategoriasProductorComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -100,14 +223,14 @@ export class CategoriasProductorComponent implements OnInit {
     this.editingCategoria = categoria;
     this.form.patchValue({
       nombre: categoria.nombre,
-      descripcion: categoria.descripcion
+      descripcion: categoria.descripcion,
     });
-    
+
     // Si la categoría tiene imagen, mostrar preview
     if (categoria.imagenUrl) {
       this.imagePreview = categoria.imagenUrl;
     }
-    
+
     this.showForm = true;
   }
 
@@ -118,7 +241,7 @@ export class CategoriasProductorComponent implements OnInit {
     this.selectedFile = null;
     this.imagePreview = null;
     this.uploadingImage = false;
-    
+
     // Reset file input
     const fileInput = document.getElementById('imagen') as HTMLInputElement;
     if (fileInput) {
@@ -127,68 +250,89 @@ export class CategoriasProductorComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.form.invalid) return;
+    // 1. Verificación del Productor (Igual que en Artículos)
+    if (!this.productor) {
+      console.error('No se encontró información del productor');
+      alert('Error: No se encontró información del productor');
+      return;
+    }
 
+    // 2. Validación del Formulario (Igual que en Artículos)
+    if (this.form.invalid) {
+      console.error('Form is invalid:', {
+        formErrors: this.form.errors,
+        formValue: this.form.value,
+        controls: Object.keys(this.form.controls).map((key) => ({
+          key,
+          errors: this.form.get(key)?.errors,
+          value: this.form.get(key)?.value,
+        })),
+      });
+
+      // Marcar todos los campos como tocados
+      Object.keys(this.form.controls).forEach((key) => {
+        this.form.get(key)?.markAsTouched();
+      });
+
+      alert('Por favor, completa todos los campos obligatorios correctamente');
+      return;
+    }
+
+    // 3. Preparación de datos (Igual que en Artículos)
     this.saving = true;
     const formData = this.form.getRawValue();
-    
-    // Función para crear/actualizar categoría
-    const crearCategoria = (imagenUrl?: string) => {
-      const request: CategoriaRequest = {
-        nombre: formData.nombre,
-        descripcion: formData.descripcion,
-        imagenUrl: imagenUrl || this.editingCategoria?.imagenUrl || ''
-      };
 
-      const operation$ = this.editingCategoria 
-        ? this.productorService.updateCategoria(this.editingCategoria.idCategoria, request)
-        : this.productorService.createCategoria(request);
-
-      operation$.subscribe({
-        next: () => {
-          this.loadCategorias();
-          this.cancelForm();
-          this.saving = false;
-          alert(this.editingCategoria ? 'Categoría actualizada correctamente' : 'Categoría creada correctamente');
-        },
-        error: (error) => {
-          console.error('Error saving categoria:', error);
-          alert('Error al guardar la categoría. Inténtalo de nuevo.');
-          this.saving = false;
-        }
-      });
+    // Construimos el objeto request directamente
+    const request: CategoriaRequest = {
+      nombre: formData.nombre.trim(),
+      descripcion: formData.descripcion.trim(),
+      // Asumimos la misma lógica que en artículos: la URL viene del form o se envía vacía/existente
+      imagenUrl: formData.imagenUrl || this.editingCategoria?.imagenUrl || '',
     };
 
-    // Si hay una imagen seleccionada, subirla primero
-    if (this.selectedFile) {
-      this.uploadingImage = true;
-      
-      // Obtener datos del usuario desde el localStorage
-      const userData = localStorage.getItem('user');
-      if (!userData) {
-        alert('Error: No se encontraron datos del usuario');
-        this.saving = false;
-        return;
-      }
+    console.log('Sending request to create/update categoria:', request);
 
-      const user = JSON.parse(userData);
-      
-      this.imagenService.subirImagenCategoria(this.selectedFile, user.id, user.tipoUsuario).subscribe({
-        next: (response) => {
-          this.uploadingImage = false;
-          crearCategoria(response.imageUrl);
-        },
-        error: (error) => {
-          console.error('Error uploading image:', error);
-          this.uploadingImage = false;
-          this.saving = false;
-          alert('Error al subir la imagen. Inténtalo de nuevo.');
+    // 4. Selección de operación (Igual que en Artículos)
+    const operation$ = this.editingCategoria
+      ? this.productorService.updateCategoria(this.editingCategoria.idCategoria, request)
+      : this.productorService.createCategoria(request);
+
+    // 5. Suscripción y manejo de respuesta (Igual que en Artículos)
+    operation$.subscribe({
+      next: (response) => {
+        console.log('Categoria saved successfully:', response);
+        this.loadCategorias();
+        this.cancelForm();
+        this.saving = false;
+        alert(
+          this.editingCategoria
+            ? 'Categoría actualizada correctamente'
+            : 'Categoría creada correctamente'
+        );
+      },
+      error: (error) => {
+        console.error('Error saving categoria:', error);
+        let errorMessage = 'Error al guardar la categoría. ';
+
+        // Mismo manejo de errores detallado
+        if (error.status === 400) {
+          errorMessage += 'Verifique que todos los campos estén completos y sean válidos.';
+        } else if (error.status === 401) {
+          errorMessage += 'No tiene permisos para realizar esta operación.';
+        } else if (error.status === 404) {
+          errorMessage += 'No se encontró el recurso solicitado.';
+        } else if (error.status === 500) {
+          errorMessage += 'Error interno del servidor.';
+        } else if (error.error?.message) {
+          errorMessage += error.error.message;
+        } else {
+          errorMessage += 'Inténtalo de nuevo.';
         }
-      });
-    } else {
-      // Si no hay imagen nueva, proceder directamente
-      crearCategoria();
-    }
+
+        alert(errorMessage);
+        this.saving = false;
+      },
+    });
   }
 
   deleteCategoria(categoria: CategoriaResponse) {
@@ -203,8 +347,17 @@ export class CategoriasProductorComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error deleting categoria:', error);
-        alert('Error al eliminar la categoría. Puede que tenga productos asociados.');
-      }
+
+        // Manejo específico si hay productos asociados (común en categorías)
+        if (
+          error.status === 409 ||
+          (error.error && error.error.message && error.error.message.includes('constraint'))
+        ) {
+          alert('No se puede eliminar la categoría porque tiene productos asociados.');
+        } else {
+          alert('Error al eliminar la categoría. Inténtalo de nuevo.');
+        }
+      },
     });
   }
 

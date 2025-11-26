@@ -83,6 +83,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'productor/categorias/nueva',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'PRODUCTOR' },
+    loadComponent: () =>
+      import('./features/productor/categorias/categorias.component').then(
+        (m) => m.CategoriasProductorComponent
+      ),
+  },
+  {
     path: 'productor/articulos',
     canActivate: [authGuard, roleGuard],
     data: { tipoUsuario: 'PRODUCTOR' },
