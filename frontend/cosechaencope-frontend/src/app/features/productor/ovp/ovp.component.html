@@ -1,0 +1,162 @@
+<div class="pedidos-container">
+  <div class="pedidos-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver
+    </button>
+    <h1>
+      <i class="fas fa-cash-register"></i> Gestión de Ventas
+    </h1>
+  </div>
+
+  <div class="pedidos-content" *ngIf="!(loading$ | async); else loadingTemplate">
+    
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="filtroEstado">
+          <i class="fas fa-filter"></i>
+          Filtrar por estado:
+        </label>
+        <select 
+          id="filtroEstado" 
+          [(ngModel)]="filtroEstado" 
+          class="filter-select">
+          <option value="TODOS">Todos los estados</option>
+          <option [value]="EstadoOrden.PENDIENTE">Pendientes</option>
+          <option [value]="EstadoOrden.EN_PROCESO">En Proceso</option>
+          <option [value]="EstadoOrden.ENVIADA">Enviados</option>
+          <option [value]="EstadoOrden.ENTREGADA">Entregados</option>
+          <option [value]="EstadoOrden.CANCELADA">Cancelados</option>
+        </select>
+      </div>
+      <div class="results-count" *ngIf="(ordenes$ | async) as ordenes">
+        <i class="fas fa-list"></i>
+        {{ filtrarOrdenes(ordenes).length }} venta(s) encontrada(s)
+      </div>
+    </div>
+
+    <!-- Lista de órdenes -->
+    <ng-container *ngIf="(ordenes$ | async) as ordenes">
+      <div class="pedidos-list" *ngIf="filtrarOrdenes(ordenes).length > 0; else noPedidos">
+        
+        <div class="pedido-card" 
+             *ngFor="let orden of filtrarOrdenes(ordenes)"
+             [class.updating]="orden.isUpdating">
+          
+          <!-- Header del pedido -->
+          <div class="pedido-card__header">
+            <div class="pedido-info">
+              <h3>
+                <i class="fas fa-receipt"></i>
+                Orden {{ orden.numeroOrden }}
+              </h3>
+              <span class="pedido-fecha">
+                <i class="fas fa-calendar"></i>
+                {{ orden.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+            <span class="badge" [ngClass]="getBadgeClass(orden.estado)">
+              <i class="fas" [ngClass]="getIconClass(orden.estado)"></i>
+              {{ getEstadoLabel(orden.estado) }}
+            </span>
+          </div>
+
+          <!-- Contenido del pedido -->
+          <div class="pedido-card__body">
+            <div class="pedido-details">
+              
+              <!-- Cliente -->
+              <div class="detail-item detail-item--full">
+                <div class="detail-label">
+                  <i class="fas fa-user"></i>
+                  Cliente
+                </div>
+                <div class="detail-value">
+                   {{ getClienteNombre(orden) }}
+                </div>
+              </div>
+
+              <!-- Artículos -->
+              <div class="detail-item">
+                <div class="detail-label">
+                  <i class="fas fa-box-open"></i>
+                  Artículos
+                </div>
+                <div class="detail-value">
+                  {{ orden.detalles.length }} ítem(s)
+                </div>
+              </div>
+
+              <!-- Observaciones -->
+              <div class="detail-item detail-item--full" *ngIf="orden.observaciones">
+                <div class="detail-label">
+                  <i class="fas fa-comment"></i>
+                  Nota
+                </div>
+                <div class="detail-value text-italic">
+                  "{{ orden.observaciones }}"
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen de precios -->
+            <div class="pedido-pricing">
+              <div class="pricing-row">
+                 <span>Cantidad Artículos:</span>
+                 <span>{{ orden.detalles.length }}</span>
+              </div>
+              <div class="pricing-row pricing-row--total">
+                <span>Total Venta:</span>
+                <strong>{{ orden.total | number:'1.2-2' }}€</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer del pedido -->
+          <div class="pedido-card__footer action-footer">
+            
+            <div *ngIf="orden.isUpdating" class="updating-msg">
+               <div class="spinner-sm"></div> Procesando...
+            </div>
+
+            <div class="action-buttons" *ngIf="!orden.isUpdating">
+               <button class="btn btn--outline" (click)="verDetalle(orden.idOvp)">
+                <i class="fas fa-eye"></i> Detalle
+              </button>
+
+              <button *ngIf="orden.estado === EstadoOrden.PENDIENTE" 
+                      class="btn btn--primary" 
+                      (click)="cambiarEstado(orden, EstadoOrden.EN_PROCESO)">
+                <i class="fas fa-check"></i> Aceptar
+              </button>
+
+              <button *ngIf="orden.estado === EstadoOrden.EN_PROCESO" 
+                      class="btn btn--info" 
+                      (click)="cambiarEstado(orden, EstadoOrden.ENVIADA)">
+                <i class="fas fa-truck"></i> Enviar
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Sin pedidos -->
+    <ng-template #noPedidos>
+      <div class="no-pedidos">
+        <i class="fas fa-store-slash"></i>
+        <h3>No se encontraron ventas</h3>
+        <p>No tienes órdenes que coincidan con los filtros o aún no has recibido pedidos.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando tus ventas...</p>
+    </div>
+  </ng-template>
+</div>

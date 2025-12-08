@@ -61,6 +61,17 @@ public class PedidoService {
         this.ordenVentaProductorService = ordenVentaProductorService;
     }
 
+    /**
+     * Crea un nuevo pedido para el cliente asociado al ID de usuario proporcionado.
+     * 
+     * @param idUsuario
+     * @param metodoPago
+     * @return {@link PedidoResponse} con los detalles del pedido creado.
+     * @throws ResourceNotFoundException si el cliente o el carrito activo no se encuentran.
+     * @throws IllegalStateException si el carrito está vacío o si el cliente no tiene
+     *         dirección o teléfono configurados.
+     * @throws StockInsuficienteException si algún artículo en el carrito no tiene stock suficiente.
+     */
     @Transactional
     public PedidoResponse crearPedido(Long idUsuario, String metodoPago) {
 
@@ -272,8 +283,8 @@ public class PedidoService {
                 EstadoOrdenVenta.ENVIADA, List.of(
                         EstadoOrdenVenta.ENTREGADA
                 ),
-                EstadoOrdenVenta.ENTREGADA, List.of(), // Estado final
-                EstadoOrdenVenta.CANCELADA, List.of() // Estado final
+                EstadoOrdenVenta.ENTREGADA, List.of(),
+                EstadoOrdenVenta.CANCELADA, List.of()
         );
 
         List<EstadoOrdenVenta> estadosPermitidos = transicionesPermitidas.get(estadoActual);

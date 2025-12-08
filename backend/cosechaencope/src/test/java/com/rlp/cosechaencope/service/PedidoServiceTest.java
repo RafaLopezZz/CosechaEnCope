@@ -8,6 +8,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +42,7 @@ import com.rlp.cosechaencope.repository.OrdenVentaProductorRepository;
 import com.rlp.cosechaencope.repository.PedidoRepository;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("Tests del servicio PedidoService")
 public class PedidoServiceTest {
 
     @Mock
@@ -76,10 +78,12 @@ public class PedidoServiceTest {
         usuario.setEmail("cliente@test.com");
         usuario.setTipoUsuario("CLIENTE");
 
-        // Configurar cliente
+        // Configurar cliente con todos los campos requeridos
         cliente = new Cliente();
         cliente.setIdCliente(1L);
         cliente.setNombre("Cliente Test");
+        cliente.setDireccion("Calle Test 123");
+        cliente.setTelefono("600123456");
         cliente.setUsuario(usuario);
 
         // Configurar categoría y productor
@@ -131,11 +135,11 @@ public class PedidoServiceTest {
     void crearPedido_deberiaCrearPedidoCuandoDatosValidos() {
         // Arrange
         when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByCliente(cliente)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.findActivoConDetalles(cliente)).thenReturn(Optional.of(carrito));
         when(articuloRepository.save(any(Articulo.class))).thenReturn(articulo);
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
             Pedido p = invocation.getArgument(0);
-            p.setIdPedido(1L); // Simular ID generado
+            p.setIdPedido(1L);
             return p;
         });
         when(carritoRepository.save(any(Carrito.class))).thenReturn(carrito);
@@ -150,7 +154,7 @@ public class PedidoServiceTest {
         assertThat(response.getEstadoPedido()).isEqualTo("Pendiente");
         assertThat(response.getDetalles()).hasSize(1);
         verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verify(carritoRepository).findByCliente(cliente);
+        verify(carritoRepository).findActivoConDetalles(cliente);
         verify(pedidoRepository).save(any(Pedido.class));
         verify(articuloRepository).save(any(Articulo.class));
         verify(ordenVentaProductorService).generarOrdenesVentaDesdePedido(any(Pedido.class));
@@ -175,15 +179,15 @@ public class PedidoServiceTest {
     void crearPedido_deberiaLanzarExcepcionCuandoCarritoNoExiste() {
         // Arrange
         when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByCliente(cliente)).thenReturn(Optional.empty());
+        when(carritoRepository.findActivoConDetalles(cliente)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> pedidoService.crearPedido(1L, "TARJETA"))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Carrito no encontrado");
+                .hasMessage("Carrito activo no encontrado");
 
         verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verify(carritoRepository).findByCliente(cliente);
+        verify(carritoRepository).findActivoConDetalles(cliente);
         verifyNoMoreInteractions(pedidoRepository, carritoService);
     }
 
@@ -192,7 +196,7 @@ public class PedidoServiceTest {
         // Arrange
         carrito.setDetalleList(List.of()); // Carrito vacío
         when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
-        when(carritoRepository.findByCliente(cliente)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.findActivoConDetalles(cliente)).thenReturn(Optional.of(carrito));
 
         // Act & Assert
         assertThatThrownBy(() -> pedidoService.crearPedido(1L, "TARJETA"))
@@ -200,8 +204,38 @@ public class PedidoServiceTest {
                 .hasMessage("No se puede crear un pedido con un carrito vacío");
 
         verify(clienteRepository).findByUsuario_IdUsuario(1L);
-        verify(carritoRepository).findByCliente(cliente);
+        verify(carritoRepository).findActivoConDetalles(cliente);
         verifyNoMoreInteractions(pedidoRepository, carritoService);
+    }
+
+    @Test
+    void crearPedido_deberiaLanzarExcepcionCuandoClienteSinDireccion() {
+        // Arrange
+        cliente.setDireccion(null);
+        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
+
+        // Act & Assert
+        assertThatThrownBy(() -> pedidoService.crearPedido(1L, "TARJETA"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("El cliente debe tener una dirección configurada para realizar un pedido");
+
+        verify(clienteRepository).findByUsuario_IdUsuario(1L);
+        verifyNoMoreInteractions(carritoRepository, pedidoRepository);
+    }
+
+    @Test
+    void crearPedido_deberiaLanzarExcepcionCuandoClienteSinTelefono() {
+        // Arrange
+        cliente.setTelefono(null);
+        when(clienteRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(cliente));
+
+        // Act & Assert
+        assertThatThrownBy(() -> pedidoService.crearPedido(1L, "TARJETA"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("El cliente debe tener un teléfono configurado para realizar un pedido");
+
+        verify(clienteRepository).findByUsuario_IdUsuario(1L);
+        verifyNoMoreInteractions(carritoRepository, pedidoRepository);
     }
 
     @Test

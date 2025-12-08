@@ -579,6 +579,9 @@ body {
   flex: 1;
   overflow: hidden;
   position: relative;
+  /* Añadir padding para compensar el efecto hover que se sale del viewport */
+  padding: var(--spacing-sm) 0;
+  margin: calc(-1 * var(--spacing-sm)) 0;
 }
 
 .gallery__track {
@@ -587,7 +590,10 @@ body {
   grid-auto-columns: 296px;
   gap: var(--spacing-xl);
   transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  padding: var(--spacing-sm);
+  /* Padding solo vertical para el efecto hover, horizontal manejado por viewport */
+  padding: var(--spacing-sm) 0;
+  /* Asegurar que no haya desbordamiento inesperado */
+  will-change: transform;
 }
 
 .gallery__item {
@@ -1421,6 +1427,10 @@ body {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    /* Padding horizontal para que el primer/último elemento se vea completo */
+    padding: var(--spacing-sm) var(--spacing-md);
+    /* Resetear transform ya que usamos scroll nativo */
+    transform: none !important;
   }
   
   .gallery__track::-webkit-scrollbar {

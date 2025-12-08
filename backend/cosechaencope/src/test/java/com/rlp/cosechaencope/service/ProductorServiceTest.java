@@ -77,21 +77,21 @@ public class ProductorServiceTest {
 
     @Test
     void obtenerProductorPorUsuarioId_existente_deberiaRetornarProductorResponse() {
-        when(productorRepository.findById(22L)).thenReturn(Optional.of(productor));
+        when(productorRepository.findByUsuario_IdUsuario(1L)).thenReturn(Optional.of(productor));
 
-        ProductorResponse response = productorService.obtenerProductorPorUsuarioId(22L);
+        ProductorResponse response = productorService.obtenerProductorPorUsuarioId(1L);
 
         assertThat(response).isNotNull();
         assertThat(response.getIdProductor()).isEqualTo(22L);
         assertThat(response.getNombre()).isEqualTo("Tomás productor");
-        verify(productorRepository).findById(22L);
+        verify(productorRepository).findByUsuario_IdUsuario(1L);
     }
 
     @Test
     void obtenerProductorPorUsuarioId_noExistente_deberiaLanzarExcepcion() {
-        when(productorRepository.findById(60L)).thenReturn(Optional.empty());
+        when(productorRepository.findByUsuario_IdUsuario(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> productorService.obtenerProductorPorUsuarioId(60L))
+        assertThatThrownBy(() -> productorService.obtenerProductorPorUsuarioId(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Productor no encontrado");
     }

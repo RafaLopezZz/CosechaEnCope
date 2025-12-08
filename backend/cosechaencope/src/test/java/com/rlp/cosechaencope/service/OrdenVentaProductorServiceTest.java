@@ -6,9 +6,12 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.times;
@@ -19,23 +22,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.rlp.cosechaencope.model.Articulo;
 import com.rlp.cosechaencope.model.Categoria;
 import com.rlp.cosechaencope.model.Cliente;
-import com.rlp.cosechaencope.model.DetalleOvp;
 import com.rlp.cosechaencope.model.DetallePedido;
 import com.rlp.cosechaencope.model.EstadoOrdenVenta;
 import com.rlp.cosechaencope.model.OrdenVentaProductor;
 import com.rlp.cosechaencope.model.Pedido;
 import com.rlp.cosechaencope.model.Productor;
 import com.rlp.cosechaencope.model.Usuario;
-import com.rlp.cosechaencope.repository.DetalleOvpRepository;
 import com.rlp.cosechaencope.repository.OrdenVentaProductorRepository;
 
+/**
+ * Tests unitarios para OrdenVentaProductorService.
+ * Verifica la generación de órdenes de venta a productores desde pedidos.
+ */
 @ExtendWith(MockitoExtension.class)
+@DisplayName("Tests del servicio OrdenVentaProductorService")
 public class OrdenVentaProductorServiceTest {
 
     @Mock
     private OrdenVentaProductorRepository ordenVentaproductorRepository;
-    @Mock
-    private DetalleOvpRepository detalleOvpRepository;
+
+    @Captor
+    private ArgumentCaptor<OrdenVentaProductor> ovpCaptor;
 
     @InjectMocks
     private OrdenVentaProductorService ordenVentaProductorService;
@@ -148,17 +155,24 @@ public class OrdenVentaProductorServiceTest {
     void generarOrdenesVentaDesdePedido_deberiaCrearOrdenesParaCadaProductor() {
         // Arrange
         when(ordenVentaproductorRepository.save(any(OrdenVentaProductor.class)))
-            .thenReturn(ovp1, ovp2);
+            .thenAnswer(invocation -> {
+                OrdenVentaProductor ovp = invocation.getArgument(0);
+                ovp.setIdOvp(ovp.getProductor().getIdProductor());
+                return ovp;
+            });
 
         // Act
-        ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
+        List<OrdenVentaProductor> resultado = ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
 
-        // Assert
-        // Verificar que se guarden 2 órdenes de venta (una por cada productor)
-        verify(ordenVentaproductorRepository, times(2)).save(any(OrdenVentaProductor.class));
+        // Assert: Verificar que se guarden 2 órdenes de venta (una por cada productor)
+        verify(ordenVentaproductorRepository, times(2)).save(ovpCaptor.capture());
+        assertThat(resultado).hasSize(2);
         
-        // Verificar que se guarden 3 detalles OVP (uno por cada detalle del pedido)
-        verify(detalleOvpRepository, times(3)).save(any(DetalleOvp.class));
+        // Verificar los productores de las OVPs capturadas
+        List<OrdenVentaProductor> ovpsCapturadas = ovpCaptor.getAllValues();
+        assertThat(ovpsCapturadas)
+            .extracting(ovp -> ovp.getProductor().getIdProductor())
+            .containsExactlyInAnyOrder(1L, 2L);
     }
 
     @Test
@@ -167,24 +181,31 @@ public class OrdenVentaProductorServiceTest {
         when(ordenVentaproductorRepository.save(any(OrdenVentaProductor.class)))
             .thenAnswer(invocation -> {
                 OrdenVentaProductor ovp = invocation.getArgument(0);
-                if (ovp.getProductor().equals(productor1)) {
-                    ovp.setIdOvp(1L);
-                    return ovp1;
-                } else {
-                    ovp.setIdOvp(2L);
-                    return ovp2;
-                }
+                ovp.setIdOvp(ovp.getProductor().getIdProductor());
+                return ovp;
             });
 
         // Act
-        ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
+        List<OrdenVentaProductor> resultado = ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
 
-        // Assert
-        // Verificar que se crean órdenes de venta para cada productor
-        verify(ordenVentaproductorRepository, times(2)).save(any(OrdenVentaProductor.class));
+        // Assert: Verificar que se crean órdenes de venta para cada productor
+        verify(ordenVentaproductorRepository, times(2)).save(ovpCaptor.capture());
         
-        // Verificar que se crean detalles para todos los artículos
-        verify(detalleOvpRepository, times(3)).save(any(DetalleOvp.class));
+        List<OrdenVentaProductor> ovpsCapturadas = ovpCaptor.getAllValues();
+        
+        // Verificar que productor1 tiene 2 líneas (articulo1 y articulo2)
+        OrdenVentaProductor ovpProductor1 = ovpsCapturadas.stream()
+            .filter(ovp -> ovp.getProductor().getIdProductor().equals(1L))
+            .findFirst()
+            .orElseThrow();
+        assertThat(ovpProductor1.getLineas()).hasSize(2);
+        
+        // Verificar que productor2 tiene 1 línea (articulo3)
+        OrdenVentaProductor ovpProductor2 = ovpsCapturadas.stream()
+            .filter(ovp -> ovp.getProductor().getIdProductor().equals(2L))
+            .findFirst()
+            .orElseThrow();
+        assertThat(ovpProductor2.getLineas()).hasSize(1);
     }
 
     @Test
@@ -193,25 +214,26 @@ public class OrdenVentaProductorServiceTest {
         when(ordenVentaproductorRepository.save(any(OrdenVentaProductor.class)))
             .thenAnswer(invocation -> {
                 OrdenVentaProductor ovp = invocation.getArgument(0);
-                
-                // Verificar que los datos básicos están asignados correctamente
-                assertThat(ovp.getProductor()).isNotNull();
-                assertThat(ovp.getFechaCreacion()).isNotNull();
-                
-                if (ovp.getProductor().equals(productor1)) {
-                    ovp.setIdOvp(1L);
-                    return ovp1;
-                } else {
-                    ovp.setIdOvp(2L);
-                    return ovp2;
-                }
+                ovp.setIdOvp(ovp.getProductor().getIdProductor());
+                return ovp;
             });
 
         // Act
         ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
 
-        // Assert
-        verify(ordenVentaproductorRepository, times(2)).save(any(OrdenVentaProductor.class));
+        // Assert: Capturar y verificar datos de las OVPs
+        verify(ordenVentaproductorRepository, times(2)).save(ovpCaptor.capture());
+        
+        List<OrdenVentaProductor> ovpsCapturadas = ovpCaptor.getAllValues();
+        
+        // Verificar que todas las OVPs tienen los datos básicos correctos
+        assertThat(ovpsCapturadas).allSatisfy(ovp -> {
+            assertThat(ovp.getProductor()).isNotNull();
+            assertThat(ovp.getFechaCreacion()).isNotNull();
+            assertThat(ovp.getEstado()).isEqualTo(EstadoOrdenVenta.PENDIENTE);
+            assertThat(ovp.getPedidoCliente()).isEqualTo(pedido);
+            assertThat(ovp.getNumeroOrden()).startsWith("OVP-");
+        });
     }
 
     @Test
@@ -220,32 +242,37 @@ public class OrdenVentaProductorServiceTest {
         pedido.setDetallePedido(List.of()); // Pedido sin detalles
 
         // Act
-        ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
+        List<OrdenVentaProductor> resultado = ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
 
-        // Assert
-        // No se debería guardar ninguna orden ni detalle
+        // Assert: No se debe guardar ninguna orden cuando el pedido está vacío
         verify(ordenVentaproductorRepository, times(0)).save(any(OrdenVentaProductor.class));
-        verify(detalleOvpRepository, times(0)).save(any(DetalleOvp.class));
+        assertThat(resultado).isEmpty();
     }
 
     @Test
     void generarOrdenesVentaDesdePedido_deberiaCrearSoloUnaOrdenParaUnProductor() {
-        // Arrange - Todos los artículos del mismo productor
-        articulo2.setProductor(productor1); // Cambiar productor del segundo artículo
-        articulo3.setProductor(productor1); // Cambiar productor del tercer artículo
+        // Arrange: Todos los artículos del mismo productor
+        articulo2.setProductor(productor1);
+        articulo3.setProductor(productor1);
         
         when(ordenVentaproductorRepository.save(any(OrdenVentaProductor.class)))
-            .thenReturn(ovp1);
+            .thenAnswer(invocation -> {
+                OrdenVentaProductor ovp = invocation.getArgument(0);
+                ovp.setIdOvp(1L);
+                return ovp;
+            });
 
         // Act
-        ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
+        List<OrdenVentaProductor> resultado = ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
 
-        // Assert
-        // Solo se debería crear una orden de venta (todos los artículos son del mismo productor)
-        verify(ordenVentaproductorRepository, times(1)).save(any(OrdenVentaProductor.class));
+        // Assert: Solo una orden de venta (todos los artículos son del mismo productor)
+        verify(ordenVentaproductorRepository, times(1)).save(ovpCaptor.capture());
+        assertThat(resultado).hasSize(1);
         
-        // Pero se deberían crear 3 detalles (uno por cada artículo)
-        verify(detalleOvpRepository, times(3)).save(any(DetalleOvp.class));
+        // Verificar que la OVP tiene 3 líneas (una por cada artículo)
+        OrdenVentaProductor ovpCapturada = ovpCaptor.getValue();
+        assertThat(ovpCapturada.getLineas()).hasSize(3);
+        assertThat(ovpCapturada.getProductor()).isEqualTo(productor1);
     }
 
     @Test
@@ -254,60 +281,19 @@ public class OrdenVentaProductorServiceTest {
         when(ordenVentaproductorRepository.save(any(OrdenVentaProductor.class)))
             .thenAnswer(invocation -> {
                 OrdenVentaProductor ovp = invocation.getArgument(0);
-                
-                // Verificar que el estado inicial es PENDIENTE
-                assertThat(ovp.getEstado()).isEqualTo(EstadoOrdenVenta.PENDIENTE);
-                assertThat(ovp.getFechaCreacion()).isNotNull();
-                
-                if (ovp.getProductor().equals(productor1)) {
-                    ovp.setIdOvp(1L);
-                    return ovp1;
-                } else {
-                    ovp.setIdOvp(2L);
-                    return ovp2;
-                }
+                ovp.setIdOvp(ovp.getProductor().getIdProductor());
+                return ovp;
             });
 
         // Act
         ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
 
-        // Assert
-        verify(ordenVentaproductorRepository, times(2)).save(any(OrdenVentaProductor.class));
-    }
-
-    @Test
-    void generarOrdenesVentaDesdePedido_deberiaCrearDetallesConDatosCorrectos() {
-        // Arrange
-        when(ordenVentaproductorRepository.save(any(OrdenVentaProductor.class)))
-            .thenAnswer(invocation -> {
-                OrdenVentaProductor ovp = invocation.getArgument(0);
-                if (ovp.getProductor().equals(productor1)) {
-                    ovp.setIdOvp(1L);
-                    return ovp1;
-                } else {
-                    ovp.setIdOvp(2L);
-                    return ovp2;
-                }
-            });
-
-        when(detalleOvpRepository.save(any(DetalleOvp.class)))
-            .thenAnswer(invocation -> {
-                DetalleOvp detalle = invocation.getArgument(0);
-                
-                // Verificar que los detalles tienen los datos correctos
-                assertThat(detalle.getOrdenVenta()).isNotNull();
-                assertThat(detalle.getArticulo()).isNotNull();
-                assertThat(detalle.getCantidad()).isGreaterThan(0);
-                assertThat(detalle.getPrecioUnitario()).isNotNull();
-                
-                return detalle;
-            });
-
-        // Act
-        ordenVentaProductorService.generarOrdenesVentaDesdePedido(pedido);
-
-        // Assert
-        verify(ordenVentaproductorRepository, times(2)).save(any(OrdenVentaProductor.class));
-        verify(detalleOvpRepository, times(3)).save(any(DetalleOvp.class));
+        // Assert: Verificar estado PENDIENTE en todas las OVPs
+        verify(ordenVentaproductorRepository, times(2)).save(ovpCaptor.capture());
+        
+        assertThat(ovpCaptor.getAllValues()).allSatisfy(ovp -> {
+            assertThat(ovp.getEstado()).isEqualTo(EstadoOrdenVenta.PENDIENTE);
+            assertThat(ovp.getFechaCreacion()).isNotNull();
+        });
     }
 }

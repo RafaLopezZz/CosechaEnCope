@@ -15,7 +15,7 @@
 
     <div class="sidebar__user" *ngIf="cliente">
       <div class="user__avatar">
-        <i class="fas fa-user-circle"></i>
+        {{ (cliente.nombre || 'C')[0] | uppercase }}
       </div>
       <div class="user__info" *ngIf="!sidebarCollapsed">
         <h3>{{ cliente.nombre || 'Cliente' }}</h3>
@@ -32,13 +32,13 @@
       </li>
       <li>
         <a routerLink="/cliente/perfil" routerLinkActive="active">
-          <i class="fas fa-user-edit"></i>
+          <i class="fas fa-user"></i>
           <span *ngIf="!sidebarCollapsed">Mi Perfil</span>
         </a>
       </li>
       <li>
         <a routerLink="/cliente/pedidos" routerLinkActive="active">
-          <i class="fas fa-shopping-bag"></i>
+          <i class="fas fa-box"></i>
           <span *ngIf="!sidebarCollapsed">Mis Pedidos</span>
         </a>
       </li>
@@ -67,181 +67,122 @@
   <!-- Main Content -->
   <main class="dashboard__main">
     <header class="main__header">
-      <h1>Mi Panel</h1>
-      <div class="header__actions">
-        <button class="btn btn--primary" routerLink="/articulos">
-          <i class="fas fa-store"></i>
-          Explorar Productos
-        </button>
+      <div class="header__title">
+        <h1>Hola, {{ cliente?.nombre || 'Cliente' }}</h1>
+        <p class="subtitle">Bienvenido a tu panel de cliente</p>
       </div>
+      <button class="btn btn--primary" routerLink="/articulos">
+        Explorar Productos
+      </button>
     </header>
 
     <div class="main__content" *ngIf="!loading; else loadingTemplate">
-      <!-- Estadísticas Cards -->
-      <div class="stats-grid" *ngIf="estadisticas">
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-shopping-bag"></i>
+      
+      <!-- Estadísticas -->
+      <section class="stats-section" *ngIf="estadisticas">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value">{{ estadisticas.totalPedidos }}</span>
+            <span class="stat-label">Pedidos totales</span>
           </div>
-          <div class="stat-card__content">
-            <h3>{{ estadisticas.totalPedidos }}</h3>
-            <p>Total de Pedidos</p>
+          <div class="stat-card">
+            <span class="stat-value">{{ estadisticas.pedidosPendientes }}</span>
+            <span class="stat-label">En curso</span>
           </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-clock"></i>
+          <div class="stat-card">
+            <span class="stat-value">{{ estadisticas.pedidosEntregados }}</span>
+            <span class="stat-label">Entregados</span>
           </div>
-          <div class="stat-card__content">
-            <h3>{{ estadisticas.pedidosPendientes }}</h3>
-            <p>Pedidos en Curso</p>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-check-circle"></i>
-          </div>
-          <div class="stat-card__content">
-            <h3>{{ estadisticas.pedidosEntregados }}</h3>
-            <p>Pedidos Entregados</p>
+          <div class="stat-card stat-card--highlight">
+            <span class="stat-value">{{ estadisticas.totalGastado | number:'1.2-2' }}€</span>
+            <span class="stat-label">Total gastado</span>
           </div>
         </div>
+      </section>
 
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-euro-sign"></i>
-          </div>
-          <div class="stat-card__content">
-            <h3>€{{ estadisticas.totalGastado | number:'1.2-2' }}</h3>
-            <p>Total Gastado</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Último Pedido Destacado -->
-      <div class="featured-order" *ngIf="estadisticas?.ultimoPedido as ultimo">
-        <div class="featured-order__header">
-          <h2>
-            <i class="fas fa-star"></i>
-            Último Pedido
-          </h2>
+      <!-- Último Pedido -->
+      <section class="last-order" *ngIf="estadisticas?.ultimoPedido as ultimo">
+        <div class="section-header">
+          <h2>Último pedido</h2>
           <span class="badge" [ngClass]="getEstadoClass(ultimo.estadoPedido)">
             {{ getEstadoLabel(ultimo.estadoPedido) }}
           </span>
         </div>
-        <div class="featured-order__body">
-          <div class="order-info">
-            <div class="info-item">
-              <i class="fas fa-calendar"></i>
-              <span>{{ ultimo.fechaPedido | date:'dd/MM/yyyy' }}</span>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-hashtag"></i>
-              <span>Pedido #{{ ultimo.idPedido }}</span>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-box"></i>
-              <span>{{ ultimo.detalles.length }} artículos</span>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-euro-sign"></i>
-              <strong>{{ ultimo.total | number:'1.2-2' }}€</strong>
-            </div>
+        <div class="order-summary">
+          <div class="order-meta">
+            <span class="order-number">#{{ ultimo.idPedido }}</span>
+            <span class="order-date">{{ ultimo.fechaPedido | date:'dd MMM yyyy' }}</span>
           </div>
-          <button class="btn btn--outline" [routerLink]="['/cliente/pedidos', ultimo.idPedido]">
-            Ver Detalles
-            <i class="fas fa-arrow-right"></i>
-          </button>
+          <div class="order-details">
+            <span>{{ ultimo.detalles.length }} artículos</span>
+            <span class="order-total">{{ ultimo.total | number:'1.2-2' }}€</span>
+          </div>
+          <a [routerLink]="['/cliente/pedidos', ultimo.idPedido]" class="btn btn--outline btn--small">
+            Ver detalles
+          </a>
         </div>
-      </div>
+      </section>
 
-      <!-- Acciones Rápidas -->
-      <div class="quick-actions">
-        <h2>Acciones Rápidas</h2>
-        <div class="actions-grid">
-          <a routerLink="/articulos" class="action-card">
-            <i class="fas fa-shopping-basket"></i>
-            <h3>Explorar Productos</h3>
+      <!-- Accesos Rápidos -->
+      <section class="quick-links">
+        <h2>Accesos rápidos</h2>
+        <div class="links-grid">
+          <a routerLink="/articulos" class="link-card">
+            <h3>Explorar productos</h3>
             <p>Descubre productos frescos de productores locales</p>
           </a>
-
-          <a routerLink="/cliente/pedidos" class="action-card">
-            <i class="fas fa-history"></i>
-            <h3>Ver Mis Pedidos</h3>
-            <p>Revisa el historial completo de tus compras</p>
+          <a routerLink="/cliente/pedidos" class="link-card">
+            <h3>Mis pedidos</h3>
+            <p>Consulta el historial de tus compras</p>
           </a>
-
-          <a routerLink="/cliente/perfil" class="action-card">
-            <i class="fas fa-user-cog"></i>
-            <h3>Actualizar Perfil</h3>
-            <p>Modifica tus datos personales y de contacto</p>
+          <a routerLink="/cliente/perfil" class="link-card">
+            <h3>Mi perfil</h3>
+            <p>Actualiza tus datos de contacto</p>
           </a>
-
-          <a routerLink="/carrito" class="action-card">
-            <i class="fas fa-shopping-cart"></i>
-            <h3>Ver Mi Carrito</h3>
-            <p>Revisa los productos que has añadido</p>
+          <a routerLink="/carrito" class="link-card">
+            <h3>Mi carrito</h3>
+            <p>Revisa los productos añadidos</p>
           </a>
         </div>
-      </div>
+      </section>
 
       <!-- Pedidos Recientes -->
-      <div class="recent-orders" *ngIf="pedidosRecientes.length > 0">
+      <section class="recent-orders" *ngIf="pedidosRecientes.length > 0">
         <div class="section-header">
-          <h2>Pedidos Recientes</h2>
-          <a routerLink="/cliente/pedidos" class="btn btn--outline">Ver Todos</a>
+          <h2>Pedidos recientes</h2>
+          <a routerLink="/cliente/pedidos" class="link-all">Ver todos</a>
         </div>
-        <div class="orders-list">
-          <div class="order-card" *ngFor="let pedido of pedidosRecientes">
-            <div class="order-card__header">
-              <div class="order-id">
-                <i class="fas fa-receipt"></i>
-                Pedido #{{ pedido.idPedido }}
-              </div>
-              <span class="badge" [ngClass]="getEstadoClass(pedido.estadoPedido)">
-                {{ getEstadoLabel(pedido.estadoPedido) }}
-              </span>
+        <div class="orders-table">
+          <div class="order-row" *ngFor="let pedido of pedidosRecientes">
+            <div class="order-info">
+              <span class="order-number">#{{ pedido.idPedido }}</span>
+              <span class="order-date">{{ pedido.fechaPedido | date:'dd/MM/yyyy' }}</span>
             </div>
-            <div class="order-card__body">
-              <div class="order-date">
-                <i class="fas fa-calendar"></i>
-                {{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}
-              </div>
-              <div class="order-items">
-                <i class="fas fa-box"></i>
-                {{ pedido.detalles.length }} artículos
-              </div>
-              <div class="order-total">
-                <strong>{{ pedido.total | number:'1.2-2' }}€</strong>
-              </div>
-            </div>
-            <div class="order-card__footer">
-              <button class="btn btn--small btn--outline" [routerLink]="['/cliente/pedidos', pedido.idPedido]">
-                Ver Detalles
-              </button>
-            </div>
+            <div class="order-items">{{ pedido.detalles.length }} artículos</div>
+            <div class="order-amount">{{ pedido.total | number:'1.2-2' }}€</div>
+            <span class="badge badge--small" [ngClass]="getEstadoClass(pedido.estadoPedido)">
+              {{ getEstadoLabel(pedido.estadoPedido) }}
+            </span>
+            <a [routerLink]="['/cliente/pedidos', pedido.idPedido]" class="btn btn--text">Ver</a>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Sin pedidos -->
-      <div class="no-orders" *ngIf="pedidosRecientes.length === 0">
-        <i class="fas fa-shopping-bag"></i>
-        <h3>Aún no has realizado ningún pedido</h3>
-        <p>¡Explora nuestros productos y haz tu primera compra!</p>
+      <section class="empty-state" *ngIf="pedidosRecientes.length === 0">
+        <h3>Aún no tienes pedidos</h3>
+        <p>Explora nuestros productos y realiza tu primera compra</p>
         <button class="btn btn--primary" routerLink="/articulos">
-          <i class="fas fa-store"></i>
-          Explorar Productos
+          Ver productos
         </button>
-      </div>
+      </section>
+
     </div>
 
     <ng-template #loadingTemplate>
       <div class="loading-container">
         <div class="spinner"></div>
-        <p>Cargando tu panel...</p>
+        <p>Cargando...</p>
       </div>
     </ng-template>
   </main>

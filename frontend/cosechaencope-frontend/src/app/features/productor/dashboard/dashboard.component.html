@@ -15,7 +15,7 @@
 
     <div class="sidebar__user" *ngIf="productor">
       <div class="user__avatar">
-        <img [src]="productor.imagenUrl || 'https://via.placeholder.com/150/4CAF50/FFFFFF?text=Productor'" [alt]="productor.nombre">
+        {{ (productor.nombre || 'P')[0] | uppercase }}
       </div>
       <div class="user__info" *ngIf="!sidebarCollapsed">
         <h3>{{ productor.nombre }}</h3>
@@ -26,13 +26,13 @@
     <ul class="sidebar__menu">
       <li>
         <a routerLink="/productor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <i class="fas fa-chart-line"></i>
-          <span *ngIf="!sidebarCollapsed">Dashboard</span>
+          <i class="fas fa-home"></i>
+          <span *ngIf="!sidebarCollapsed">Inicio</span>
         </a>
       </li>
       <li>
         <a routerLink="/productor/perfil" routerLinkActive="active">
-          <i class="fas fa-user-edit"></i>
+          <i class="fas fa-user"></i>
           <span *ngIf="!sidebarCollapsed">Mi Perfil</span>
         </a>
       </li>
@@ -50,7 +50,7 @@
       </li>
       <li>
         <a routerLink="/productor/pedidos" routerLinkActive="active">
-          <i class="fas fa-shopping-cart"></i>
+          <i class="fas fa-clipboard-list"></i>
           <span *ngIf="!sidebarCollapsed">Pedidos</span>
         </a>
       </li>
@@ -67,105 +67,142 @@
   <!-- Main Content -->
   <main class="dashboard__main">
     <header class="main__header">
-      <h1>Panel de Control</h1>
-      <div class="header__actions">
-        <button class="btn btn--primary" routerLink="/productor/articulos/nuevo">
-          <i class="fas fa-plus"></i>
-          Nuevo Producto
-        </button>
+      <div class="header__title">
+        <h1>Hola, {{ productor?.nombre || 'Productor' }}</h1>
+        <p class="subtitle">Panel de gestión de tu tienda</p>
       </div>
+      <button class="btn btn--primary" routerLink="/productor/articulos/nuevo">
+        Nuevo Producto
+      </button>
     </header>
 
     <div class="main__content" *ngIf="!loading; else loadingTemplate">
-      <!-- Estadísticas Cards -->
-      <div class="stats-grid" *ngIf="estadisticas">
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-box text-blue"></i>
+      
+      <!-- Estadísticas -->
+      <section class="stats-section" *ngIf="estadisticas">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value">{{ estadisticas.totalProductos }}</span>
+            <span class="stat-label">Productos ({{ estadisticas.productosActivos }} activos)</span>
           </div>
-          <div class="stat-card__content">
-            <h3>{{ estadisticas.totalProductos || 0 }}</h3>
-            <p>Productos Activos</p>
+          <div class="stat-card">
+            <span class="stat-value">{{ estadisticas.totalOrdenes }}</span>
+            <span class="stat-label">Órdenes totales</span>
           </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-shopping-cart text-green"></i>
+          <div class="stat-card">
+            <span class="stat-value">{{ estadisticas.ordenesPendientes }}</span>
+            <span class="stat-label">Pendientes</span>
           </div>
-          <div class="stat-card__content">
-            <h3>{{ estadisticas.totalVentas || 0 }}</h3>
-            <p>Ventas Este Mes</p>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-euro-sign text-yellow"></i>
-          </div>
-          <div class="stat-card__content">
-            <h3>€{{ estadisticas.ingresosMes || 0 | number:'1.2-2' }}</h3>
-            <p>Ingresos del Mes</p>
+          <div class="stat-card stat-card--highlight">
+            <span class="stat-value">{{ estadisticas.ingresosMes | number:'1.2-2' }}€</span>
+            <span class="stat-label">Ingresos del mes</span>
           </div>
         </div>
+      </section>
 
-        <div class="stat-card">
-          <div class="stat-card__icon">
-            <i class="fas fa-star text-orange"></i>
-          </div>
-          <div class="stat-card__content">
-            <h3>{{ estadisticas.valoracion || 'N/A' }}</h3>
-            <p>Valoración Media</p>
-          </div>
+      <!-- Última Orden -->
+      <section class="last-order" *ngIf="estadisticas?.ultimaOrden as ultima">
+        <div class="section-header">
+          <h2>Última orden recibida</h2>
+          <span class="badge estado-{{ ultima.estado.toLowerCase() }}">
+            {{ ultima.estado }}
+          </span>
         </div>
-      </div>
+        <div class="order-summary">
+          <div class="order-meta">
+            <span class="order-number">{{ ultima.numeroOrden || 'OVP-' + ultima.idOvp }}</span>
+            <span class="order-date">{{ ultima.fechaCreacion | date:'dd MMM yyyy' }}</span>
+          </div>
+          <div class="order-details">
+            <span>{{ ultima.detalles?.length || 0 }} artículos</span>
+            <span class="order-total">{{ ultima.total | number:'1.2-2' }}€</span>
+          </div>
+          <a [routerLink]="['/productor/pedidos', ultima.idOvp]" class="btn btn--outline btn--small">
+            Ver detalles
+          </a>
+        </div>
+      </section>
 
-      <!-- Acciones Rápidas -->
-      <div class="quick-actions">
-        <h2>Acciones Rápidas</h2>
-        <div class="actions-grid">
-          <a routerLink="/productor/articulos/nuevo" class="action-card">
-            <i class="fas fa-plus-circle"></i>
-            <h3>Agregar Producto</h3>
+      <!-- Accesos Rápidos -->
+      <section class="quick-links">
+        <h2>Accesos rápidos</h2>
+        <div class="links-grid">
+          <a routerLink="/productor/articulos/nuevo" class="link-card">
+            <h3>Agregar producto</h3>
             <p>Añade un nuevo producto a tu catálogo</p>
           </a>
-
-          <a routerLink="/productor/categorias/nueva" class="action-card">
-            <i class="fas fa-tag"></i>
-            <h3>Nueva Categoría</h3>
-            <p>Crea una nueva categoría de productos</p>
+          <a routerLink="/productor/categorias/nueva" class="link-card">
+            <h3>Nueva categoría</h3>
+            <p>Crea una nueva categoría para organizar</p>
           </a>
-
-          <a routerLink="/productor/perfil" class="action-card">
-            <i class="fas fa-user-cog"></i>
-            <h3>Actualizar Perfil</h3>
-            <p>Modifica la información de tu empresa</p>
+          <a routerLink="/productor/perfil" class="link-card">
+            <h3>Mi perfil</h3>
+            <p>Actualiza la información de tu empresa</p>
           </a>
-
-          <a routerLink="/productor/pedidos" class="action-card">
-            <i class="fas fa-list-alt"></i>
-            <h3>Ver Pedidos</h3>
+          <a routerLink="/productor/pedidos" class="link-card">
+            <h3>Ver pedidos</h3>
             <p>Gestiona los pedidos recibidos</p>
           </a>
         </div>
-      </div>
+      </section>
+
+      <!-- Órdenes Recientes -->
+      <section class="recent-orders" *ngIf="ordenesRecientes.length > 0">
+        <div class="section-header">
+          <h2>Órdenes recientes</h2>
+          <a routerLink="/productor/pedidos" class="link-all">Ver todas</a>
+        </div>
+        <div class="orders-table">
+          <div class="order-row" *ngFor="let orden of ordenesRecientes">
+            <div class="order-info">
+              <span class="order-number">{{ orden.numeroOrden || 'OVP-' + orden.idOvp }}</span>
+              <span class="order-date">{{ orden.fechaCreacion | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="order-items">{{ orden.detalles?.length || 0 }} artículos</div>
+            <div class="order-amount">{{ orden.total | number:'1.2-2' }}€</div>
+            <span class="badge badge--small estado-{{ orden.estado.toLowerCase() }}">
+              {{ orden.estado }}
+            </span>
+            <a [routerLink]="['/productor/pedidos', orden.idOvp]" class="btn btn--text">Ver</a>
+          </div>
+        </div>
+      </section>
 
       <!-- Productos Recientes -->
-      <div class="recent-products">
+      <section class="recent-products" *ngIf="articulosRecientes.length > 0">
         <div class="section-header">
-          <h2>Productos Recientes</h2>
-          <a routerLink="/productor/articulos" class="btn btn--outline">Ver Todos</a>
+          <h2>Productos recientes</h2>
+          <a routerLink="/productor/articulos" class="link-all">Ver todos</a>
         </div>
-        <div class="products-placeholder">
-          <p>Aquí se mostrarán tus productos más recientes</p>
+        <div class="products-grid">
+          <div class="product-card" *ngFor="let articulo of articulosRecientes">
+            <img [src]="articulo.imagenUrl || 'https://via.placeholder.com/150'" [alt]="articulo.nombre">
+            <div class="product-card__content">
+              <h4>{{ articulo.nombre }}</h4>
+              <div class="product-meta">
+                <span class="price">{{ articulo.precio | number:'1.2-2' }}€</span>
+                <span class="stock" [class.low-stock]="articulo.stock < 10">{{ articulo.stock }} uds.</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Sin datos -->
+      <section class="empty-state" *ngIf="ordenesRecientes.length === 0 && articulosRecientes.length === 0">
+        <h3>¡Bienvenido a tu panel!</h3>
+        <p>Comienza añadiendo productos para empezar a recibir pedidos.</p>
+        <button class="btn btn--primary" routerLink="/productor/articulos/nuevo">
+          Añadir primer producto
+        </button>
+      </section>
+
     </div>
 
     <ng-template #loadingTemplate>
       <div class="loading-container">
         <div class="spinner"></div>
-        <p>Cargando panel de control...</p>
+        <p>Cargando...</p>
       </div>
     </ng-template>
   </main>

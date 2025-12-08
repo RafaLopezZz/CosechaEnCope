@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * servir tanto Thymeleaf templates como Angular SPA
  *
  * @author rafalopezzz
- * @since 1.0.0
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -40,7 +39,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(604800); // Cache por 1 semana para fuentes
 
         // Recursos para Angular SPA
-        // CRÍTICO: Angular 20 compila a static/app/ directamente, NO a static/app/browser/
+        // CRÍTICO: Angular compila a static/app/ directamente, NO a static/app/browser/
         String angularLocation = "classpath:/static/app/";
 
         // Archivos de Angular (JS, CSS, etc.)

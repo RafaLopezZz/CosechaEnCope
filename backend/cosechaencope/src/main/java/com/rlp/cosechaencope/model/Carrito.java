@@ -83,7 +83,7 @@ public class Carrito {
     }
 
     public void recalcularTotales() {
-        // Asegurarse que cada detalle tenga su totalLinea calculado
+        // Asegura que cada detalle tenga su totalLinea calculado
         detalleList.forEach(DetalleCarrito::calcularTotalLinea);
 
         // Calcular subtotal

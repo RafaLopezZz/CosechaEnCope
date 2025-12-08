@@ -58,9 +58,9 @@ public class JwtUtils {
                 .collect(Collectors.toList());
 
         // Añadir el tipo de usuario como un rol adicional
-        // Asumiendo que tienes un método getTipoUsuario() en UserDetailsImpl
+        // getTipoUsuario() en UserDetailsImpl
         if (userDetails.getTipoUsuario() != null) {
-            // Añadir el prefijo ROLE_ si estás usando hasRole() en tu configuración de seguridad
+            // Añadir el prefijo ROLE_ usando hasRole() en configuración de seguridad
             roles.add("ROLE_" + userDetails.getTipoUsuario());
         }
 
@@ -69,8 +69,8 @@ public class JwtUtils {
                 .claim("roles", roles) // añadir roles como claim
                 .setIssuedAt(now) // fecha de emisión
                 .setExpiration(expiryDate) // fecha de expiración
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();                                   // genera la cadena final
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // firmar con clave secreta
+                .compact(); // genera la cadena final
     }
 
     /**

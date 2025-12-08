@@ -5,8 +5,7 @@
  * y evitar duplicación de código. Los endpoints están organizados por módulos
  * correspondientes a los controladores del backend.
  *
- * @author Generated from Spring Boot Controllers
- * @version 1.0.0
+ * @author rafalopezzz
  */
 
 import { environment } from '../../../environments/environment';
@@ -64,11 +63,11 @@ export const API_ENDPOINTS = {
    */
   CARRITO: {
     BASE: `${API_BASE_URL}/carrito`,
-    ADD_ITEM: `${API_BASE_URL}/carrito/agregar`,                       // POST
-    GET_CART: `${API_BASE_URL}/carrito`,                                // GET
-    DECREMENT_ITEM: (idArticulo: number) =>                            // POST con {idArticulo}
+    ADD_ITEM: `${API_BASE_URL}/carrito/agregar`,
+    GET_CART: `${API_BASE_URL}/carrito`,
+    DECREMENT_ITEM: (idArticulo: number) =>
       `${API_BASE_URL}/carrito/decrementar/${idArticulo}`,
-    CLEAR_CART: `${API_BASE_URL}/carrito/vaciar`,                      // DELETE
+    CLEAR_CART: `${API_BASE_URL}/carrito/vaciar`,
   },
 
   /**

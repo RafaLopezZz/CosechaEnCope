@@ -59,23 +59,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
 
-        // 1. Archivos estáticos por extensión (MÁXIMA PRIORIDAD)
+        // Archivos estáticos por extensión (MÁXIMA PRIORIDAD)
         if (path.matches(".*\\.(js|css|svg|png|jpg|jpeg|gif|ico|woff|woff2|ttf|eot|map|json|webp|txt|html)$")) {
             return true;
         }
 
-        // 2. Angular chunks con hash hexadecimal (main.abc123.js, styles.def456.css)
+        // Angular chunks con hash hexadecimal (main.abc123.js, styles.def456.css)
         // Patrón: /app/nombre.hash.extensión donde hash es hexadecimal
         if (path.matches(".*/app/[a-zA-Z0-9]+\\.[a-f0-9]{10,}\\.(js|css)$")) {
             return true;
         }
 
-        // 3. Angular index.html explícitamente
+        // Angular index.html explícitamente
         if (path.equals("/app/") || path.equals("/app/index.html")) {
             return true;
         }
 
-        // 4. Recursos públicos por prefijo
+        // Recursos públicos por prefijo
         return path.startsWith("/css/")
                 || path.startsWith("/js/")
                 || path.startsWith("/images/")
@@ -94,6 +94,24 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 || path.startsWith("/swagger-ui");
     }
 
+    /**
+     * Procesa la petición HTTP para autenticar al usuario mediante JWT.
+     *
+     * Este método realiza:
+     * <ul>
+     * <li>Extracción del token JWT del header Authorization</li>
+     * <li>Validación del token y manejo de excepciones específicas</li>
+     * <li>Carga de detalles del usuario y establecimiento del contexto de
+     * seguridad</li>
+     * <li>Registro detallado de eventos para auditoría y depuración</li>
+     * </ul>
+     *
+     * @param request La petición HTTP entrante
+     * @param response La respuesta HTTP saliente
+     * @param filterChain La cadena de filtros para continuar el procesamiento
+     * @throws ServletException Si ocurre un error en el servlet
+     * @throws IOException Si ocurre un error de E/S
+     */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,

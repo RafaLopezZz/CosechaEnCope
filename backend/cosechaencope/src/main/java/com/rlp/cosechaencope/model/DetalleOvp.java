@@ -2,6 +2,8 @@ package com.rlp.cosechaencope.model;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,6 +39,7 @@ public class DetalleOvp {
    * OVP a la que pertenece este detalle. Se establece una relación de muchos a uno
    * con la entidad OrdenVentaproductor.
    */
+  @JsonBackReference
   @ManyToOne
   @JoinColumn(name="id_ovp")
   private OrdenVentaProductor ordenVenta;

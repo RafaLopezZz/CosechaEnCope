@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
  * Optimizado para SEO y rendimiento de carga inicial
  * 
  * @author rafalopezzz
- * @since 1.0.0
  */
 @Slf4j
 @Controller
@@ -51,7 +50,7 @@ public class HomeController {
         log.info("Renderizando landing page con datos dinámicos");
         
         try {
-            // 1. Obtener categorías (máximo 6 para la landing)
+            // Obtener categorías (máximo 6 para la landing)
             List<CategoriaResponse> categorias = categoriaService.obtenerTodasLasCategorias()
                 .stream()
                 .limit(6)
@@ -59,7 +58,7 @@ public class HomeController {
             model.addAttribute("categorias", categorias);
             log.debug("Categorías cargadas: {}", categorias.size());
             
-            // 2. Obtener artículos (8 primeros con imagen válida)
+            // Obtener artículos (8 primeros con imagen válida)
             List<ArticuloResponse> articulos = articuloService.obtenerTodosLosArticulos()
                 .stream()
                 .filter(a -> a.getImagenUrl() != null && !a.getImagenUrl().trim().isEmpty())
@@ -84,7 +83,7 @@ public class HomeController {
         model.addAttribute("canonicalUrl", "https://cosechaencope.com/");
         model.addAttribute("ogImage", "/images/og-landing.jpg");
         
-        // Datos estructurados para rich snippets
+        // Datos estructurados
         model.addAttribute("structuredData", seoService.getHomePageStructuredData());
         
         // Keywords para SEO

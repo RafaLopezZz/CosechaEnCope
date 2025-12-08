@@ -1,0 +1,541 @@
+@use '../../../../styles/variables' as *;
+
+.pedidos-container {
+  min-height: 100vh;
+  background-color: $bg-secondary;
+  padding: 40px 20px;
+}
+
+.pedidos-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  
+  .btn-back {
+    background: transparent;
+    border: 2px solid $border-color;
+    color: $text-secondary;
+    padding: 10px 20px;
+    border-radius: $border-radius-md;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    transition: all $transition-base;
+    margin-bottom: 20px;
+
+    &:hover {
+      background: $bg-primary;
+      border-color: $color-primary;
+      color: $color-primary;
+      transform: translateX(-3px);
+    }
+  }
+
+  h1 {
+    color: $color-tertiary;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    i {
+      color: $color-primary;
+    }
+  }
+}
+
+.pedidos-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Filter Bar
+.filter-bar {
+  background: $bg-primary;
+  padding: 20px;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  label {
+    font-weight: 600;
+    color: $text-secondary;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+
+    i {
+      color: $color-primary;
+    }
+  }
+}
+
+.filter-select {
+  padding: 10px 16px;
+  border: 2px solid $border-color;
+  border-radius: $border-radius-md;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: $bg-primary;
+  transition: all $transition-base;
+  min-width: 200px;
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+}
+
+.results-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: $text-muted;
+  font-size: 14px;
+  font-weight: 500;
+
+  i {
+    color: $color-primary;
+  }
+}
+
+// Pedidos List
+.pedidos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pedido-card {
+  background: $bg-primary;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  overflow: hidden;
+  transition: all $transition-base;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+
+  // Estado de actualización optimista
+  &.updating {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+}
+
+.pedido-card__header {
+  background: $color-primary;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.pedido-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pedido-fecha {
+    font-size: 14px;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.pedido-card__body {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 30px;
+}
+
+.pedido-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-item {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+  align-items: start;
+
+  &--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.detail-label {
+  font-size: 14px;
+  color: $text-secondary;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    color: $color-secondary;
+    width: 16px;
+  }
+}
+
+.detail-value {
+  font-size: 14px;
+  color: $text-primary;
+  font-weight: 500;
+
+  &.text-italic {
+    font-style: italic;
+    color: $text-muted;
+  }
+}
+
+.pedido-pricing {
+  background: $bg-secondary;
+  padding: 20px;
+  border-radius: $border-radius-md;
+  min-width: 250px;
+  height: fit-content;
+}
+
+.pricing-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: $text-secondary;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border-color;
+  }
+
+  &--total {
+    margin-top: 8px;
+    padding-top: 12px;
+    font-size: 18px;
+    color: $text-primary;
+    border-top: 2px solid $border-color !important;
+    border-bottom: none;
+
+    strong {
+      color: $color-primary;
+      font-weight: 700;
+    }
+  }
+}
+
+.pedido-card__footer {
+  padding: 20px;
+  background: $bg-secondary;
+  border-top: 1px solid $border-color;
+  display: flex;
+  justify-content: flex-end;
+
+  &.action-footer {
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.updating-msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $text-muted;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid $border-color;
+  border-top: 2px solid $color-primary;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+// Estados de pedidos (OVP)
+.badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &.estado-pendiente {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  &.estado-preparacion {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+
+  &.estado-enviado {
+    background-color: #e0e7ff;
+    color: #3730a3;
+  }
+
+  &.estado-entregado {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+
+  &.estado-cancelado {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+// Buttons
+.btn {
+  padding: 12px 24px;
+  border-radius: $border-radius-md;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all $transition-base;
+  border: none;
+  text-decoration: none;
+
+  &--outline {
+    background: transparent;
+    border: 2px solid $border-color;
+    color: $text-secondary;
+
+    &:hover {
+      border-color: $color-primary;
+      color: $color-primary;
+      background: rgba($color-primary, 0.05);
+    }
+  }
+
+  &--primary {
+    background: $color-primary;
+    color: white;
+
+    &:hover {
+      background: darken($color-primary, 8%);
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &--info {
+    background: #3b82f6;
+    color: white;
+
+    &:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+
+  &--success {
+    background: #10b981;
+    color: white;
+
+    &:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// No pedidos
+.no-pedidos {
+  background: $bg-primary;
+  padding: 80px 40px;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  text-align: center;
+
+  i {
+    font-size: 80px;
+    color: $border-color;
+    margin-bottom: 24px;
+  }
+
+  h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 12px 0;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid $border-color;
+    border-top: 4px solid $color-primary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive
+@media (max-width: 992px) {
+  .pedido-card__body {
+    grid-template-columns: 1fr;
+  }
+
+  .pedido-pricing {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .pedidos-container {
+    padding: 20px 15px;
+  }
+
+  .pedidos-header h1 {
+    font-size: 26px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+
+    label {
+      font-size: 13px;
+    }
+  }
+
+  .filter-select {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .results-count {
+    justify-content: center;
+  }
+
+  .pedido-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pedido-info h3 {
+    font-size: 18px;
+  }
+
+  .detail-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .pedido-pricing {
+    padding: 16px;
+  }
+
+  .pedido-card__footer.action-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .no-pedidos {
+    padding: 60px 20px;
+
+    i {
+      font-size: 60px;
+    }
+
+    h3 {
+      font-size: 20px;
+    }
+  }
+}

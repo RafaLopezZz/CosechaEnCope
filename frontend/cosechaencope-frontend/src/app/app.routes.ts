@@ -110,6 +110,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'productor/pedidos',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'PRODUCTOR' },
+    loadComponent: () => import('./features/productor/ovp/ovp.component').then(m => m.OrdenesProductorComponent),
+    title: 'Gestión de Ventas'
+  },
+  {
+    path: 'productor/pedidos/:id',
+    canActivate: [authGuard, roleGuard],
+    data: { tipoUsuario: 'PRODUCTOR' },
+    loadComponent: () => import('./features/productor/ovp/orden-productor-detalle.component').then(m => m.OrdenProductorDetalleComponent),
+    title: 'Detalle de Venta'
+  },
+  {
     path: 'carrito',
     loadComponent: () =>
       import('./features/carrito/pages/carrito-view/carrito-view.component').then(

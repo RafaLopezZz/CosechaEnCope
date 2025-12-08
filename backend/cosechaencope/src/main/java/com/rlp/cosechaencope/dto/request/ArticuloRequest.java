@@ -39,10 +39,10 @@ import lombok.Data;
 public class ArticuloRequest {
 
     @NotBlank
-    @Schema(description = "Nombre del artículo", example = "Estrella de Levante", required = true)
+    @Schema(description = "Nombre del artículo", example = "Tomate Raf", required = true)
     private String nombre;
 
-    @Schema(description = "Descripción detallada del artículo", example = "Cerveza artesanal de tipo rubia con 5% de alcohol")
+    @Schema(description = "Descripción detallada del artículo", example = "Tomate típico de la Marina de Cope cultivado sin pesticidas ni químicos")
     private String descripcion;
 
     @DecimalMin(value = "0.0")

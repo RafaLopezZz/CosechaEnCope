@@ -1,0 +1,133 @@
+<div class="detalle-container">
+  <div class="detalle-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Volver al Listado
+    </button>
+  </div>
+
+  <div class="loading-container" *ngIf="loading$ | async">
+    <div class="spinner"></div>
+    <p>Recuperando información de la venta...</p>
+  </div>
+
+  <div class="detalle-content" *ngIf="(ordenSeleccionada$ | async) as orden">
+    
+    <div class="pedido-header-card">
+      <div class="pedido-title">
+        <h1>
+          <i class="fas fa-file-invoice-dollar"></i>
+          Orden {{ orden.numeroOrden }}
+        </h1>
+        <span class="pedido-date">
+          <i class="fas fa-clock"></i>
+          Creada el {{ orden.fechaCreacion | date:'fullDate' }}
+        </span>
+      </div>
+      
+      <div class="pedido-status">
+        <span class="badge" [ngClass]="getBadgeClass(orden.estado)">
+          {{ orden.estado }}
+        </span>
+      </div>
+    </div>
+
+    <div class="control-panel-card" *ngIf="orden.estado !== EstadoOrden.ENTREGADA && orden.estado !== EstadoOrden.CANCELADA">
+      <h2><i class="fas fa-cogs"></i> Gestionar Estado</h2>
+      <div class="control-actions">
+        <p>Siguiente paso lógico:</p>
+        
+        <button *ngIf="orden.estado === EstadoOrden.PENDIENTE" 
+                class="btn btn--primary btn-lg"
+                (click)="cambiarEstado(orden, EstadoOrden.EN_PROCESO)">
+          <i class="fas fa-check-circle"></i> Comenzar Preparación
+        </button>
+
+        <button *ngIf="orden.estado === EstadoOrden.EN_PROCESO" 
+                class="btn btn--info btn-lg"
+                (click)="cambiarEstado(orden, EstadoOrden.ENVIADA)">
+          <i class="fas fa-shipping-fast"></i> Marcar como Enviado
+        </button>
+
+        <button *ngIf="orden.estado === EstadoOrden.ENVIADA" 
+                class="btn btn--success btn-lg"
+                (click)="cambiarEstado(orden, EstadoOrden.ENTREGADA)">
+          <i class="fas fa-handshake"></i> Confirmar Entrega
+        </button>
+
+        <button class="btn btn--danger-outline" 
+                (click)="cambiarEstado(orden, EstadoOrden.CANCELADA)">
+          <i class="fas fa-times"></i> Cancelar Orden
+        </button>
+      </div>
+    </div>
+
+    <div class="tracking-card" *ngIf="orden.estado !== 'CANCELADA'">
+      <h2><i class="fas fa-tasks"></i> Progreso del Pedido</h2>
+      <div class="tracking-progress">
+        <div class="progress-bar">
+           <div class="progress-fill" [style.width.%]="getProgressPercentage(orden.estado)"></div>
+        </div>
+        <div class="tracking-steps">
+          <div class="step" [class.active]="isStepActive(orden.estado, EstadoOrden.PENDIENTE)">
+            <div class="step-icon"><i class="fas fa-clipboard-list"></i></div>
+            <span>Recibido</span>
+          </div>
+          <div class="step" [class.active]="isStepActive(orden.estado, EstadoOrden.EN_PROCESO)">
+            <div class="step-icon"><i class="fas fa-box-open"></i></div>
+            <span>En Preparación</span>
+          </div>
+          <div class="step" [class.active]="isStepActive(orden.estado, EstadoOrden.ENVIADA)">
+            <div class="step-icon"><i class="fas fa-truck"></i></div>
+            <span>Enviado</span>
+          </div>
+          <div class="step" [class.active]="isStepActive(orden.estado, EstadoOrden.ENTREGADA)">
+            <div class="step-icon"><i class="fas fa-check"></i></div>
+            <span>Completado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="articulos-card" style="grid-column: span 2;">
+        <h2><i class="fas fa-boxes"></i> Artículos a Preparar</h2>
+        <div class="articulos-list">
+          <div class="articulo-item" *ngFor="let detalle of orden.detalles">
+            <div class="articulo-info">
+              <h4>{{ detalle.articulo.nombre }}</h4>
+              <p class="articulo-precio">
+                {{ detalle.precioUnitario | number:'1.2-2' }}€/ud.
+              </p>
+            </div>
+            <div class="articulo-qty">
+               x{{ detalle.cantidad }}
+            </div>
+            <div class="articulo-total">
+              {{ (detalle.cantidad * detalle.precioUnitario) | number:'1.2-2' }}€
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resumen-card">
+        <h2><i class="fas fa-wallet"></i> Balance</h2>
+        <div class="resumen-list">
+          <div class="resumen-item">
+            <span>Total Bruto:</span>
+            <span>{{ orden.total | number:'1.2-2' }}€</span>
+          </div>
+          <div class="resumen-item">
+            <span>Comisión Plataforma:</span>
+            <span class="text-danger">-{{ (orden.total * 0.10) | number:'1.2-2' }}€</span> 
+          </div>
+          <div class="resumen-item resumen-item--total">
+            <span>Ganancia Neta:</span>
+            <strong>{{ (orden.total * 0.90) | number:'1.2-2' }}€</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

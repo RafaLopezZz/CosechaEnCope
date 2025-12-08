@@ -35,10 +35,6 @@ import lombok.extern.slf4j.Slf4j;
  * aplicaciones RESTful. También se configura un {@link BCryptPasswordEncoder}
  * para la encriptación de contraseñas.</p>
  *
- * <p>
- * Es posible que desees activar autenticación en ciertas rutas, como
- * "/beerstar/productores/**", dependiendo de los requisitos de tu API.</p>
- *
  * @author rafalopezzz
  */
 @Slf4j
@@ -95,7 +91,7 @@ public class SecurityConfig {
                 // Rutas SSR públicas (Thymeleaf)
                 .requestMatchers("/", "/nosotros", "/contacto", "/categorias", "/productos/**").permitAll()
 
-                // SPA (index + assets). Permitimos GET sobre los recursos estáticos bajo /app/**
+                // SPA (index + assets). GET sobre los recursos estáticos bajo /app/**
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/app/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                         "/css/**", "/js/**", "/images/**", "/gal/**", "/iconos/**", "/fonts/**",
@@ -106,7 +102,7 @@ public class SecurityConfig {
                 .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**",
                         "/swagger-resources/**", "/webjars/**", "/configuration/**").permitAll()
 
-                // Endpoints públicos específicos (mantenlos si los necesitas)
+                // Endpoints públicos específicos
                 .requestMatchers("/cosechaencope/articulos", "/cosechaencope/categorias",
                         "/cosechaencope/usuarios", "/cosechaencope/usuarios/registro").permitAll()
                 .requestMatchers("/cosechaencope/auth/registro/clientes", "/cosechaencope/auth/registro/productores").permitAll()
@@ -126,7 +122,7 @@ public class SecurityConfig {
                 );
 
         http.authenticationProvider(authenticationProvider());
-        // El filtro se añade pero veremos más abajo cómo evitar que haga ruido en rutas públicas
+        // Se añade el filtro JWT antes del filtro de autenticación de usuario y contraseña
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         log.info("Configuración de seguridad HTTP completada");
         return http.build();

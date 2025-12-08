@@ -133,17 +133,28 @@
       </a>
     </div>
   </div>
-</section>
 
-<!-- Carousel JavaScript -->
-<script>
-  // Variables globales para el carousel
-  let galleryCurrentIndex = 0;
-  let galleryTotalSlides = 0;
-  let galleryAutoPlayInterval = null;
+  <!-- Carousel JavaScript -->
+  <script th:inline="none">
+    // Variables globales para el carousel
+    let galleryCurrentIndex = 0;
+    let galleryTotalSlides = 0;
+    let galleryAutoPlayInterval = null;
+    let galleryCardWidth = 328; // Valor por defecto (296px card + 32px gap)
+    let galleryIsNativeScroll = false; // Detectar si usa scroll nativo (móvil)
+
+  // Detectar si el carrusel usa scroll nativo (pantallas <= 480px)
+  function isNativeScrollMode() {
+    const track = document.getElementById("galleryTrack");
+    if (!track) return false;
+    
+    const style = getComputedStyle(track);
+    // Si overflow-x es auto o scroll, usa scroll nativo
+    return style.overflowX === 'auto' || style.overflowX === 'scroll';
+  }
 
   // Función para calcular el ancho de una tarjeta + gap
-  function getGalleryCardWidth() {
+  function calculateGalleryCardWidth() {
     const track = document.getElementById("galleryTrack");
     if (!track) return 328;
     
@@ -151,9 +162,23 @@
     if (items.length === 0) return 328;
     
     const firstItem = items[0];
-    const style = getComputedStyle(track);
-    const gap = parseFloat(style.columnGap || style.gap || "32") || 32;
-    return firstItem.getBoundingClientRect().width + gap;
+    const secondItem = items[1];
+    
+    // Si hay al menos 2 items, calculamos el gap real midiendo la diferencia
+    if (secondItem) {
+      const firstRect = firstItem.getBoundingClientRect();
+      const secondRect = secondItem.getBoundingClientRect();
+      // La diferencia entre el inicio del segundo y el inicio del primero = ancho + gap
+      galleryCardWidth = secondRect.left - firstRect.left;
+    } else {
+      // Solo hay un item, usamos su ancho + gap estimado
+      const itemRect = firstItem.getBoundingClientRect();
+      const style = getComputedStyle(track);
+      const gap = parseFloat(style.columnGap) || parseFloat(style.gap) || 32;
+      galleryCardWidth = itemRect.width + gap;
+    }
+    
+    return galleryCardWidth;
   }
 
   // Actualizar la posición del carousel
@@ -161,10 +186,22 @@
     const track = document.getElementById("galleryTrack");
     if (!track || galleryTotalSlides === 0) return;
 
-    const cardWidth = getGalleryCardWidth();
-    const offset = -(galleryCurrentIndex * cardWidth);
-
-    track.style.transform = `translateX(${offset}px)`;
+    // Actualizar modo de scroll
+    galleryIsNativeScroll = isNativeScrollMode();
+    
+    // Recalcular el ancho de la tarjeta
+    calculateGalleryCardWidth();
+    
+    if (galleryIsNativeScroll) {
+      // Modo scroll nativo: limpiar transform y usar scrollLeft
+      track.style.transform = '';
+      const scrollPosition = galleryCurrentIndex * galleryCardWidth;
+      track.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+    } else {
+      // Modo transform: usar translateX
+      const offset = -(galleryCurrentIndex * galleryCardWidth);
+      track.style.transform = `translateX(${offset}px)`;
+    }
 
     // Actualizar clases active en items
     const items = track.querySelectorAll(".gallery__item");
@@ -197,8 +234,52 @@
 
   // Ir a un slide específico (función global para onclick)
   function goToGallerySlide(index) {
-    galleryCurrentIndex = index;
-    updateGallery();
+    if (index >= 0 && index < galleryTotalSlides) {
+      galleryCurrentIndex = index;
+      updateGallery();
+    }
+  }
+
+  // Función para iniciar autoplay
+  function startGalleryAutoPlay() {
+    if (galleryAutoPlayInterval) return; // Ya está corriendo
+    
+    galleryAutoPlayInterval = setInterval(() => {
+      scrollGallery(1);
+    }, 5000);
+  }
+
+  // Función para detener autoplay
+  function stopGalleryAutoPlay() {
+    if (galleryAutoPlayInterval) {
+      clearInterval(galleryAutoPlayInterval);
+      galleryAutoPlayInterval = null;
+    }
+  }
+
+  // Sincronizar índice con scroll nativo en móvil
+  function syncScrollPosition() {
+    const track = document.getElementById("galleryTrack");
+    if (!track || !galleryIsNativeScroll || galleryCardWidth === 0) return;
+    
+    const scrollLeft = track.scrollLeft;
+    const newIndex = Math.round(scrollLeft / galleryCardWidth);
+    
+    if (newIndex !== galleryCurrentIndex && newIndex >= 0 && newIndex < galleryTotalSlides) {
+      galleryCurrentIndex = newIndex;
+      
+      // Actualizar indicadores sin mover el scroll
+      const indicators = document.querySelectorAll(".gallery__indicators .indicator");
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle("active", index === galleryCurrentIndex);
+      });
+      
+      // Actualizar clases active en items
+      const items = track.querySelectorAll(".gallery__item");
+      items.forEach((item, index) => {
+        item.classList.toggle("active", index === galleryCurrentIndex);
+      });
+    }
   }
 
   // Inicializar cuando el DOM esté listo
@@ -211,34 +292,46 @@
     
     if (galleryTotalSlides === 0) return;
 
-    // Auto-play (cada 5 segundos)
-    galleryAutoPlayInterval = setInterval(() => {
-      scrollGallery(1);
-    }, 5000);
+    // Calcular ancho inicial después de que CSS esté aplicado
+    // Usamos requestAnimationFrame para asegurar que el layout esté calculado
+    requestAnimationFrame(() => {
+      galleryIsNativeScroll = isNativeScrollMode();
+      calculateGalleryCardWidth();
+      updateGallery();
+    });
 
-    // Pausar auto-play al hacer hover
+    // Auto-play (cada 5 segundos)
+    startGalleryAutoPlay();
+
+    // Pausar auto-play al hacer hover o touch
     const carousel = document.querySelector(".gallery__carousel");
     if (carousel) {
-      carousel.addEventListener("mouseenter", () => {
-        if (galleryAutoPlayInterval) {
-          clearInterval(galleryAutoPlayInterval);
-          galleryAutoPlayInterval = null;
-        }
-      });
-
-      carousel.addEventListener("mouseleave", () => {
-        if (!galleryAutoPlayInterval) {
-          galleryAutoPlayInterval = setInterval(() => {
-            scrollGallery(1);
-          }, 5000);
-        }
-      });
+      carousel.addEventListener("mouseenter", stopGalleryAutoPlay);
+      carousel.addEventListener("mouseleave", startGalleryAutoPlay);
+      carousel.addEventListener("touchstart", stopGalleryAutoPlay, { passive: true });
+      carousel.addEventListener("touchend", function() {
+        // Reiniciar autoplay después de 3 segundos de soltar
+        setTimeout(startGalleryAutoPlay, 3000);
+      }, { passive: true });
     }
 
-    // Actualizar al cambiar tamaño de ventana
-    window.addEventListener("resize", updateGallery);
+    // Sincronizar scroll nativo con indicadores (para móvil)
+    let scrollTimeout;
+    track.addEventListener("scroll", function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(syncScrollPosition, 100);
+    }, { passive: true });
 
-    // Inicializar
-    updateGallery();
+    // Actualizar al cambiar tamaño de ventana (con debounce)
+    let resizeTimeout;
+    window.addEventListener("resize", function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        galleryIsNativeScroll = isNativeScrollMode();
+        calculateGalleryCardWidth();
+        updateGallery();
+      }, 150);
+    });
   });
-</script>
+  </script>
+</section>

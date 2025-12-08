@@ -84,7 +84,7 @@ public class CarritoService {
                     d.setArticulo(articulo);
                     d.setCantidad(0);
                     d.setPrecioUnitario(articulo.getPrecio());
-                    // guardamos para forzar ID (cascade=ALL, no haría falta, pero nos aseguramos)
+                    // guardamos para forzar ID (cascade=ALL, no haría falta, pero asegura)
                     DetalleCarrito saved = detalleCarritoRepository.save(d);
                     carrito.getDetalleList().add(saved);
                     return saved;

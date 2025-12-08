@@ -1,0 +1,12 @@
+{
+  "email": "a@b.es",
+  "password": "12345678",
+  "nombre": "Rafael",
+  "telefono": "666625252",
+  "direccion": {
+    "calle": "C/tal, 69",
+    "cp": "30889",
+    "ciudad": "Águilas",
+    "provincia": "Murcia"
+  }
+}

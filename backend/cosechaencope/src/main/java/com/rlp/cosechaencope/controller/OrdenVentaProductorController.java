@@ -2,7 +2,6 @@ package com.rlp.cosechaencope.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rlp.cosechaencope.dto.response.MessageResponse;
-import com.rlp.cosechaencope.model.OrdenVentaProductor;
-import com.rlp.cosechaencope.repository.OrdenVentaProductorRepository;
+import com.rlp.cosechaencope.dto.response.OvpResponse;
+import com.rlp.cosechaencope.service.OrdenVentaProductorService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -20,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Controlador REST para la gestión de órdenes de venta asociadas a productores.
@@ -43,11 +43,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/cosechaencope/productores/{idProductor}/ordenes")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 @Tag(name = "Órdenes de Venta Productor", description = "Gestión de órdenes de venta asociadas a productores")
 public class OrdenVentaProductorController {
 
-    @Autowired
-    private OrdenVentaProductorRepository ordenVentaProductorRepository;
+    private final OrdenVentaProductorService ordenVentaProductorService;
 
     /**
      * Lista todas las órdenes de venta asociadas a un productor específico.
@@ -72,7 +72,7 @@ public class OrdenVentaProductorController {
                 description = "Lista de órdenes obtenida exitosamente",
                 content = @Content(
                         mediaType = "application/json",
-                        array = @ArraySchema(schema = @Schema(implementation = OrdenVentaProductor.class))
+                        array = @ArraySchema(schema = @Schema(implementation = OvpResponse.class))
                 )
         ),
         @ApiResponse(
@@ -97,7 +97,7 @@ public class OrdenVentaProductorController {
         )
     })
     @GetMapping
-    public List<OrdenVentaProductor> listarPorProductor(@PathVariable Long idProductor) {
-        return ordenVentaProductorRepository.findByProductor_IdProductorOrderByFechaCreacionDesc(idProductor);
+    public List<OvpResponse> listarPorProductor(@PathVariable Long idProductor) {
+        return ordenVentaProductorService.listarOrdenesPorProductor(idProductor);
     }
 }

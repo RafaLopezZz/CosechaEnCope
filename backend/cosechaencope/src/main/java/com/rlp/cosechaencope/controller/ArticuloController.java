@@ -69,15 +69,24 @@ public class ArticuloController {
      * @return {@code ResponseEntity<ArticulosResponseDTO>} con el artículo
      * creado y HTTP 200.
      */
-    @Operation(summary = "Crear un nuevo artículo",
-            description = "Crea un nuevo artículo con los datos proporcionados")
+    @Operation(
+            summary = "Crear un nuevo artículo",
+            description = "Crea un nuevo artículo con los datos proporcionados"
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201",
+        @ApiResponse(
+                responseCode = "201",
                 description = "Artículo creado correctamente",
-                content = @Content(schema = @Schema(implementation = ArticuloResponse.class))),
-        @ApiResponse(responseCode = "400",
+                content = @Content(
+                        schema = @Schema(implementation = ArticuloResponse.class
+                        )
+                )
+        ),
+        @ApiResponse(
+                responseCode = "400",
                 description = "Datos de artículo inválidos",
-                content = @Content)
+                content = @Content
+        )
     })
     @PostMapping
     public ResponseEntity<ArticuloResponse> crearArticulo(@Valid @RequestBody ArticuloRequest articuloRequest) {
@@ -92,16 +101,27 @@ public class ArticuloController {
      * @return {@code ResponseEntity<ArticulosResponseDTO>} con el artículo
      * encontrado y HTTP 200.
      */
-    @Operation(summary = "Obtener artículo por ID",
-            description = "Retorna un artículo según el ID proporcionado")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Artículo encontrado",
-                content = @Content(schema = @Schema(implementation = ArticuloResponse.class))),
-        @ApiResponse(responseCode = "404",
-                description = "Artículo no encontrado",
-                content = @Content)
-    })
+    @Operation(
+            summary = "Obtener artículo por ID",
+            description = "Retorna un artículo según el ID proporcionado"
+    )
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Artículo encontrado",
+                        content = @Content(
+                                schema = @Schema(implementation = ArticuloResponse.class
+                                )
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Artículo no encontrado",
+                        content = @Content
+                )
+            }
+    )
     @GetMapping("/{idArticulo}")
     public ResponseEntity<ArticuloResponse> obtenerArticuloPorId(@PathVariable Long idArticulo) {
         ArticuloResponse response = articuloService.obtenerArticuloPorId(idArticulo);
@@ -114,16 +134,26 @@ public class ArticuloController {
      * @return {@code ResponseEntity<List<ArticulosResponseDTO>>} con la lista
      * de artículos y HTTP 200.
      */
-    @Operation(summary = "Obtener todos los artículos",
-            description = "Retorna una lista de todos los artículos disponibles")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Lista de artículos obtenida correctamente",
-                content = @Content(schema = @Schema(implementation = ArticuloResponse.class))),
-        @ApiResponse(responseCode = "404",
-                description = "No se encontraron artículos",
-                content = @Content)
-    })
+    @Operation(
+            summary = "Obtener todos los artículos",
+            description = "Retorna una lista de todos los artículos disponibles"
+    )
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Lista de artículos obtenida correctamente",
+                        content = @Content(schema = @Schema(implementation = ArticuloResponse.class
+                        )
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "No se encontraron artículos",
+                        content = @Content
+                )
+            }
+    )
     @GetMapping
     public ResponseEntity<List<ArticuloResponse>> obtenerTodosLosArticulos() {
         List<ArticuloResponse> response = articuloService.obtenerTodosLosArticulos();
@@ -139,19 +169,30 @@ public class ArticuloController {
      * @return {@code ResponseEntity<String>} con un mensaje de éxito y HTTP
      * 200.
      */
-    @Operation(summary = "Actualizar un artículo existente",
-            description = "Actualiza los datos de un artículo existente según su ID")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Artículo actualizado correctamente",
-                content = @Content(schema = @Schema(implementation = ArticuloResponse.class))),
-        @ApiResponse(responseCode = "404",
-                description = "Artículo no encontrado",
-                content = @Content),
-        @ApiResponse(responseCode = "400",
-                description = "Datos de artículo inválidos",
-                content = @Content)
-    })
+    @Operation(
+            summary = "Actualizar un artículo existente",
+            description = "Actualiza los datos de un artículo existente según su ID"
+    )
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Artículo actualizado correctamente",
+                        content = @Content(
+                                schema = @Schema(implementation = ArticuloResponse.class
+                                )
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Artículo no encontrado",
+                        content = @Content),
+                @ApiResponse(responseCode = "400",
+                        description = "Datos de artículo inválidos",
+                        content = @Content
+                )
+            }
+    )
     @PutMapping("/{idArticulo}")
     public ResponseEntity<ArticuloResponse> actualizarArticulo(@PathVariable Long idArticulo, @Valid @RequestBody ArticuloRequest articuloRequest) {
         ArticuloResponse response = articuloService.actualizarArticulo(idArticulo, articuloRequest);
@@ -165,16 +206,24 @@ public class ArticuloController {
      * @return {@code ResponseEntity<String>} con un mensaje de éxito y HTTP
      * 200.
      */
-    @Operation(summary = "Eliminar un artículo",
-            description = "Elimina un artículo según el ID proporcionado")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "204",
-                description = "Artículo eliminado correctamente",
-                content = @Content),
-        @ApiResponse(responseCode = "404",
-                description = "Artículo no encontrado",
-                content = @Content)
-    })
+    @Operation(
+            summary = "Eliminar un artículo",
+            description = "Elimina un artículo según el ID proporcionado"
+    )
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "204",
+                        description = "Artículo eliminado correctamente",
+                        content = @Content
+                ),
+                @ApiResponse(
+                        responseCode = "404",
+                        description = "Artículo no encontrado",
+                        content = @Content
+                )
+            }
+    )
     @DeleteMapping("/{idArticulo}")
     public ResponseEntity<String> eliminarArticulo(@PathVariable("idArticulo") Long idArticulo) {
         articuloService.eliminarArticulo(idArticulo);
@@ -189,16 +238,27 @@ public class ArticuloController {
      * @param idsArticulo Lista de IDs de los artículos a obtener
      * @return ResponseEntity con la lista de artículos encontrados y HTTP 200
      */
-    @Operation(summary = "Obtener múltiples artículos por IDs",
-            description = "Retorna una lista de artículos según los IDs proporcionados en el body")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Artículos encontrados",
-                content = @Content(schema = @Schema(implementation = ArticuloResponse.class))),
-        @ApiResponse(responseCode = "400",
-                description = "Lista de IDs inválida",
-                content = @Content)
-    })
+    @Operation(
+            summary = "Obtener múltiples artículos por IDs",
+            description = "Retorna una lista de artículos según los IDs proporcionados en el body"
+    )
+    @ApiResponses(
+            value = {
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Artículos encontrados",
+                        content = @Content(
+                                schema = @Schema(implementation = ArticuloResponse.class
+                                )
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "400",
+                        description = "Lista de IDs inválida",
+                        content = @Content
+                )
+            }
+    )
     @PostMapping("/batch")
     public ResponseEntity<List<ArticuloResponse>> obtenerArticulosPorIds(
             @RequestBody List<Long> idsArticulo) {

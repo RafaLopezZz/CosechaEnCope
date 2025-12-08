@@ -40,7 +40,7 @@ export class UserStoreService {
    * intenta decodificar el token JWT (método legacy)
    */
   private restoreUserFromSession(): void {
-    // Intentar restaurar desde el objeto guardado (método recomendado)
+    // Intentar restaurar desde el objeto guardado
     const savedUser = sessionStorage.getItem('currentUser');
     if (savedUser) {
       try {
@@ -64,8 +64,8 @@ export class UserStoreService {
       // Decodificar el JWT para obtener información del usuario
       const payload = this.decodeJWT(token);
       
-      // ADVERTENCIA: Este método legacy no puede obtener el idUsuario del token
-      // porque no está incluido en los claims. Se recomienda guardar el
+      // ADVERTENCIA: El método legacy no puede obtener el idUsuario del token
+      // porque no está incluido en los claims. Se guarda el
       // JwtResponse completo en sessionStorage durante el login.
       const user: JwtResponse = {
         token: token,

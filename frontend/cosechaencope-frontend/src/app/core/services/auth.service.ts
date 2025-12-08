@@ -9,11 +9,7 @@ import { CarritoService } from './carrito.service';
 import { API_ENDPOINTS } from '../config';
 
 /**
- * Servicio de autenticación mejorado con fusión de carrito
- *
- * MEJORAS IMPLEMENTADAS:
- * ✅ Fusión automática del carrito invitado tras login exitoso (asíncrona)
- * ✅ Sincronización del estado del carrito con el backend
+ * Servicio de autenticación mejorado con fusión de carrito (asíncrona).
  *
  * NOTA: La fusión del carrito se ejecuta de forma no bloqueante para no afectar
  * el flujo de login. Los errores de fusión se logean pero no bloquean la autenticación.
