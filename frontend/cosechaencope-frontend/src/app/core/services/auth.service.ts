@@ -42,13 +42,8 @@ export class AuthService {
       tap((res) => {
         sessionStorage.setItem('authToken', res.token);
         this.store.set(res);
-
-        // Fusionar carrito invitado de forma asíncrona (no bloqueante)
-        console.log('[AuthService] Login productor exitoso, fusionando carrito invitado...');
-        this.carritoService.fusionarCarritoInvitado().subscribe({
-          next: () => console.log('[AuthService] Carrito fusionado exitosamente'),
-          error: (err) => console.error('[AuthService] Error al fusionar carrito:', err),
-        });
+        // Los productores no tienen carrito de compras
+        console.log('[AuthService] Login productor exitoso');
       })
     );
   }

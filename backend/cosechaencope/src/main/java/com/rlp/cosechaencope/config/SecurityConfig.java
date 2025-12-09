@@ -110,9 +110,11 @@ public class SecurityConfig {
 
                 // Rutas que requieren autenticación/roles
                 .requestMatchers("/cosechaencope/usuarios/clientes/**").authenticated()
+                .requestMatchers("/cosechaencope/usuarios/productores/**").authenticated()
                 .requestMatchers("/cosechaencope/carrito/**").authenticated()
                 .requestMatchers("/cosechaencope/pedidos/**").authenticated()
                 .requestMatchers("/cosechaencope/productores/**").authenticated()
+                .requestMatchers("/cosechaencope/clientes/**").authenticated()
 
                 // Cualquier /cosechaencope/** (resto) solo SUPERADMIN
                 .requestMatchers("/cosechaencope/**").hasRole("SUPERADMIN")
