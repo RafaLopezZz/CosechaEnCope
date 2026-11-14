@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cosechaencope-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cosechaencope}
+      POSTGRES_USER: ${POSTGRES_USER:-cosecha_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cosecha_pass}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cosecha_user} -d ${POSTGRES_DB:-cosechaencope}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cosecha-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cosechaencope-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8081}:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-cosechaencope}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-cosecha_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-cosecha_pass}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en .env (ver .env.docker.example)}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-test_key}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-test_secret}
+      AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME:-cosecha-bucket}
+      AWS_REGION: ${AWS_REGION:-eu-west-1}
+      MYENV: prod
+    networks:
+      - cosecha-net
+
+volumes:
+  postgres_data:
+    name: cosechaencope_postgres_data
+
+networks:
+  cosecha-net:
+    driver: bridge

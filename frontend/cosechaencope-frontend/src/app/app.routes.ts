@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { SignInComponent } from './features/auth/sign-in/sign-in.component';
-import { SignUpComponent } from './features/auth/sign-up/sign-up.component';
+
 import { SignErrComponent } from './features/auth/sign-err/sign-err.component';
 import { AuthSelectorComponent } from './features/auth/auth-selector/auth-selector.component';
 import { ClienteSignInComponent } from './features/auth/cliente-sign-in/cliente-sign-in.component';
@@ -11,6 +11,7 @@ import { ArticuloListComponent } from './features/articulos/articulo-list/articu
 import { FeaturesSectionComponent } from './features/home/features-section/features-section.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { checkoutGuard } from './core/guards/checkout.guard';
 
 export const routes: Routes = [
   // NOTA: La ruta raíz '/' es manejada por Spring Boot (SSR con Thymeleaf)
@@ -133,6 +134,7 @@ export const routes: Routes = [
   },
   {
     path: 'checkout',
+    canActivate: [checkoutGuard],
     loadComponent: () =>
       import('./features/checkout/pages/checkout-page/checkout-page.component').then(
         (m) => m.CheckoutPageComponent
