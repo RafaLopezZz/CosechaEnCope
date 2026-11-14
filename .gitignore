@@ -35,3 +35,6 @@ Thumbs.db
 *.sql.backup
 postgres/
 EOF
+
+# Logs de ejecucion del backend
+backend/cosechaencope/logs/
