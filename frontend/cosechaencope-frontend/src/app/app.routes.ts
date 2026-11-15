@@ -17,6 +17,12 @@ export const routes: Routes = [
   // NOTA: La ruta raíz '/' es manejada por Spring Boot (SSR con Thymeleaf)
   // Angular solo maneja rutas bajo /app/**
 
+  {
+    path: '',
+    redirectTo: 'articulos',
+    pathMatch: 'full',
+  },
+
   // Página de selección de tipo de usuario
   {
     path: 'auth',
@@ -62,7 +68,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'PRODUCTOR' },
     loadComponent: () =>
       import('./features/productor/dashboard/dashboard.component').then(
-        (m) => m.DashboardProductorComponent
+        (m) => m.DashboardProductorComponent,
       ),
   },
   {
@@ -71,7 +77,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'PRODUCTOR' },
     loadComponent: () =>
       import('./features/productor/perfil/perfil.component').then(
-        (m) => m.PerfilProductorComponent
+        (m) => m.PerfilProductorComponent,
       ),
   },
   {
@@ -80,7 +86,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'PRODUCTOR' },
     loadComponent: () =>
       import('./features/productor/categorias/categorias.component').then(
-        (m) => m.CategoriasProductorComponent
+        (m) => m.CategoriasProductorComponent,
       ),
   },
   {
@@ -89,7 +95,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'PRODUCTOR' },
     loadComponent: () =>
       import('./features/productor/categorias/categorias.component').then(
-        (m) => m.CategoriasProductorComponent
+        (m) => m.CategoriasProductorComponent,
       ),
   },
   {
@@ -98,7 +104,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'PRODUCTOR' },
     loadComponent: () =>
       import('./features/productor/articulos/articulos.component').then(
-        (m) => m.ArticulosProductorComponent
+        (m) => m.ArticulosProductorComponent,
       ),
   },
   {
@@ -107,28 +113,32 @@ export const routes: Routes = [
     data: { tipoUsuario: 'PRODUCTOR' },
     loadComponent: () =>
       import('./features/productor/articulos/articulos.component').then(
-        (m) => m.ArticulosProductorComponent
+        (m) => m.ArticulosProductorComponent,
       ),
   },
   {
     path: 'productor/pedidos',
     canActivate: [authGuard, roleGuard],
     data: { tipoUsuario: 'PRODUCTOR' },
-    loadComponent: () => import('./features/productor/ovp/ovp.component').then(m => m.OrdenesProductorComponent),
-    title: 'Gestión de Ventas'
+    loadComponent: () =>
+      import('./features/productor/ovp/ovp.component').then((m) => m.OrdenesProductorComponent),
+    title: 'Gestión de Ventas',
   },
   {
     path: 'productor/pedidos/:id',
     canActivate: [authGuard, roleGuard],
     data: { tipoUsuario: 'PRODUCTOR' },
-    loadComponent: () => import('./features/productor/ovp/orden-productor-detalle.component').then(m => m.OrdenProductorDetalleComponent),
-    title: 'Detalle de Venta'
+    loadComponent: () =>
+      import('./features/productor/ovp/orden-productor-detalle.component').then(
+        (m) => m.OrdenProductorDetalleComponent,
+      ),
+    title: 'Detalle de Venta',
   },
   {
     path: 'carrito',
     loadComponent: () =>
       import('./features/carrito/pages/carrito-view/carrito-view.component').then(
-        (m) => m.CarritoViewComponent
+        (m) => m.CarritoViewComponent,
       ),
     title: 'Mi Carrito',
   },
@@ -137,7 +147,7 @@ export const routes: Routes = [
     canActivate: [checkoutGuard],
     loadComponent: () =>
       import('./features/checkout/pages/checkout-page/checkout-page.component').then(
-        (m) => m.CheckoutPageComponent
+        (m) => m.CheckoutPageComponent,
       ),
     title: 'Finalizar Compra',
   },
@@ -149,7 +159,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'CLIENTE' },
     loadComponent: () =>
       import('./features/cliente/dashboard/dashboard.component').then(
-        (m) => m.DashboardClienteComponent
+        (m) => m.DashboardClienteComponent,
       ),
   },
   {
@@ -157,18 +167,14 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { tipoUsuario: 'CLIENTE' },
     loadComponent: () =>
-      import('./features/cliente/perfil/perfil.component').then(
-        (m) => m.PerfilClienteComponent
-      ),
+      import('./features/cliente/perfil/perfil.component').then((m) => m.PerfilClienteComponent),
   },
   {
     path: 'cliente/pedidos',
     canActivate: [authGuard, roleGuard],
     data: { tipoUsuario: 'CLIENTE' },
     loadComponent: () =>
-      import('./features/cliente/pedidos/pedidos.component').then(
-        (m) => m.PedidosClienteComponent
-      ),
+      import('./features/cliente/pedidos/pedidos.component').then((m) => m.PedidosClienteComponent),
   },
   {
     path: 'cliente/pedidos/:id',
@@ -176,7 +182,7 @@ export const routes: Routes = [
     data: { tipoUsuario: 'CLIENTE' },
     loadComponent: () =>
       import('./features/cliente/pedidos/pedido-detalle.component').then(
-        (m) => m.PedidoDetalleComponent
+        (m) => m.PedidoDetalleComponent,
       ),
   },
 
